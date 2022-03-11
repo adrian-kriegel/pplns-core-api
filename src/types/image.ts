@@ -4,6 +4,7 @@ import db from '../storage/database';
 import { objectId } from '@unologin/server-common/lib/schemas/general';
 
 import { Type, Static } from '@unologin/typebox-extended/typebox';
+import { processingOutput } from './processing-output';
 
 export const image = Type.Object(
   {

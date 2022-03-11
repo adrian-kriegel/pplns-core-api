@@ -5,6 +5,8 @@ import { objectId } from '@unologin/server-common/lib/schemas/general';
 
 import { Type, Static } from '@unologin/typebox-extended/typebox';
 
+import { labelType } from './processing-output';
+
 export const task = Type.Object(
   {
     _id: objectId,
@@ -16,6 +18,17 @@ export const task = Type.Object(
     description: Type.String({ default: 'no description' }),
     // total number of images
     numImages: Type.Number({ minimum: 1 }),
+    
+    labels: Type.Array(
+      Type.Object(
+        {
+          // type of label to produce
+          labelType: labelType,
+          // classes for this label
+          classes: Type.Array(Type.String()),
+        },
+      ),
+    ),
   },
 );
 
