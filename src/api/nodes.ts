@@ -14,12 +14,13 @@ import { checkTaskAccess } from '../access-control/resource-access';
 
 import db from '../storage/database';
 import * as schemas from '../types/pipeline';
+import { simplePatch } from '../util/rest-util';
 
 export const nodes = db<schemas.Node>('nodes');
 
 const nodeQuery = Type.Object(
   {
-    _id: objectId,
+    _id: Type.Optional(objectId),
     taskId: objectId,
   },
 );
@@ -48,9 +49,15 @@ export default resource(
 
     post: async ({ taskId }, node) => 
     {
-      return (await nodes.insertOne({ ...node, taskId }))
-        .insertedId.toHexString()
-      ;
+      const doc = { ...node, taskId };
+
+      return {
+        ...doc,
+        _id: (await nodes.insertOne(doc)).insertedId, 
+      };
     },
+
+    patch: ({ taskId, _id }, newNode) => 
+      simplePatch<schemas.Node>(nodes, { taskId, _id }, newNode),
   },
 );

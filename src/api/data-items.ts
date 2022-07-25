@@ -8,12 +8,14 @@ import {
 } from '@unologin/server-common/lib/util/rest-util';
 
 import { Type, Static } from '@unologin/typebox-extended/typebox';
+import { badRequest, forbidden } from 'express-lemur/lib/errors';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
 import { checkTaskAccess } from '../access-control/resource-access';
 
 import db from '../storage/database';
 import * as schemas from '../types/pipeline';
+import { simplePatch } from '../util/rest-util';
 import { bundles } from './bundles';
 import { nodes } from './nodes';
 
@@ -21,7 +23,7 @@ export const dataItems = db<schemas.DataItem>('dataItems');
 
 const dataItemQuery = Type.Object(
   {
-    _id: objectId,
+    _id: Type.Optional(objectId),
     taskId: objectId,
     nodeId: objectId,
     done: Type.Optional(Type.Boolean()),
@@ -50,7 +52,7 @@ async function onItemDone(
   ).toArray();
 
   const bundleUpserts = await Promise.all(
-    consumers.map(({ _id: consumerId }) => 
+    consumers.map(({ _id: consumerId, inputs }) => 
       bundles.findOneAndUpdate(
         {
           taskId,
@@ -58,19 +60,40 @@ async function onItemDone(
           bundle,
         },
         {
-          $push: { itemIds: itemId },
+          $push:
+          {
+            // push the value into the correct position
+            itemIds: 
+            {
+              $each: [itemId],
+              $position: inputs.findIndex(
+                (input) => input.equals(nodeId),
+              ),
+            },
+          },
+          $setOnInsert: 
+          {
+            done: inputs.length === 1,
+          },
         },
         {
           upsert: true,
+          returnDocument: 'after',
         },
       ),
     ),
   );
   
-  const isDoneArray = consumers.map(
+  // array of booleans indicating whether or not to update the state to done for each bundle
+  const updateDone = consumers.map(
     (consumer, i) => 
     {
       const bundle = bundleUpserts[i].value;
+
+      if (bundle.done)
+      {
+        return false;
+      }
 
       // put itemId in bundle (findOneAndUpdate will return value BEFORE update)
       if (!bundle.itemIds.find((_id) => _id.equals(itemId)))
@@ -90,11 +113,14 @@ async function onItemDone(
         // only update bundles that are "done"
         $in: bundleUpserts.map(
           ({ value: { _id } }) => _id,
-        ).filter((_, i) => isDoneArray[i]),
+        ).filter((_, i) => updateDone[i]),
       },
     },
     {
-      done: true,
+      $set:
+      {
+        done: true,
+      },
     },
   );
 }
@@ -115,8 +141,26 @@ export default resource(
       query: dataItemQuery,
     },
 
-    accessControl: ({ taskId }, _0, _1, res) => 
-      checkTaskAccess(taskId, res),
+    accessControl: async ({ taskId, _id }, _0, { method }, res) => 
+    {
+      await checkTaskAccess(taskId, res);
+
+      if (_id)
+      {
+        const item = await dataItems.findOne({ _id });
+
+        res.locals.targetResource;
+
+        if (method !== 'GET' && item.done)
+        {
+          throw forbidden()
+            .msg('Cannot change data-item that is already "done".');
+        }
+      }
+
+    },
+
+    getOne: (_0, _1, res) => res.locals.targetResource,
 
     get: collectionToGetHandler<DataItemQuery, typeof schemas.dataItem>(
       dataItems,
@@ -124,26 +168,62 @@ export default resource(
       (q) => removeUndefined(q),
     ),
 
-    post: async ({ taskId, nodeId }, item) => 
+    post: async ({ taskId, nodeId }, inputItem) => 
     {
-      const itemId = (
-        await dataItems.insertOne({ ...item, taskId, nodeId })
-      ).insertedId;
+      const item = { ...inputItem, taskId, nodeId };
 
-      // if the item is done, push it into its destination bundles
-      if (item.done)
+      try 
       {
-        await onItemDone(
-          {
-            ...item,
-            _id: itemId,
-            taskId,
-            nodeId,
-          },
-        );
+        const itemId = (
+          await dataItems.insertOne(item)
+        ).insertedId;
+  
+        if (item.done)
+        {
+          await onItemDone(
+            {
+              ...item,
+              _id: itemId,
+            },
+          );
+        }
+  
+        return { ...item, _id: itemId };
       }
+      catch (e)
+      {
+        if (e.code === 11000)
+        {
+          throw badRequest()
+            .msg(
+              `Output from ${nodeId} to bundle ${item.bundle} already exists`,
+            );
+        }
+        else 
+        {
+          throw e;
+        }
+      }
+    },
 
-      return itemId.toHexString();
+    patch: async ({ taskId, _id, nodeId }, item) => 
+    {
+      const newItem = await simplePatch<schemas.DataItem>(
+        dataItems,
+        {
+          _id,
+          taskId,
+          nodeId,
+        },
+        item,
+      );
+
+      if (newItem.done)
+      {
+        await onItemDone(newItem);
+      }
+      
+      return newItem;
     },
   },
 );

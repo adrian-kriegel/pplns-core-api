@@ -1,4 +1,5 @@
 
+import { parseObjectId } from '@unologin/server-common/lib/general/database';
 import {
   objectId,
 } from '@unologin/server-common/lib/schemas/general';
@@ -10,17 +11,18 @@ import {
 import { Type, Static } from '@unologin/typebox-extended/typebox';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
-import { ObjectId } from 'mongodb';
+
 import { checkTaskAccess } from '../access-control/resource-access';
 
 import db from '../storage/database';
 
 import * as schemas from '../types/pipeline';
 import { getUser } from '../util/express-util';
+import { simplePatch } from '../util/rest-util';
 
 export const tasks = db<schemas.Task>('tasks');
 
-const taskQuery = Type.Object({ _id: objectId });
+const taskQuery = Type.Object({ _id: Type.Optional(objectId) });
 type TaskQuery = Static<typeof taskQuery>;
 
 export default resource(
@@ -47,21 +49,14 @@ export default resource(
     {
       const user = getUser(res);
 
-      task.owners = [new ObjectId(user.asuId)];
+      task.owners = [parseObjectId(user.asuId)];
 
       const insertResult = await tasks.insertOne(task);
 
       return insertResult.insertedId.toHexString();
     },
 
-    patch: async ({ _id }, newTask) => 
-    {
-      const task = await tasks.findOneAndUpdate(
-        { _id },
-        { $set: newTask as any },
-      );
-
-      return { ...task.value, ...newTask };
-    },
+    patch: ({ _id }, newTask) => 
+      simplePatch(tasks, { _id }, newTask),
   },
 );

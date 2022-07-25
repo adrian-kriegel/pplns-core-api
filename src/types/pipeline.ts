@@ -35,7 +35,7 @@ export const node = Type.Object(
   },
 );
 
-export const nodeWrite = Type.Omit(node, ['taskId']);
+export const nodeWrite = Type.Omit(node, ['taskId', '_id']);
 
 export type Node = Static<typeof node>;
 export type NodeWrite = Static<typeof nodeWrite>;
@@ -61,7 +61,7 @@ export const dataItem = Type.Object(
   },
 );
 
-export const dataItemWrite = Type.Omit(dataItem, ['taskId']);
+export const dataItemWrite = Type.Omit(dataItem, ['taskId', 'nodeId']);
 
 export type DataItem = Static<typeof dataItem>;
 export type DataItemWrite = Static<typeof dataItemWrite>;
@@ -69,7 +69,10 @@ export type DataItemWrite = Static<typeof dataItemWrite>;
 const bundleProps = 
 {
   _id: objectId,
+
+  // items in this bundle in order of consumer.inputs
   itemIds: Type.Array(objectId),
+
   taskId: objectId,
 
   bundle: Type.String(),
