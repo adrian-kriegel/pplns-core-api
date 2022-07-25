@@ -46,13 +46,15 @@
   },
   "dependencies": {
     "@sinclair/typebox": "^0.23.4",
-    "@unologin/node-api": "ssh://git@github.com:unologin/node-api",
+    "@unologin/node-api": "^2.2.3",
     "@unologin/server-common": "ssh://git@github.com:unologin/server-common",
     "@unologin/typebox-extended": "ssh://git@github.com:unologin/typebox-extended",
     "ajv": "^8.10.0",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-lemur": "ssh://git@github.com:unologin/express-lemur",
+    "mongodb": "^4.8.0",
     "serverless-http": "^2.7.0"
   }
 }
