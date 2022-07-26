@@ -11,7 +11,7 @@ import { Type, Static } from '@unologin/typebox-extended/typebox';
 import { badRequest, forbidden } from 'express-lemur/lib/errors';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
-import { checkTaskAccess } from '../access-control/resource-access';
+import { checkTaskAccess } from '../middleware/resource-access';
 
 import db from '../storage/database';
 import * as schemas from '../schemas/pipeline';

@@ -5,7 +5,7 @@
   "main": "build/main.js",
   "scripts": {
     "lint": "eslint --fix --ext .ts ./src ./test",
-    "dev": "ts-node-dev ./src/main/server",
+    "dev": "UNOLOGIN_ENV=local ts-node-dev ./src/main/server",
     "test": "jest --detectOpenHandles",
     "build-dev": "sls package --stage=dev",
     "build": "sls package --stage=production",
@@ -42,7 +42,7 @@
     "ts-jest": "^26.5.6",
     "ts-loader": "^8.1.0",
     "ts-node-dev": "^1.1.6",
-    "typescript": "^4.2.3",
+    "typescript": "4.6.2",
     "webpack": "^5.37.1"
   },
   "dependencies": {
@@ -50,7 +50,7 @@
     "@unologin/node-api": "^2.2.3",
     "@unologin/server-common": "ssh://git@github.com:unologin/server-common",
     "@unologin/typebox-extended": "ssh://git@github.com:unologin/typebox-extended",
-    "ajv": "^8.10.0",
+    "ajv": "6.12.6",
     "cookie-parser": "^1.4.6",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",

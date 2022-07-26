@@ -5,14 +5,14 @@ import {
 } from '@unologin/server-common/lib/schemas/general';
 
 import {
-  collectionToGetHandler,
+  collectionToGetHandler, removeUndefined,
 } from '@unologin/server-common/lib/util/rest-util';
 
 import { Type, Static } from '@unologin/typebox-extended/typebox';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
 
-import { checkTaskAccess } from '../access-control/resource-access';
+import { checkTaskAccess } from '../middleware/resource-access';
 
 import db from '../storage/database';
 
@@ -43,6 +43,8 @@ export default resource(
     get: collectionToGetHandler<TaskQuery, typeof schemas.task>(
       tasks,
       schemas.task,
+      // [!] TODO: only return tasks the user owns
+      (q) => removeUndefined(q),
     ),
 
     post: async (_0, task, _1, res) => 
