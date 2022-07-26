@@ -13,7 +13,7 @@ import { resource } from 'express-lemur/lib/rest/rest-router';
 import { checkTaskAccess } from '../access-control/resource-access';
 
 import db from '../storage/database';
-import * as schemas from '../types/pipeline';
+import * as schemas from '../schemas/pipeline';
 import { simplePatch } from '../util/rest-util';
 
 export const nodes = db<schemas.Node>('nodes');

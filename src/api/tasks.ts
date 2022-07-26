@@ -16,7 +16,7 @@ import { checkTaskAccess } from '../access-control/resource-access';
 
 import db from '../storage/database';
 
-import * as schemas from '../types/pipeline';
+import * as schemas from '../schemas/pipeline';
 import { getUser } from '../util/express-util';
 import { simplePatch } from '../util/rest-util';
 

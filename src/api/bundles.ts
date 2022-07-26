@@ -15,7 +15,7 @@ import { Collection } from 'mongodb';
 import { checkTaskAccess } from '../access-control/resource-access';
 
 import db from '../storage/database';
-import * as schemas from '../types/pipeline';
+import * as schemas from '../schemas/pipeline';
 
 export const bundles = db<schemas.Bundle>('bundles');
 

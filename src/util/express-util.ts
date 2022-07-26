@@ -5,7 +5,7 @@ import type { User } from '@unologin/node-api';
 
 import { unauthorized } from 'express-lemur/lib/errors';
 import { assert404 } from 'express-lemur/lib/rest/rest-router';
-import { Task } from '../types/pipeline';
+import { Task } from '../schemas/pipeline';
 
 /**
  * 
