@@ -6,10 +6,11 @@ import { DataItem, Node, Task } from '../src/schemas/pipeline';
 
 import tasksApi from '../src/api/tasks';
 import nodesApi from '../src/api/nodes';
-import dataItemsApi, { dataItems } from '../src/api/data-items';
-import bundlesApi, { bundles } from '../src/api/bundles';
+import dataItemsApi from '../src/api/data-items';
+import bundlesApi from '../src/api/bundles';
 
 import { APIError } from 'express-lemur/lib/errors';
+import { bundles, dataItems } from '../src/storage/database';
 
 const userId = new ObjectId('62de9ee9ac751033dad45a62');
 
@@ -59,7 +60,7 @@ test('POST /task/:taskId/nodes creates new nodes for task', async () =>
   srcNode1 = await nodesApi.post(
     { taskId },
     {
-      worker: 'src-node-1',
+      workerId: new ObjectId(),
       inputs: [],
     },
     null as any,
@@ -72,7 +73,7 @@ test('POST /task/:taskId/nodes creates new nodes for task', async () =>
   srcNode2 = await nodesApi.post(
     { taskId },
     {
-      worker: 'src-node-1',
+      workerId: new ObjectId(),
       inputs: [],
     },
     null as any,
@@ -85,7 +86,7 @@ test('POST /task/:taskId/nodes creates new nodes for task', async () =>
   outNode = await nodesApi.post(
     { taskId },
     {
-      worker: 'out-node',
+      workerId: new ObjectId(),
       inputs: [
         {
           nodeId: srcNode1._id,

@@ -14,14 +14,11 @@ import { resource } from 'express-lemur/lib/rest/rest-router';
 
 import { checkTaskAccess } from '../middleware/resource-access';
 
-import db from '../storage/database';
 
 import * as schemas from '../schemas/pipeline';
+import { tasks } from '../storage/database';
 import { getUser } from '../util/express-util';
 import { simplePatch } from '../util/rest-util';
-
-export const tasks = db<schemas.Task>('tasks');
-
 const taskQuery = Type.Object({ _id: Type.Optional(objectId) });
 type TaskQuery = Static<typeof taskQuery>;
 

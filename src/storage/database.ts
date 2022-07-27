@@ -1,6 +1,14 @@
 
 import Connection from '@unologin/server-common/lib/general/database';
 
+import {
+  Bundle,
+  DataItem,
+  Node,
+  Task,
+  Worker,
+} from '../schemas/pipeline';
+
 import indexes from './db-indexes';
 
 const db = new Connection(
@@ -22,3 +30,13 @@ export default function collection<T=any>(cname: string)
   return db.collection<T>(cname);
 }
 
+
+export const bundles = collection<Bundle>('bundles');
+
+export const nodes = collection<Node>('nodes');
+
+export const dataItems = collection<DataItem>('dataItems');
+
+export const tasks = collection<Task>('tasks');
+
+export const workers = collection<Worker>('workers');

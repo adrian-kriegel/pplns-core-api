@@ -12,11 +12,9 @@ import { Type, Static } from '@unologin/typebox-extended/typebox';
 import { resource } from 'express-lemur/lib/rest/rest-router';
 import { checkTaskAccess } from '../middleware/resource-access';
 
-import db from '../storage/database';
 import * as schemas from '../schemas/pipeline';
+import { nodes } from '../storage/database';
 import { simplePatch } from '../util/rest-util';
-
-export const nodes = db<schemas.Node>('nodes');
 
 const nodeQuery = Type.Object(
   {

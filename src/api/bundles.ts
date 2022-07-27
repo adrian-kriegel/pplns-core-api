@@ -14,10 +14,8 @@ import { resource } from 'express-lemur/lib/rest/rest-router';
 import { Collection } from 'mongodb';
 import { checkTaskAccess } from '../middleware/resource-access';
 
-import db from '../storage/database';
 import * as schemas from '../schemas/pipeline';
-
-export const bundles = db<schemas.Bundle>('bundles');
+import { bundles } from '../storage/database';
 
 const bundleQuery = Type.Object(
   {

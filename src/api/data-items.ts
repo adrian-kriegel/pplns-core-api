@@ -13,13 +13,9 @@ import { badRequest, forbidden } from 'express-lemur/lib/errors';
 import { resource } from 'express-lemur/lib/rest/rest-router';
 import { checkTaskAccess } from '../middleware/resource-access';
 
-import db from '../storage/database';
 import * as schemas from '../schemas/pipeline';
+import { bundles, dataItems, nodes } from '../storage/database';
 import { simplePatch } from '../util/rest-util';
-import { bundles } from './bundles';
-import { nodes } from './nodes';
-
-export const dataItems = db<schemas.DataItem>('dataItems');
 
 const dataItemQuery = Type.Object(
   {

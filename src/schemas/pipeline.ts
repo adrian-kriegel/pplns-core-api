@@ -37,8 +37,8 @@ export const node = Type.Object(
       ),
     ),
 
-    // name/id of the worker responsible
-    worker: Type.String(),
+    // responsible worker
+    workerId: objectId,
   },
 );
 
@@ -106,3 +106,18 @@ export const bundleRead = Type.Object(
 
 export type Bundle = Static<typeof bundle>;
 export type BundleRead = Static<typeof bundleRead>;
+
+export const worker = Type.Object(
+  {
+    _id: objectId,
+
+    // human readable title and description
+    title: Type.String(),
+    description: Type.Optional(Type.String()),
+  },
+);
+
+export const workerWrite = Type.Omit(worker, ['_id']);
+
+export type Worker = Static<typeof worker>;
+export type WorkerWrite = Static<typeof workerWrite>;
