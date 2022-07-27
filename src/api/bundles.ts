@@ -41,7 +41,7 @@ collectionToGetHandler<BundleQuery, typeof schemas.bundleRead>(
     {
       $lookup:
       {
-        from: 'dataItems', // dataItems.collectionName,
+        from: 'dataItems', // dataItems.collectionName, (won't work because of circular deps => TODO: fix)
         localField: 'itemIds',
         foreignField: '_id',
         as: 'items',
@@ -65,11 +65,12 @@ export default resource(
 
     get: async (...args) => 
     { 
-      // TODO: somehow order the items in the aggregation lookup stage to avoid the mess below
       const { results, total } = await getBundlesWithUnorderedItems(...args);
 
       return {
         total,
+        // ensure that the 'items' are in the same order as the itemIds (which are in the order the consumer expects)
+        // TODO: somehow order the items in the aggregation lookup stage to avoid the mess below
         results: results.map(
           (bundle) => 
             (

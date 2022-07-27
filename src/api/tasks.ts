@@ -34,11 +34,21 @@ export default resource(
     schemas: 
     {
       read: schemas.task,
-      write: schemas.task,
+      write: Type.Omit(schemas.task, ['_id']),
       query: taskQuery,
     },
 
-    accessControl: ({ _id }, _0, _1, res) => checkTaskAccess(_id, res),
+    accessControl: ({ _id }, _0, _1, res) => 
+    {
+      if (_id)
+      {
+        return checkTaskAccess(_id, res);
+      }
+      else 
+      {
+        return Promise.resolve();
+      }
+    },
 
     get: collectionToGetHandler<TaskQuery, typeof schemas.task>(
       tasks,

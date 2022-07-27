@@ -86,7 +86,16 @@ test('POST /task/:taskId/nodes creates new nodes for task', async () =>
     { taskId },
     {
       worker: 'out-node',
-      inputs: [srcNode1._id, srcNode2._id],
+      inputs: [
+        {
+          nodeId: srcNode1._id,
+          output: 'out0',
+        },
+        {
+          nodeId: srcNode2._id,
+          output: 'out0',
+        },
+      ],
     },
     null as any,
     mockRes,
@@ -106,6 +115,7 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
         data: 'b1data2',
         done: true,
         bundle: 'b1',
+        output: 'out0',
       }, 
       null as any,
       mockRes,
@@ -130,7 +140,7 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
     expect(bundle.items[0].data).toBe('b1data2');
   });
 
-  it('POST by same node and same bundle not allowed', async () => 
+  it('POST by same {nodeId,bundle,output} not allowed', async () => 
   {
     await expect(
       () => dataItemsApi.post(
@@ -139,11 +149,36 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
           data: 'b1data3',
           done: true,
           bundle: 'b1',
+          output: 'out0',
         }, 
         null as any,
         mockRes,
       ),
     ).rejects.toBeInstanceOf(APIError);
+  });
+
+  it('POST by same {nodeId,bundle}, different output allowed', async () => 
+  {
+    const bundlesCollection = await bundles.find({}).toArray();
+
+    await dataItemsApi.post(
+      { nodeId: srcNode2._id, taskId },
+      {
+        data: 'b1data3',
+        done: true,
+        bundle: 'b1',
+        // output out1 is not connected to anything
+        output: 'out1',
+      }, 
+      null as any,
+      mockRes,
+    );
+
+    // should not appear in any bundles => no new bundles
+    expect(await bundles.find({}).toArray())
+      .toStrictEqual(bundlesCollection);
+
+    
   });
 
   it(
@@ -156,6 +191,7 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
           data: 'b2data1',
           done: true,
           bundle: 'b2',
+          output: 'out0',
         }, 
       null as any,
       mockRes,
@@ -163,7 +199,7 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
 
       expect(
         await dataItems.countDocuments(),
-      ).toBe(2);
+      ).toBe(3);
 
       const bundle = await bundles.findOne({ itemIds: item._id });
 
@@ -175,7 +211,7 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
     },
   );
 
-  it('POST with done=true creates new data-item finishes bundle.', async () => 
+  it('POST with done=true creates new data-item, finishes bundle.', async () => 
   {
     const item = await dataItemsApi.post(
       { nodeId: srcNode1._id, taskId },
@@ -183,6 +219,7 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
         data: 'b1data1',
         done: true,
         bundle: 'b1',
+        output: 'out0',
       }, 
       null as any,
       mockRes,
@@ -190,7 +227,7 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
 
     expect(
       await dataItems.countDocuments(),
-    ).toBe(3);
+    ).toBe(4);
 
     const { results: [bundle] } = await bundlesApi.get(
       { consumerId: outNode._id, taskId, bundle: 'b1' },

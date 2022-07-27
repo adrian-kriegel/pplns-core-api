@@ -28,7 +28,14 @@ export const node = Type.Object(
     taskId: objectId,
 
     // references other nodes from the same task
-    inputs: Type.Array(objectId),
+    inputs: Type.Array(
+      Type.Object(
+        {
+          nodeId: objectId,
+          output: Type.String(),
+        },
+      ),
+    ),
 
     // name/id of the worker responsible
     worker: Type.String(),
@@ -50,7 +57,10 @@ export const dataItem = Type.Object(
     // _id of node which produced this data item
     nodeId: objectId,
 
-    // grouping identifier for outputs that belong together (not _id of bundle!)
+    // name of the output this data item belongs to
+    output: Type.String(),
+
+    // grouping identifier for outputs that belong together e.g. _id of input (not _id of bundle!)
     bundle: Type.String(),
 
     // set to true once all processing has completed
@@ -61,7 +71,7 @@ export const dataItem = Type.Object(
   },
 );
 
-export const dataItemWrite = Type.Omit(dataItem, ['taskId', 'nodeId']);
+export const dataItemWrite = Type.Omit(dataItem, ['taskId', 'nodeId', '_id']);
 
 export type DataItem = Static<typeof dataItem>;
 export type DataItemWrite = Static<typeof dataItemWrite>;
@@ -75,6 +85,7 @@ const bundleProps =
 
   taskId: objectId,
 
+  // same as dataItem.bundle
   bundle: Type.String(),
 
   // true iff all required data items are done

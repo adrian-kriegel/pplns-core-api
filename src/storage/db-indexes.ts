@@ -21,6 +21,7 @@ const indexes : CollectionIndexes =
       nodeId: 1,
       taskId: 1,
       bundle: 1,
+      output: 1,
       $options: { unique: true },
     },
   ],

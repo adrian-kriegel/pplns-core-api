@@ -42,12 +42,13 @@ type DataItemQuery = Static<typeof dataItemQuery>;
  * @returns Promise<void>
  */
 async function onItemDone(
-  { nodeId, taskId, _id: itemId, bundle } : schemas.DataItem,
+  { nodeId, taskId, _id: itemId, bundle, output } : schemas.DataItem,
 )
 {
   const consumers = await nodes.find(
     {
-      inputs: nodeId,
+      // find nodes where the data item is an input
+      inputs: { $elemMatch: { nodeId, output } },
     },
   ).toArray();
 
@@ -67,7 +68,10 @@ async function onItemDone(
             {
               $each: [itemId],
               $position: inputs.findIndex(
-                (input) => input.equals(nodeId),
+                (input) => 
+                  input.nodeId.equals(nodeId) && 
+                  input.output === output
+                ,
               ),
             },
           },
@@ -101,6 +105,7 @@ async function onItemDone(
         bundle.itemIds.push(itemId);
       }
 
+      // bundle is done once it's full
       return bundle.itemIds.length === consumer.inputs.length;
     },
   );
