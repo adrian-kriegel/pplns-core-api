@@ -3,6 +3,8 @@ import * as unologin from '@unologin/node-api';
 
 import { Errors, LemurRouter } from 'express-lemur';
 
+import { isLambda } from '../main/env-setup';
+
 const {
   parseLogin,
   loginEventHandler,
@@ -54,5 +56,28 @@ api.add(
   },
 );
 
-// always parse login 
-api.express().all('/*', parseLogin);
+if (process.env.DEBUG_DISABLE_AUTH === 'true')
+{
+  if (
+    isLambda || 
+    process.env.NODE_ENV !== 'development'
+  )
+  {
+    throw new Error('Attempted to disable auth in production.');
+  }
+
+  const asuId = '62e0df28ba228a25b4694c5b';
+
+  console.warn(`AUTHENTICATION DISABLED. USING asuId=${asuId}`);
+
+  api.express().all('*', (_, res, next) => 
+  {
+    res.locals.unologin = { user: { asuId } };
+    next();
+  });
+}
+else 
+{
+  // always parse login 
+  api.express().all('/*', parseLogin);
+}
