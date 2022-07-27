@@ -1,7 +1,7 @@
 
 import { Static, Type } from '@unologin/typebox-extended/typebox';
 
-import { objectId } from '@unologin/server-common/lib/schemas/general';
+import { date, objectId } from '@unologin/server-common/lib/schemas/general';
 
 export const task = Type.Object(
   {
@@ -93,6 +93,12 @@ const bundleProps =
 
   // node that may consume these items
   consumerId: objectId,
+
+  // time the bundle is taken at (won't be available to afterwards)
+  consumedAt: Type.Optional(date),
+
+  // internal id used to group bundles that have been taken at the same time
+  consumedUpdateId: Type.Optional(objectId),
 };
 
 export const bundle = Type.Object(bundleProps);

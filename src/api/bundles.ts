@@ -11,7 +11,7 @@ import {
 import { Type, Static } from '@unologin/typebox-extended/typebox';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
-import { Collection } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import { checkTaskAccess } from '../middleware/resource-access';
 
 import * as schemas from '../schemas/pipeline';
@@ -24,6 +24,10 @@ const bundleQuery = Type.Object(
     consumerId: objectId,
     done: Type.Optional(Type.Boolean()),
     bundle: Type.Optional(Type.String()),
+    limit: Type.Optional(Type.Integer({ minimum: 1 })),
+    // set to true if returned bundles should be consumed
+    consume: Type.Optional(Type.Boolean()),
+    consumedUpdateId: Type.Optional(objectId),
   },
 );
 
@@ -50,7 +54,9 @@ collectionToGetHandler<BundleQuery, typeof schemas.bundleRead>(
 
 export default resource(
   {
-    route: '/tasks/:taskId/nodes/:consumerId/inputs',
+    route: [
+      '/tasks/:taskId/nodes/:consumerId/inputs',
+    ],
     id: '_id',
     
     schemas:
@@ -63,10 +69,43 @@ export default resource(
 
     get: async (...args) => 
     { 
-      const { results, total } = await getBundlesWithUnorderedItems(...args);
+      const q = args[0];
+
+      if (q.consume)
+      {
+        // mark all updated documents with a unique id to fetch them later
+        const consumedUpdateId = new ObjectId();
+
+        await bundles.updateMany(
+          removeUndefined(
+            {
+              ...q,
+              consumedAt: { $exists: false },
+              limit: undefined,
+              consume: undefined,
+            },
+          ),
+          {
+            $set:
+            {
+              consumedAt: new Date(),
+              consumedUpdateId,
+            },
+          },
+        );
+
+        // TODO: check update success
+
+        // alter the query to only include the just updated resources
+        args[0] = { consumedUpdateId } as BundleQuery;
+      }
+
+      // @ts-ignore
+      // eslint-disable-next-line
+      const { results, total } = await getBundlesWithUnorderedItems(...args)
 
       return {
-        total,
+        total: total || results.length,
         // ensure that the 'items' are in the same order as the itemIds (which are in the order the consumer expects)
         // TODO: somehow order the items in the aggregation lookup stage to avoid the mess below
         results: results.map(
