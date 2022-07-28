@@ -74,6 +74,7 @@ async function onItemDone(
           $setOnInsert: 
           {
             done: inputs.length === 1,
+            createdAt: new Date(),
           },
         },
         {
@@ -171,7 +172,12 @@ export default resource(
 
     post: async ({ taskId, nodeId }, inputItem) => 
     {
-      const item = { ...inputItem, taskId, nodeId };
+      const item = {
+        ...inputItem,
+        taskId,
+        nodeId,
+        createdAt: new Date(),
+      };
 
       try 
       {

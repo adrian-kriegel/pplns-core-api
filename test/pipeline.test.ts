@@ -2,7 +2,7 @@
 import { parseObjectId } from '@unologin/server-common/lib/general/database';
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
-import { DataItem, Node, Task } from '../src/schemas/pipeline';
+import { DataItem, Node, TaskWrite } from '../src/schemas/pipeline';
 
 import tasksApi from '../src/api/tasks';
 import nodesApi from '../src/api/nodes';
@@ -29,7 +29,7 @@ describe('Tasks & Nodes API', () =>
 {
   it('POST /tasks creates new task and sets creator as owner', async () => 
   {
-    const task : Omit<Task, '_id'> = 
+    const task : TaskWrite = 
     {
       title: 'test task',
       description: 'testing',

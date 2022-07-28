@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 import { Response } from 'express';
 
 import { getUser } from '../util/express-util';
-import { tasks } from '../api/tasks';
+import { tasks } from '../storage/database';
 import { assert404 } from 'express-lemur/lib/rest/rest-router';
 import { unauthorized } from 'express-lemur/lib/errors';
 

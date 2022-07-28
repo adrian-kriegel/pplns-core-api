@@ -47,7 +47,7 @@ export default resource(
 
     post: async ({ taskId }, node) => 
     {
-      const doc = { ...node, taskId };
+      const doc = { ...node, taskId, createdAt: new Date() };
 
       return {
         ...doc,

@@ -40,5 +40,19 @@ export default resource(
       schemas.worker,
       (q) => removeUndefined(q),
     ),
+
+    post: async (q, doc) => 
+    {
+      const worker : Omit<schemas.Worker, '_id'> = 
+      {
+        ...doc,
+        createdAt: new Date(),
+      };
+
+      return {
+        ...worker,
+        _id: (await (workers.insertOne(worker))).insertedId,
+      };
+    },
   },
 );

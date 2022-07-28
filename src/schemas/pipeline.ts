@@ -2,10 +2,17 @@
 import { Static, Type } from '@unologin/typebox-extended/typebox';
 
 import { date, objectId } from '@unologin/server-common/lib/schemas/general';
+import { TObject, TProperties } from '@sinclair/typebox';
+
+const writeType = <T extends TProperties>(schema : TObject<T>) => 
+  Type.Omit(schema, ['_id', 'createdAt'])
+;
 
 export const task = Type.Object(
   {
     _id: objectId,
+
+    createdAt: date,
 
     // human readable title and description
     title: Type.String(),
@@ -19,11 +26,16 @@ export const task = Type.Object(
   },
 );
 
+export const taskWrite = writeType(task);
+
 export type Task = Static<typeof task>;
+export type TaskWrite = Static<typeof taskWrite>;
 
 export const node = Type.Object(
   {
     _id: objectId,
+
+    createdAt: date,
 
     taskId: objectId,
 
@@ -42,7 +54,7 @@ export const node = Type.Object(
   },
 );
 
-export const nodeWrite = Type.Omit(node, ['taskId', '_id']);
+export const nodeWrite = Type.Omit(writeType(node), ['taskId']);
 
 export type Node = Static<typeof node>;
 export type NodeWrite = Static<typeof nodeWrite>;
@@ -50,6 +62,8 @@ export type NodeWrite = Static<typeof nodeWrite>;
 export const dataItem = Type.Object(
   {
     _id: objectId,
+
+    createdAt: date,
 
     // _id of the task this item belongs to
     taskId: objectId,
@@ -71,7 +85,10 @@ export const dataItem = Type.Object(
   },
 );
 
-export const dataItemWrite = Type.Omit(dataItem, ['taskId', 'nodeId', '_id']);
+export const dataItemWrite = Type.Omit(
+  writeType(dataItem),
+  ['taskId', 'nodeId'],
+);
 
 export type DataItem = Static<typeof dataItem>;
 export type DataItemWrite = Static<typeof dataItemWrite>;
@@ -79,6 +96,8 @@ export type DataItemWrite = Static<typeof dataItemWrite>;
 const bundleProps = 
 {
   _id: objectId,
+
+  createdAt: date,
 
   // items in this bundle in order of consumer.inputs
   itemIds: Type.Array(objectId),
@@ -124,6 +143,8 @@ export const worker = Type.Object(
   {
     _id: objectId,
 
+    createdAt: date,
+
     // human readable title and description
     title: Type.String(),
     description: Type.Optional(Type.String()),
@@ -145,7 +166,7 @@ export const worker = Type.Object(
   },
 );
 
-export const workerWrite = Type.Omit(worker, ['_id']);
+export const workerWrite = writeType(worker);
 
 export type Worker = Static<typeof worker>;
 export type WorkerWrite = Static<typeof workerWrite>;

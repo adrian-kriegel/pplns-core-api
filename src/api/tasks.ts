@@ -31,7 +31,7 @@ export default resource(
     schemas: 
     {
       read: schemas.task,
-      write: Type.Omit(schemas.task, ['_id']),
+      write: schemas.taskWrite,
       query: taskQuery,
     },
 
@@ -60,7 +60,12 @@ export default resource(
 
       task.owners = [parseObjectId(user.asuId)];
 
-      const insertResult = await tasks.insertOne(task);
+      const insertResult = await tasks.insertOne(
+        {
+          ...task,
+          createdAt: new Date(),
+        },
+      );
 
       return insertResult.insertedId.toHexString();
     },
