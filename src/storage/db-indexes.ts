@@ -32,7 +32,7 @@ const indexes : CollectionIndexes =
     { bundle: 1 },
     { done: 1 },
     { consumerId: 1 },
-    { consumedUpdateId: 1 },
+    { consumedAt: 1 },
   ],
 };
 

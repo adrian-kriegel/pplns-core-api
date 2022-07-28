@@ -11,11 +11,13 @@ import {
 import { Type, Static } from '@unologin/typebox-extended/typebox';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
-import { Collection, ObjectId } from 'mongodb';
+import { Collection } from 'mongodb';
 import { checkTaskAccess } from '../middleware/resource-access';
 
 import * as schemas from '../schemas/pipeline';
-import { bundles } from '../storage/database';
+import { bundles, dataItems } from '../storage/database';
+
+import { mapMask } from '@unologin/server-common/lib/util/util';
 
 const bundleQuery = Type.Object(
   {
@@ -27,7 +29,6 @@ const bundleQuery = Type.Object(
     limit: Type.Optional(Type.Integer({ minimum: 1 })),
     // set to true if returned bundles should be consumed
     consume: Type.Optional(Type.Boolean()),
-    consumedUpdateId: Type.Optional(objectId),
   },
 );
 
@@ -37,7 +38,8 @@ const getBundlesWithUnorderedItems =
 collectionToGetHandler<BundleQuery, typeof schemas.bundleRead>(
   bundles as Collection<any>,
   schemas.bundleRead,
-  (q) => removeUndefined(q),
+  // remove all items from query that do not appear in the bundle schema (consume, limit, etc.)
+  (q) => mapMask(q, Object.keys(schemas.bundle.properties) as any),
   defaultSort,
   [
     {
@@ -51,6 +53,32 @@ collectionToGetHandler<BundleQuery, typeof schemas.bundleRead>(
     },
   ],
 );
+
+/**
+ * 
+ * @param results bundles
+ * @returns bundles with ordered items
+ */
+function orderItemsInBundles(
+  results : schemas.BundleRead[],
+) : schemas.BundleRead[]
+{
+  return results.map(
+    (bundle) => 
+      (
+        {
+          ...bundle,
+          items: bundle.itemIds
+            .map(
+              (itemId) => 
+                (bundle as any as schemas.BundleRead).items.find(
+                  ({ _id }) => itemId.equals(_id),
+                ),
+            ),
+        }
+      ), 
+  );
+}
 
 export default resource(
   {
@@ -73,56 +101,57 @@ export default resource(
 
       if (q.consume)
       {
-        // mark all updated documents with a unique id to fetch them later
-        const consumedUpdateId = new ObjectId();
-
-        await bundles.updateMany(
-          removeUndefined(
-            {
-              ...q,
-              consumedAt: { $exists: false },
-              limit: undefined,
-              consume: undefined,
-            },
-          ),
+        // TODO: allow for taking more than one bundle at a time
+        
+        const findQuery = removeUndefined(
           {
-            $set:
-            {
-              consumedAt: new Date(),
-              consumedUpdateId,
-            },
+            ...q,
+            consumedAt: { $exists: false },
+            limit: undefined,
+            consume: undefined,
           },
         );
 
         // TODO: check update success
+        const { value: bundle } = await bundles.findOneAndUpdate(
+          findQuery,
+          {
+            $set:
+            {
+              consumedAt: new Date(),
+            },
+          },
+          {
+            returnDocument: 'after',
+          },
+        );
 
-        // alter the query to only include the just updated resources
-        args[0] = { consumedUpdateId } as BundleQuery;
+        const [items, total] = await Promise.all(
+          [
+            bundle ? 
+              dataItems.find({ _id: { $in: bundle.itemIds } }).toArray() :
+              Promise.resolve([]),
+
+            bundles.countDocuments(findQuery),
+          ],
+        );
+
+        return { 
+          // total needs to be incremented as countDocuments is performed after consuming
+          total: total +1,
+          results: bundle ?
+            orderItemsInBundles([{ ...bundle, items }]) :
+            [],
+        };
       }
 
-      // @ts-ignore
-      // eslint-disable-next-line
-      const { results, total } = await getBundlesWithUnorderedItems(...args)
+      const { results, total } = await getBundlesWithUnorderedItems(...args);
 
       return {
         total: total || results.length,
         // ensure that the 'items' are in the same order as the itemIds (which are in the order the consumer expects)
         // TODO: somehow order the items in the aggregation lookup stage to avoid the mess below
-        results: results.map(
-          (bundle) => 
-            (
-              {
-                ...bundle,
-                items: bundle.itemIds
-                  .map(
-                    (itemId) => 
-                      (bundle as any as schemas.BundleRead).items.find(
-                        ({ _id }) => itemId.equals(_id),
-                      ),
-                  ),
-              }
-            ), 
-        ),
+        results: orderItemsInBundles(results),
       };
     },
   },

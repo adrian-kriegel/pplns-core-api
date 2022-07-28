@@ -94,11 +94,8 @@ const bundleProps =
   // node that may consume these items
   consumerId: objectId,
 
-  // time the bundle is taken at (won't be available to afterwards)
+  // time the bundle is taken at (won't be available to consumers afterwards)
   consumedAt: Type.Optional(date),
-
-  // internal id used to group bundles that have been taken at the same time
-  consumedUpdateId: Type.Optional(objectId),
 };
 
 export const bundle = Type.Object(bundleProps);
@@ -113,6 +110,16 @@ export const bundleRead = Type.Object(
 export type Bundle = Static<typeof bundle>;
 export type BundleRead = Static<typeof bundleRead>;
 
+export const dataTypeDefinition = Type.Object(
+  {
+    description: Type.String(),
+
+    // TODO: jsonschema meta schema
+    schema: Type.Optional(Type.Any()),
+  },
+);
+
+// defines outline or blueprint for a node
 export const worker = Type.Object(
   {
     _id: objectId,
@@ -120,6 +127,21 @@ export const worker = Type.Object(
     // human readable title and description
     title: Type.String(),
     description: Type.Optional(Type.String()),
+
+    inputs: Type.Record(
+      Type.String(),
+      dataTypeDefinition,
+    ),
+
+    outputs: Type.Record(
+      Type.String(),
+      dataTypeDefinition,
+    ),
+
+    params: Type.Record(
+      Type.String(),
+      dataTypeDefinition,
+    ),
   },
 );
 

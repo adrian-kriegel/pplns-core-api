@@ -25,88 +25,91 @@ let srcNode1 : Node;
 let srcNode2 : Node;
 let outNode : Node;
 
-test('POST /tasks creates new task and sets creator as owner', async () => 
+describe('Tasks & Nodes API', () => 
 {
-  const task : Omit<Task, '_id'> = 
+  it('POST /tasks creates new task and sets creator as owner', async () => 
   {
-    title: 'test task',
-    description: 'testing',
+    const task : Omit<Task, '_id'> = 
+    {
+      title: 'test task',
+      description: 'testing',
 
-    params: { },
-    owners: [],
-  };
+      params: { },
+      owners: [],
+    };
 
-  taskId = parseObjectId(
+    taskId = parseObjectId(
     await tasksApi.post(
       null as any,
       task,
       null as any,
       mockRes,
     ) as string,
-  );
+    );
 
-  const { results } = await tasksApi.get(
-    { _id: taskId },
+    const { results } = await tasksApi.get(
+      { _id: taskId },
     null as any,
     mockRes,
-  );
+    );
 
-  expect(results[0].owners)
-    .toStrictEqual([userId]);
+    expect(results[0].owners)
+      .toStrictEqual([userId]);
+  });
+
+  it('POST /task/:taskId/nodes creates new nodes for task', async () => 
+  {
+    srcNode1 = await nodesApi.post(
+      { taskId },
+      {
+        workerId: new ObjectId(),
+        inputs: [],
+      },
+      null as any,
+      mockRes,
+    ) as Node;
+
+    expect(srcNode1.taskId).toStrictEqual(taskId);
+    expect(srcNode1._id).toBeDefined();
+
+    srcNode2 = await nodesApi.post(
+      { taskId },
+      {
+        workerId: new ObjectId(),
+        inputs: [],
+      },
+      null as any,
+      mockRes,
+    ) as Node;
+
+    expect(srcNode2.taskId).toStrictEqual(taskId);
+    expect(srcNode2._id).toBeDefined();
+
+    outNode = await nodesApi.post(
+      { taskId },
+      {
+        workerId: new ObjectId(),
+        inputs: [
+          {
+            nodeId: srcNode1._id,
+            output: 'out0',
+          },
+          {
+            nodeId: srcNode2._id,
+            output: 'out0',
+          },
+        ],
+      },
+      null as any,
+      mockRes,
+    ) as Node;
+
+    expect(outNode.taskId).toStrictEqual(taskId);
+    expect(outNode._id).toBeDefined();
+  });
 });
 
-test('POST /task/:taskId/nodes creates new nodes for task', async () => 
-{
-  srcNode1 = await nodesApi.post(
-    { taskId },
-    {
-      workerId: new ObjectId(),
-      inputs: [],
-    },
-    null as any,
-    mockRes,
-  ) as Node;
-
-  expect(srcNode1.taskId).toStrictEqual(taskId);
-  expect(srcNode1._id).toBeDefined();
-
-  srcNode2 = await nodesApi.post(
-    { taskId },
-    {
-      workerId: new ObjectId(),
-      inputs: [],
-    },
-    null as any,
-    mockRes,
-  ) as Node;
-
-  expect(srcNode2.taskId).toStrictEqual(taskId);
-  expect(srcNode2._id).toBeDefined();
-
-  outNode = await nodesApi.post(
-    { taskId },
-    {
-      workerId: new ObjectId(),
-      inputs: [
-        {
-          nodeId: srcNode1._id,
-          output: 'out0',
-        },
-        {
-          nodeId: srcNode2._id,
-          output: 'out0',
-        },
-      ],
-    },
-    null as any,
-    mockRes,
-  ) as Node;
-
-  expect(outNode.taskId).toStrictEqual(taskId);
-  expect(outNode._id).toBeDefined();
-});
-
-describe('/tasks/:taskId/nodes/:nodeId/outputs', () => 
+describe('DataItems API', () => 
 {
   it('POST with done=true creates new data-item and bundle.', async () => 
   {
@@ -243,7 +246,11 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
 
     expect(bundle.bundle).toBe('b1');
   });
+});
 
+describe('Bundles API', () => 
+{
+  // if this test fails, it's likely the fault of the dataItems API
   it('bundle is available to consumer node', async () => 
   {
     const { results, total } = await bundlesApi.get(
@@ -263,4 +270,38 @@ describe('/tasks/:taskId/nodes/:nodeId/outputs', () =>
       bundle.items.map(({ data }) => data),
     ).toStrictEqual(['b1data1', 'b1data2']);
   });
+
+  it(
+    // should return the same bundles as non have been consumed yet
+    'first GET with consume=true returns same bundles as consume=false', 
+    async () => 
+    {
+      const query = { consumerId: outNode._id, taskId, done: true, limit: 1 };
+
+      const { results: getResults } = await bundlesApi.get(
+        query,
+        null as any,
+        mockRes,
+      );
+
+      const { results: consumeResults } = await bundlesApi.get(
+        {
+          ...query,
+          consume: true,
+        },
+        null as any,
+        mockRes,
+      );
+
+      expect(
+        // removing consume related fields because those will change
+        consumeResults.map(
+        // eslint-disable-next-line
+        ({ consumedAt, ...b }) => b,
+        ),
+      ).toStrictEqual(getResults);
+
+      expect(consumeResults.length).toBe(query.limit);
+    },
+  );
 });
