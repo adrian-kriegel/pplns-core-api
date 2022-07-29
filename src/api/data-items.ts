@@ -15,7 +15,6 @@ import { checkTaskAccess } from '../middleware/resource-access';
 
 import * as schemas from '../schemas/pipeline';
 import { bundles, dataItems, nodes } from '../storage/database';
-import { simplePatch } from '../util/rest-util';
 
 const dataItemQuery = Type.Object(
   {
@@ -170,67 +169,67 @@ export default resource(
       (q) => removeUndefined(q),
     ),
 
-    post: async ({ taskId, nodeId }, inputItem) => 
+    post: async ({ taskId, nodeId }, item) => 
     {
-      const item = {
-        ...inputItem,
+      // taskId, nodeId, bundle, output form a unique index (see db-indexes for dataItems)
+      const query = 
+      {
         taskId,
         nodeId,
-        createdAt: new Date(),
+        bundle: item.bundle,
+        output: item.output,
+        done: false,
       };
 
       try 
       {
-        const itemId = (
-          await dataItems.insertOne(item)
-        ).insertedId;
-  
-        if (item.done)
-        {
-          await onItemDone(
+        const updateResult = await dataItems.findOneAndUpdate(
+          query,
+          {
+            $set:
             {
-              ...item,
-              _id: itemId,
+              done: item.done,
             },
-          );
+            $push: 
+            {
+              data: { $each: item.data },
+            },
+            $setOnInsert:
+            {
+              createdAt: new Date(),
+            },
+          },
+          {
+            upsert: true,
+            returnDocument: 'after',
+          },
+        );
+
+        const dbItem = updateResult.value;
+
+        if (dbItem.done)
+        {
+          await onItemDone(dbItem);
         }
   
-        return { ...item, _id: itemId };
+        return dbItem;
       }
       catch (e)
       {
+        // since "upsert" is used above, "11000" (duplicate key) can only happen
+        // if item is done already and thus should not be changed anymore
         if (e.code === 11000)
         {
           throw badRequest()
-            .msg(
-              `Output from ${nodeId} to bundle ${item.bundle} already exists`,
-            );
+            .msg('Item is "done". Update rejected.')
+            .data({ taskId, nodeId, output: item.output })
+          ;
         }
         else 
         {
           throw e;
         }
       }
-    },
-
-    patch: async ({ taskId, _id, nodeId }, item) => 
-    {
-      const newItem = await simplePatch<schemas.DataItem>(
-        dataItems,
-        {
-          _id,
-          taskId,
-          nodeId,
-        },
-        item,
-      );
-
-      if (newItem.done)
-      {
-        await onItemDone(newItem);
-      }
-      
-      return newItem;
     },
   },
 );

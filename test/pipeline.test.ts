@@ -9,8 +9,8 @@ import nodesApi from '../src/api/nodes';
 import dataItemsApi from '../src/api/data-items';
 import bundlesApi from '../src/api/bundles';
 
-import { APIError } from 'express-lemur/lib/errors';
 import { bundles, dataItems } from '../src/storage/database';
+import { APIError } from 'express-lemur/lib/errors';
 
 const userId = new ObjectId('62de9ee9ac751033dad45a62');
 
@@ -116,7 +116,7 @@ describe('DataItems API', () =>
     const item = await dataItemsApi.post(
       { nodeId: srcNode2._id, taskId },
       {
-        data: 'b1data2',
+        data: ['b1data2'],
         done: true,
         bundle: 'b1',
         output: 'out0',
@@ -141,24 +141,57 @@ describe('DataItems API', () =>
 
     expect(bundle.bundle).toBe('b1');
 
-    expect(bundle.items[0].data).toBe('b1data2');
+    expect(bundle.items[0].data).toStrictEqual(['b1data2']);
   });
 
-  it('POST by same {nodeId,bundle,output} not allowed', async () => 
+  it('POST with same {nodeId,bundle,output} will append data', async () => 
   {
+    await dataItemsApi.post(
+      { nodeId: srcNode2._id, taskId },
+      {
+        data: ['pushtest'],
+        done: false,
+        bundle: 'b1',
+        // not connected so won't interfere with other bundles and items
+        output: 'out3',
+      }, 
+      null as any,
+      mockRes,
+    );
+
+    const item = await dataItemsApi.post(
+      { nodeId: srcNode2._id, taskId },
+      {
+        data: ['pushtest2'],
+        done: true,
+        bundle: 'b1',
+        // not connected so won't interfere with other bundles and items
+        output: 'out3',
+      }, 
+      null as any,
+      mockRes,
+    ) as DataItem;
+
     await expect(
       () => dataItemsApi.post(
         { nodeId: srcNode2._id, taskId },
         {
-          data: 'b1data3',
+          data: ['pushtest3'],
           done: true,
           bundle: 'b1',
-          output: 'out0',
+          // not connected so won't interfere with other bundles and items
+          output: 'out3',
         }, 
         null as any,
         mockRes,
       ),
+      'Should not be able to POST after data item is "done".',
     ).rejects.toBeInstanceOf(APIError);
+
+    expect(item.data).toStrictEqual(['pushtest', 'pushtest2']);
+
+    // delete so it won't mess with the following tests
+    await dataItems.deleteOne({ _id: item._id });
   });
 
   it('POST by same {nodeId,bundle}, different output allowed', async () => 
@@ -168,7 +201,7 @@ describe('DataItems API', () =>
     await dataItemsApi.post(
       { nodeId: srcNode2._id, taskId },
       {
-        data: 'b1data3',
+        data: ['b1data3'],
         done: true,
         bundle: 'b1',
         // output out1 is not connected to anything
@@ -192,7 +225,7 @@ describe('DataItems API', () =>
       const item = await dataItemsApi.post(
         { nodeId: srcNode1._id, taskId },
         {
-          data: 'b2data1',
+          data: ['b2data1'],
           done: true,
           bundle: 'b2',
           output: 'out0',
@@ -220,7 +253,7 @@ describe('DataItems API', () =>
     const item = await dataItemsApi.post(
       { nodeId: srcNode1._id, taskId },
       {
-        data: 'b1data1',
+        data: ['b1data1'],
         done: true,
         bundle: 'b1',
         output: 'out0',
@@ -268,7 +301,7 @@ describe('Bundles API', () =>
     // check that data is in correct order
     expect(
       bundle.items.map(({ data }) => data),
-    ).toStrictEqual(['b1data1', 'b1data2']);
+    ).toStrictEqual([['b1data1'], ['b1data2']]);
   });
 
   it(

@@ -81,7 +81,7 @@ export const dataItem = Type.Object(
     done: Type.Boolean(),
 
     // output data
-    data: Type.Any(),
+    data: Type.Array(Type.Any()),
   },
 );
 
