@@ -10,6 +10,7 @@ import { resource } from 'express-lemur/lib/rest/rest-router';
 
 import * as schemas from '../schemas/pipeline';
 import { workers } from '../storage/database';
+import { simplePatch } from '../util/rest-util';
 
 const workerQuery = Type.Object(
   {
@@ -54,5 +55,7 @@ export default resource(
         _id: (await (workers.insertOne(worker))).insertedId,
       };
     },
+
+    patch: (q, doc) => simplePatch(workers, q, doc),
   },
 );

@@ -12,11 +12,11 @@ import { Collection } from 'mongodb';
 export async function simplePatch<T>(
   collection : Collection<any>,
   query : object,
-  update : object,
+  update : any,
 ) : Promise<T>
 {
   const doc = assert404(
-    await collection.findOneAndUpdate(query, update),
+    await collection.findOneAndUpdate(query, { $set: update }),
   );
 
   return { ...doc.value, ...update } as any;

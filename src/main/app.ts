@@ -15,6 +15,7 @@ import bundles from '../api/bundles';
 import dataItems from '../api/data-items';
 import nodes from '../api/nodes';
 import tasks from '../api/tasks';
+import workers from '../api/workers';
 
 const app = express();
 
@@ -37,6 +38,7 @@ restAPI.addResource(bundles);
 restAPI.addResource(dataItems);
 restAPI.addResource(nodes);
 restAPI.addResource(tasks);
+restAPI.addResource(workers);
 
 // @ts-ignore TODO: check why "express" does not exist on RestRouter according to TS
 app.use(restAPI.express());
