@@ -12,7 +12,10 @@ const indexes : CollectionIndexes =
   nodes:
   [
     { taskId: 1 },
-    { inputs: 1 },
+    {
+      'inputs.outputChannel': 1,
+      'inputs.nodeId': 1,
+    },
   ],
   dataItems:
   [
@@ -21,7 +24,7 @@ const indexes : CollectionIndexes =
       nodeId: 1,
       taskId: 1,
       bundle: 1,
-      output: 1,
+      outputChannel: 1,
       $options: { unique: true },
     },
   ],

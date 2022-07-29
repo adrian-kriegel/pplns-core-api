@@ -8,10 +8,11 @@ import {
 } from '@unologin/server-common/lib/util/rest-util';
 
 import { Type, Static } from '@unologin/typebox-extended/typebox';
-import { notFound } from 'express-lemur/lib/errors';
+import { badRequest, notFound } from 'express-lemur/lib/errors';
 
-import { resource } from 'express-lemur/lib/rest/rest-router';
+import { assert404, resource } from 'express-lemur/lib/rest/rest-router';
 import { Collection } from 'mongodb';
+
 import { checkTaskAccess } from '../middleware/resource-access';
 
 import * as schemas from '../schemas/pipeline';
@@ -26,6 +27,45 @@ const nodeQuery = Type.Object(
 );
 
 type NodeQuery = Static<typeof nodeQuery>;
+
+/**
+ * 
+ * @param inputs node inputs
+ * @param worker worker for the provided node
+ * @returns void
+ * @throws bad request
+ */
+function validateNodeInputs(
+  inputs : schemas.NodeWrite['inputs'],
+  worker : schemas.Worker,
+)
+{
+  const inputChannels = inputs.map(
+    ({ inputChannel }) => inputChannel,
+  );
+
+  const hasDuplicates = 
+    Object.keys(
+      Object.fromEntries(inputChannels.map((c) => [c, c])),
+    ).length !== inputChannels.length
+  ;
+
+  if (hasDuplicates)
+  {
+    throw badRequest()
+      .msg('Duplicate inputs.');
+  }
+
+  for (const channel of inputChannels)
+  {
+    if (!(channel in worker.inputs))
+    {
+      throw badRequest()
+        .msg('Invalid input channel.')
+        .data({ inputs: worker.inputs, inputChannel: channel });
+    }
+  }
+}
 
 export default resource(
   {
@@ -68,14 +108,15 @@ export default resource(
 
     post: async ({ taskId }, node) => 
     {
+      const worker = assert404(
+        await workers.findOne({ _id: node.workerId }),
+      );
+
+      validateNodeInputs(node.inputs, worker);
+
       const doc = { ...node, taskId, createdAt: new Date() };
 
-      const [insertResult, worker] = await Promise.all(
-        [
-          nodes.insertOne(doc),
-          workers.findOne({ _id: doc.workerId }),
-        ],
-      );
+      const insertResult = await nodes.insertOne(doc);
 
       return {
         ...doc,
@@ -84,14 +125,35 @@ export default resource(
       };
     },
 
-    patch: ({ taskId, _id }, newNode) => 
-      simplePatch<schemas.NodeRead>(nodes, { taskId, _id }, newNode),
+    patch: async ({ taskId, _id }, newNode) => 
+    {
+      if ('inputs' in newNode)
+      {
+        const worker = assert404(
+          await workers.findOne({ _id: newNode.workerId }),
+        );
+  
+        validateNodeInputs(newNode.inputs, worker); 
+      }
+
+      return simplePatch<schemas.NodeRead>(nodes, { taskId, _id }, newNode);
+    },
 
     delete: async ({ taskId, _id }) => 
     {
-      const result = await nodes.deleteOne({ taskId, _id });
+      const [deleteResult] = await Promise.all(
+        [
+          // delete the node
+          nodes.deleteOne({ taskId, _id }),
+          // delete all connections to the node TODO: test
+          nodes.updateMany(
+            { 'inputs.nodeId': _id },
+            { $pull: { inputs: { nodeId: _id } } },
+          ),
+        ],
+      );
 
-      if (result.deletedCount !== 1)
+      if (deleteResult.deletedCount !== 1)
       {
         throw notFound()
           .msg('Node not found')

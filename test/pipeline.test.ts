@@ -9,7 +9,7 @@ import nodesApi from '../src/api/nodes';
 import dataItemsApi from '../src/api/data-items';
 import bundlesApi from '../src/api/bundles';
 
-import { bundles, dataItems } from '../src/storage/database';
+import { bundles, dataItems, workers } from '../src/storage/database';
 import { APIError } from 'express-lemur/lib/errors';
 
 const userId = new ObjectId('62de9ee9ac751033dad45a62');
@@ -20,10 +20,39 @@ const mockRes =
 } as any as Response;
 
 let taskId : ObjectId;
+let workerId : ObjectId;
 
 let srcNode1 : Node;
 let srcNode2 : Node;
 let outNode : Node;
+
+beforeAll(async () => 
+{
+  const dataType = { description: '', schema: {} };
+
+  const result = await workers.insertOne(
+    {
+      createdAt: new Date(),
+
+      title: '',
+      description: '',
+
+      inputs: 
+      {
+        in0: dataType,
+        in1: dataType,
+      },
+      outputs:
+      {
+        out0: dataType,
+        out1: dataType,
+      },
+      params: {},
+    },
+  );
+
+  workerId = result.insertedId;
+});
 
 describe('Tasks & Nodes API', () => 
 {
@@ -62,7 +91,7 @@ describe('Tasks & Nodes API', () =>
     srcNode1 = await nodesApi.post(
       { taskId },
       {
-        workerId: new ObjectId(),
+        workerId,
         inputs: [],
         position: { x: 0, y: 0 },
       },
@@ -76,7 +105,7 @@ describe('Tasks & Nodes API', () =>
     srcNode2 = await nodesApi.post(
       { taskId },
       {
-        workerId: new ObjectId(),
+        workerId,
         inputs: [],
         position: { x: 0, y: 0 },
       },
@@ -90,16 +119,18 @@ describe('Tasks & Nodes API', () =>
     outNode = await nodesApi.post(
       { taskId },
       {
-        workerId: new ObjectId(),
+        workerId,
         position: { x: 0, y: 0 },
         inputs: [
           {
             nodeId: srcNode1._id,
-            output: 'out0',
+            outputChannel: 'out0',
+            inputChannel: 'in1',
           },
           {
             nodeId: srcNode2._id,
-            output: 'out0',
+            outputChannel: 'out0',
+            inputChannel: 'in0',
           },
         ],
       },
@@ -109,6 +140,33 @@ describe('Tasks & Nodes API', () =>
 
     expect(outNode.taskId).toStrictEqual(taskId);
     expect(outNode._id).toBeDefined();
+  });
+
+  it('POST /task/:taskId/nodes throws for duplicate inputs', async () => 
+  {
+    await expect(
+      () => nodesApi.post?.(
+        { taskId },
+        {
+          workerId,
+          position: { x: 0, y: 0 },
+          inputs: [
+            {
+              nodeId: srcNode1._id,
+              outputChannel: 'out0',
+              inputChannel: 'in0',
+            },
+            {
+              nodeId: srcNode2._id,
+              outputChannel: 'out0',
+              inputChannel: 'in0',
+            },
+          ],
+        },
+      null as any,
+      mockRes,
+      ),
+    ).rejects.toBeInstanceOf(APIError);
   });
 });
 
@@ -122,7 +180,7 @@ describe('DataItems API', () =>
         data: ['b1data2'],
         done: true,
         bundle: 'b1',
-        output: 'out0',
+        outputChannel: 'out0',
       }, 
       null as any,
       mockRes,
@@ -156,7 +214,7 @@ describe('DataItems API', () =>
         done: false,
         bundle: 'b1',
         // not connected so won't interfere with other bundles and items
-        output: 'out3',
+        outputChannel: 'out3',
       }, 
       null as any,
       mockRes,
@@ -169,7 +227,7 @@ describe('DataItems API', () =>
         done: true,
         bundle: 'b1',
         // not connected so won't interfere with other bundles and items
-        output: 'out3',
+        outputChannel: 'out3',
       }, 
       null as any,
       mockRes,
@@ -183,7 +241,7 @@ describe('DataItems API', () =>
           done: true,
           bundle: 'b1',
           // not connected so won't interfere with other bundles and items
-          output: 'out3',
+          outputChannel: 'out3',
         }, 
         null as any,
         mockRes,
@@ -208,7 +266,7 @@ describe('DataItems API', () =>
         done: true,
         bundle: 'b1',
         // output out1 is not connected to anything
-        output: 'out1',
+        outputChannel: 'out1',
       }, 
       null as any,
       mockRes,
@@ -231,7 +289,7 @@ describe('DataItems API', () =>
           data: ['b2data1'],
           done: true,
           bundle: 'b2',
-          output: 'out0',
+          outputChannel: 'out0',
         }, 
       null as any,
       mockRes,
@@ -259,7 +317,7 @@ describe('DataItems API', () =>
         data: ['b1data1'],
         done: true,
         bundle: 'b1',
-        output: 'out0',
+        outputChannel: 'out0',
       }, 
       null as any,
       mockRes,

@@ -37,13 +37,13 @@ type DataItemQuery = Static<typeof dataItemQuery>;
  * @returns Promise<void>
  */
 async function onItemDone(
-  { nodeId, taskId, _id: itemId, bundle, output } : schemas.DataItem,
+  { nodeId, taskId, _id: itemId, bundle, outputChannel } : schemas.DataItem,
 )
 {
   const consumers = await nodes.find(
     {
       // find nodes where the data item is an input
-      inputs: { $elemMatch: { nodeId, output } },
+      inputs: { $elemMatch: { nodeId, outputChannel } },
     },
   ).toArray();
 
@@ -65,7 +65,7 @@ async function onItemDone(
               $position: inputs.findIndex(
                 (input) => 
                   input.nodeId.equals(nodeId) && 
-                  input.output === output
+                  input.outputChannel === outputChannel
                 ,
               ),
             },
@@ -177,7 +177,7 @@ export default resource(
         taskId,
         nodeId,
         bundle: item.bundle,
-        output: item.output,
+        outputChannel: item.outputChannel,
         done: false,
       };
 
@@ -222,7 +222,7 @@ export default resource(
         {
           throw badRequest()
             .msg('Item is "done". Update rejected.')
-            .data({ taskId, nodeId, output: item.output })
+            .data({ taskId, nodeId, output: item.outputChannel })
           ;
         }
         else 

@@ -87,7 +87,10 @@ const nodeProps =
     Type.Object(
       {
         nodeId: objectId,
-        output: Type.String(),
+        // name of the output channel
+        outputChannel: Type.String(),
+        // name of the input channel
+        inputChannel: Type.String(),
       },
     ),
   ),
@@ -131,7 +134,7 @@ export const dataItem = Type.Object(
     nodeId: objectId,
 
     // name of the output this data item belongs to
-    output: Type.String(),
+    outputChannel: Type.String(),
 
     // grouping identifier for outputs that belong together e.g. _id of input (not _id of bundle!)
     bundle: Type.String(),
