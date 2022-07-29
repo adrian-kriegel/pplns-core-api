@@ -171,7 +171,7 @@ export default resource(
 
     post: async ({ taskId, nodeId }, item) => 
     {
-      // taskId, nodeId, bundle, output form a unique index (see db-indexes for dataItems)
+      // {taskId, nodeId, bundle, output} form a unique index (see db-indexes for dataItems)
       const query = 
       {
         taskId,

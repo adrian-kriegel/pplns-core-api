@@ -138,6 +138,15 @@ export const dataTypeDefinition = Type.Object(
   },
 );
 
+export type DataTypeDefinition = Static<typeof dataTypeDefinition>;
+
+export const dataTypeRecord = Type.Record(
+  Type.String(),
+  dataTypeDefinition,
+);
+
+export type DataTypeRecord = Static<typeof dataTypeRecord>;
+
 // defines outline or blueprint for a node
 export const worker = Type.Object(
   {
@@ -149,20 +158,11 @@ export const worker = Type.Object(
     title: Type.String(),
     description: Type.Optional(Type.String()),
 
-    inputs: Type.Record(
-      Type.String(),
-      dataTypeDefinition,
-    ),
+    inputs: dataTypeRecord,
 
-    outputs: Type.Record(
-      Type.String(),
-      dataTypeDefinition,
-    ),
+    outputs: dataTypeRecord,
 
-    params: Type.Record(
-      Type.String(),
-      dataTypeDefinition,
-    ),
+    params: dataTypeRecord,
   },
 );
 
