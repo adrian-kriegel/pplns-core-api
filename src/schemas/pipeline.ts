@@ -26,38 +26,97 @@ export const task = Type.Object(
   },
 );
 
-export const taskWrite = writeType(task);
 
-export type Task = Static<typeof task>;
-export type TaskWrite = Static<typeof taskWrite>;
+export const dataTypeDefinition = Type.Object(
+  {
+    description: Type.String(),
 
-export const node = Type.Object(
+    // TODO: jsonschema meta schema
+    schema: Type.Optional(Type.Any()),
+  },
+);
+
+export type DataTypeDefinition = Static<typeof dataTypeDefinition>;
+
+export const dataTypeRecord = Type.Record(
+  Type.String(),
+  dataTypeDefinition,
+);
+
+export type DataTypeRecord = Static<typeof dataTypeRecord>;
+
+// defines outline or blueprint for a node
+export const worker = Type.Object(
   {
     _id: objectId,
 
     createdAt: date,
 
-    taskId: objectId,
+    // human readable title and description
+    title: Type.String(),
+    description: Type.Optional(Type.String()),
 
-    // references other nodes from the same task
-    inputs: Type.Array(
-      Type.Object(
-        {
-          nodeId: objectId,
-          output: Type.String(),
-        },
-      ),
-    ),
+    inputs: dataTypeRecord,
 
-    // responsible worker
-    workerId: objectId,
+    outputs: dataTypeRecord,
+
+    params: dataTypeRecord,
   },
 );
 
+export const workerWrite = writeType(worker);
+
+export type Worker = Static<typeof worker>;
+export type WorkerWrite = Static<typeof workerWrite>;
+
+export const taskWrite = writeType(task);
+
+export type Task = Static<typeof task>;
+export type TaskWrite = Static<typeof taskWrite>;
+
+const nodeProps = 
+{
+  _id: objectId,
+
+  createdAt: date,
+
+  taskId: objectId,
+
+  // references other nodes from the same task
+  inputs: Type.Array(
+    Type.Object(
+      {
+        nodeId: objectId,
+        output: Type.String(),
+      },
+    ),
+  ),
+
+  // responsible worker
+  workerId: objectId,
+
+  // position in the pipeline UI
+  position: Type.Object(
+    {
+      x: Type.Number(),
+      y: Type.Number(),
+    },
+  ),
+};  
+
+export const node = Type.Object(nodeProps);
+
 export const nodeWrite = Type.Omit(writeType(node), ['taskId']);
+export const nodeRead = Type.Object(
+  {
+    ...nodeProps,
+    worker,
+  },
+);
 
 export type Node = Static<typeof node>;
 export type NodeWrite = Static<typeof nodeWrite>;
+export type NodeRead = Static<typeof nodeRead>;
 
 export const dataItem = Type.Object(
   {
@@ -129,44 +188,3 @@ export const bundleRead = Type.Object(
 export type Bundle = Static<typeof bundle>;
 export type BundleRead = Static<typeof bundleRead>;
 
-export const dataTypeDefinition = Type.Object(
-  {
-    description: Type.String(),
-
-    // TODO: jsonschema meta schema
-    schema: Type.Optional(Type.Any()),
-  },
-);
-
-export type DataTypeDefinition = Static<typeof dataTypeDefinition>;
-
-export const dataTypeRecord = Type.Record(
-  Type.String(),
-  dataTypeDefinition,
-);
-
-export type DataTypeRecord = Static<typeof dataTypeRecord>;
-
-// defines outline or blueprint for a node
-export const worker = Type.Object(
-  {
-    _id: objectId,
-
-    createdAt: date,
-
-    // human readable title and description
-    title: Type.String(),
-    description: Type.Optional(Type.String()),
-
-    inputs: dataTypeRecord,
-
-    outputs: dataTypeRecord,
-
-    params: dataTypeRecord,
-  },
-);
-
-export const workerWrite = writeType(worker);
-
-export type Worker = Static<typeof worker>;
-export type WorkerWrite = Static<typeof workerWrite>;

@@ -64,6 +64,7 @@ describe('Tasks & Nodes API', () =>
       {
         workerId: new ObjectId(),
         inputs: [],
+        position: { x: 0, y: 0 },
       },
       null as any,
       mockRes,
@@ -77,6 +78,7 @@ describe('Tasks & Nodes API', () =>
       {
         workerId: new ObjectId(),
         inputs: [],
+        position: { x: 0, y: 0 },
       },
       null as any,
       mockRes,
@@ -89,6 +91,7 @@ describe('Tasks & Nodes API', () =>
       { taskId },
       {
         workerId: new ObjectId(),
+        position: { x: 0, y: 0 },
         inputs: [
           {
             nodeId: srcNode1._id,
