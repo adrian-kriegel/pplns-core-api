@@ -22,8 +22,9 @@ import { mapMask } from '@unologin/server-common/lib/util/util';
 const bundleQuery = Type.Object(
   {
     _id: Type.Optional(objectId),
-    taskId: objectId,
-    consumerId: objectId,
+    taskId: Type.Optional(objectId),
+    consumerId: Type.Optional(objectId),
+    workerId: Type.Optional(objectId),
     done: Type.Optional(Type.Boolean()),
     bundle: Type.Optional(Type.String()),
     limit: Type.Optional(Type.Integer({ minimum: 1 })),
@@ -84,7 +85,9 @@ export default resource(
   {
     route: [
       '/tasks/:taskId/nodes/:consumerId/inputs',
+      '/workers/:workerId/inputs',
     ],
+
     id: '_id',
     
     schemas:
@@ -106,6 +109,7 @@ export default resource(
         const findQuery = removeUndefined(
           {
             ...q,
+            done: true,
             consumedAt: { $exists: false },
             limit: undefined,
             consume: undefined,
@@ -146,7 +150,7 @@ export default resource(
       }
 
       const { results, total } = await getBundlesWithUnorderedItems(...args);
-
+      
       return {
         total: total || results.length,
         // ensure that the 'items' are in the same order as the itemIds (which are in the order the consumer expects)

@@ -364,38 +364,4 @@ describe('Bundles API', () =>
       bundle.items.map(({ data }) => data),
     ).toStrictEqual([['b1data1'], ['b1data2']]);
   });
-
-  it(
-    // should return the same bundles as non have been consumed yet
-    'first GET with consume=true returns same bundles as consume=false', 
-    async () => 
-    {
-      const query = { consumerId: outNode._id, taskId, done: true, limit: 1 };
-
-      const { results: getResults } = await bundlesApi.get(
-        query,
-        null as any,
-        mockRes,
-      );
-
-      const { results: consumeResults } = await bundlesApi.get(
-        {
-          ...query,
-          consume: true,
-        },
-        null as any,
-        mockRes,
-      );
-
-      expect(
-        // removing consume related fields because those will change
-        consumeResults.map(
-        // eslint-disable-next-line
-        ({ consumedAt, ...b }) => b,
-        ),
-      ).toStrictEqual(getResults);
-
-      expect(consumeResults.length).toBe(query.limit);
-    },
-  );
 });

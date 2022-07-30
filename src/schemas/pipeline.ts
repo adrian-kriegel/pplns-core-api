@@ -175,6 +175,9 @@ const bundleProps =
   // node that may consume these items
   consumerId: objectId,
 
+  // worker responsible (redundant as this is stored in node too but improves queries)
+  workerId: objectId,
+
   // time the bundle is taken at (won't be available to consumers afterwards)
   consumedAt: Type.Optional(date),
 };

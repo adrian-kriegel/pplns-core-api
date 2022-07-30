@@ -48,7 +48,7 @@ async function onItemDone(
   ).toArray();
 
   const bundleUpserts = await Promise.all(
-    consumers.map(({ _id: consumerId, inputs }) => 
+    consumers.map(({ _id: consumerId, inputs, workerId }) => 
       bundles.findOneAndUpdate(
         {
           taskId,
@@ -74,6 +74,10 @@ async function onItemDone(
           {
             done: inputs.length === 1,
             createdAt: new Date(),
+          },
+          $set:
+          {
+            workerId,
           },
         },
         {
