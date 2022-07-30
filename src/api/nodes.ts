@@ -35,7 +35,7 @@ type NodeQuery = Static<typeof nodeQuery>;
  * @returns void
  * @throws bad request
  */
-function validateNodeInputs(
+async function validateNodeInputs(
   inputs : schemas.NodeWrite['inputs'],
   worker : schemas.Worker,
 )
@@ -64,6 +64,24 @@ function validateNodeInputs(
         .msg('Invalid input channel.')
         .data({ inputs: worker.inputs, inputChannel: channel });
     }
+  }
+
+  const inputNodeIds = inputs.map(({ nodeId }) => nodeId);
+
+  const inputNodes = await nodes.find(
+    { _id: { $in: inputNodeIds } },
+  ).toArray();
+
+  if (inputNodes.length !== inputs.length)
+  {
+    const invalidInputNodes = inputNodeIds.filter(
+      (nodeId) => !inputNodes.find(({ _id }) => _id === nodeId ),
+    );
+
+    throw badRequest()
+      .msg('Input node(s) not found.')
+      .data({ invalidInputNodes })
+    ;
   }
 }
 
@@ -112,7 +130,7 @@ export default resource(
         await workers.findOne({ _id: node.workerId }),
       );
 
-      validateNodeInputs(node.inputs, worker);
+      await validateNodeInputs(node.inputs, worker);
 
       const doc = { ...node, taskId, createdAt: new Date() };
 
@@ -129,11 +147,18 @@ export default resource(
     {
       if ('inputs' in newNode)
       {
+        let workerId = newNode.workerId;
+
+        if (!workerId)
+        {
+          workerId = (await nodes.findOne({ _id, taskId })).workerId;
+        }
+
         const worker = assert404(
-          await workers.findOne({ _id: newNode.workerId }),
+          await workers.findOne({ _id: workerId }),
         );
   
-        validateNodeInputs(newNode.inputs, worker); 
+        await validateNodeInputs(newNode.inputs, worker); 
       }
 
       return simplePatch<schemas.NodeRead>(nodes, { taskId, _id }, newNode);
