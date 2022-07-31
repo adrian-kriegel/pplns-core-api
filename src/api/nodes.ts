@@ -15,6 +15,11 @@ import { Collection } from 'mongodb';
 
 import { checkTaskAccess } from '../middleware/resource-access';
 
+import {
+  getInternalWorker,
+  IInternalWorker,
+} from '../pipeline/internal-workers';
+
 import * as schemas from '../schemas/pipeline';
 import { nodes, workers } from '../storage/database';
 import { simplePatch } from '../util/rest-util';
@@ -37,7 +42,7 @@ type NodeQuery = Static<typeof nodeQuery>;
  */
 async function validateNodeInputs(
   inputs : schemas.NodeWrite['inputs'],
-  worker : schemas.Worker,
+  worker : schemas.Worker | IInternalWorker,
 )
 {
   const inputChannels = inputs.map(
@@ -100,6 +105,8 @@ export default resource(
 
     accessControl: ({ taskId }, _0, _1, res) => checkTaskAccess(taskId, res),
 
+    // [!] TODO: add map function to collectionToGetHandler for postprocessing
+    // then use it to fill in internal workers
     get: collectionToGetHandler<NodeQuery, typeof schemas.nodeRead>(
       nodes as Collection<any>,
       schemas.nodeRead,
@@ -147,15 +154,17 @@ export default resource(
     {
       if ('inputs' in newNode)
       {
-        let workerId = newNode.workerId;
-
-        if (!workerId)
-        {
-          workerId = (await nodes.findOne({ _id, taskId })).workerId;
-        }
+        // find the worker through either newNode or the database if not specified in PATCH
+        const { workerId, internalWorker } = 
+          'internalWorker' in newNode || 'workerId' in newNode ?
+            newNode :
+            await nodes.findOne({ _id, taskId })
+        ; 
 
         const worker = assert404(
-          await workers.findOne({ _id: workerId }),
+          internalWorker ? 
+            getInternalWorker(internalWorker) :
+            await workers.findOne({ _id: workerId }),
         );
   
         await validateNodeInputs(newNode.inputs, worker); 

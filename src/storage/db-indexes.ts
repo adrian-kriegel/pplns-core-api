@@ -23,7 +23,7 @@ const indexes : CollectionIndexes =
     {
       nodeId: 1,
       taskId: 1,
-      bundle: 1,
+      flowId: 1,
       outputChannel: 1,
       $options: { unique: true },
     },
@@ -32,7 +32,7 @@ const indexes : CollectionIndexes =
   [
     { itemIds: 1 },
     { taskId: 1 },
-    { bundle: 1 },
+    { flowId: 1 },
     { done: 1 },
     { consumerId: 1 },
     { consumedAt: 1 },

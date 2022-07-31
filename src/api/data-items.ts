@@ -11,10 +11,13 @@ import { Type, Static } from '@unologin/typebox-extended/typebox';
 import { badRequest, forbidden } from 'express-lemur/lib/errors';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
+import { ObjectId } from 'mongodb';
 import { checkTaskAccess } from '../middleware/resource-access';
 
+import { upsertBundle } from '../pipeline/worker';
+
 import * as schemas from '../schemas/pipeline';
-import { bundles, dataItems, nodes } from '../storage/database';
+import { dataItems, nodes } from '../storage/database';
 
 const dataItemQuery = Type.Object(
   {
@@ -22,7 +25,7 @@ const dataItemQuery = Type.Object(
     taskId: objectId,
     nodeId: objectId,
     done: Type.Optional(Type.Boolean()),
-    bundle: Type.Optional(Type.Boolean()),
+    flowId: Type.Optional(Type.Boolean()),
   },
 );
 
@@ -36,10 +39,12 @@ type DataItemQuery = Static<typeof dataItemQuery>;
  * 
  * @returns Promise<void>
  */
-async function onItemDone(
-  { nodeId, taskId, _id: itemId, bundle, outputChannel } : schemas.DataItem,
+export async function onItemDone(
+  item : schemas.DataItem,
 )
 {
+  const { nodeId, outputChannel } = item;
+
   const consumers = await nodes.find(
     {
       // find nodes where the data item is an input
@@ -47,87 +52,85 @@ async function onItemDone(
     },
   ).toArray();
 
-  const bundleUpserts = await Promise.all(
-    consumers.map(({ _id: consumerId, inputs, workerId }) => 
-      bundles.findOneAndUpdate(
-        {
-          taskId,
-          consumerId,
-          bundle,
-        },
-        {
-          $push:
-          {
-            // push the value into the correct position
-            itemIds: 
-            {
-              $each: [itemId],
-              $position: inputs.findIndex(
-                (input) => 
-                  input.nodeId.equals(nodeId) && 
-                  input.outputChannel === outputChannel
-                ,
-              ),
-            },
-          },
-          $setOnInsert: 
-          {
-            done: inputs.length === 1,
-            createdAt: new Date(),
-          },
-          $set:
-          {
-            workerId,
-          },
-        },
-        {
-          upsert: true,
-          returnDocument: 'after',
-        },
-      ),
-    ),
+  await Promise.all(
+    consumers.map((consumer) => upsertBundle(
+      nodeId,
+      consumer,
+      item,
+    )),
   );
-  
-  // array of booleans indicating whether or not to update the state to done for each bundle
-  const updateDone = consumers.map(
-    (consumer, i) => 
-    {
-      const bundle = bundleUpserts[i].value;
+}
 
-      if (bundle.done)
+/**
+ * 
+ * @param param0 { taskId, nodeId }
+ * @param item item
+ * @returns item
+ */
+export async function postDataItem(
+  { taskId, nodeId } : { taskId: ObjectId, nodeId: ObjectId }, 
+  item : schemas.DataItemWrite | schemas.DataItem,
+)
+{
+  // {taskId, nodeId, flowId, output} form a unique index (see db-indexes for dataItems)
+  const query = 
+  {
+    taskId,
+    nodeId,
+    flowId: item.flowId,
+    outputChannel: item.outputChannel,
+    done: false,
+  };
+
+  try 
+  {
+    const updateResult = await dataItems.findOneAndUpdate(
+      query,
       {
-        return false;
-      }
-
-      // put itemId in bundle (findOneAndUpdate will return value BEFORE update)
-      if (!bundle.itemIds.find((_id) => _id.equals(itemId)))
-      {
-        bundle.itemIds.push(itemId);
-      }
-
-      // bundle is done once it's full
-      return bundle.itemIds.length === consumer.inputs.length;
-    },
-  );
-
-  // update "done" bundles
-  await bundles.updateMany(
-    {
-      _id:
-      {
-        // only update bundles that are "done"
-        $in: bundleUpserts.map(
-          ({ value: { _id } }) => _id,
-        ).filter((_, i) => updateDone[i]),
+        $set:
+        {
+          done: item.done,
+        },
+        $push: 
+        {
+          data: { $each: item.data },
+        },
+        $setOnInsert:
+        {
+          createdAt: new Date(),
+        },
       },
-    },
-    {
-      $set:
       {
-        done: true,
+        upsert: true,
+        returnDocument: 'after',
       },
-    },
-  );
+    );
+
+    const dbItem = updateResult.value;
+
+    if (dbItem.done)
+    {
+      await onItemDone(dbItem);
+    }
+
+    return dbItem;
+  }
+  catch (e)
+  {
+    // since "upsert" is used above, "11000" (duplicate key) can only happen
+    // if item is done already and thus should not be changed anymore
+    if (e.code === 11000)
+    {
+      throw badRequest()
+        .msg('Item is "done". Update rejected.')
+        .data({ taskId, nodeId, output: item.outputChannel })
+      ;
+    }
+    else 
+    {
+      throw e;
+    }
+  }
 }
 
 export default resource(
@@ -173,68 +176,7 @@ export default resource(
       (q) => removeUndefined(q),
     ),
 
-    post: async ({ taskId, nodeId }, item) => 
-    {
-      // {taskId, nodeId, bundle, output} form a unique index (see db-indexes for dataItems)
-      const query = 
-      {
-        taskId,
-        nodeId,
-        bundle: item.bundle,
-        outputChannel: item.outputChannel,
-        done: false,
-      };
-
-      try 
-      {
-        const updateResult = await dataItems.findOneAndUpdate(
-          query,
-          {
-            $set:
-            {
-              done: item.done,
-            },
-            $push: 
-            {
-              data: { $each: item.data },
-            },
-            $setOnInsert:
-            {
-              createdAt: new Date(),
-            },
-          },
-          {
-            upsert: true,
-            returnDocument: 'after',
-          },
-        );
-
-        const dbItem = updateResult.value;
-
-        if (dbItem.done)
-        {
-          await onItemDone(dbItem);
-        }
-  
-        return dbItem;
-      }
-      catch (e)
-      {
-        // since "upsert" is used above, "11000" (duplicate key) can only happen
-        // if item is done already and thus should not be changed anymore
-        if (e.code === 11000)
-        {
-          throw badRequest()
-            .msg('Item is "done". Update rejected.')
-            .data({ taskId, nodeId, output: item.outputChannel })
-          ;
-        }
-        else 
-        {
-          throw e;
-        }
-      }
-    },
+    post: postDataItem,
   },
 );
 

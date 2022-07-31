@@ -26,7 +26,7 @@ const bundleQuery = Type.Object(
     consumerId: Type.Optional(objectId),
     workerId: Type.Optional(objectId),
     done: Type.Optional(Type.Boolean()),
-    bundle: Type.Optional(Type.String()),
+    flowId: Type.Optional(objectId),
     limit: Type.Optional(Type.Integer({ minimum: 1 })),
     // set to true if returned bundles should be consumed
     consume: Type.Optional(Type.Boolean()),

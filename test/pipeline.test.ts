@@ -22,6 +22,9 @@ const mockRes =
 let taskId : ObjectId;
 let workerId : ObjectId;
 
+const flowId1 = new ObjectId('f1de9ee9ac751033dad45a62');
+const flowId2 = new ObjectId('f2de9ee9ac751033dad45a62');
+
 let srcNode1 : Node;
 let srcNode2 : Node;
 let outNode : Node;
@@ -179,7 +182,7 @@ describe('DataItems API', () =>
       {
         data: ['b1data2'],
         done: true,
-        bundle: 'b1',
+        flowId: flowId1,
         outputChannel: 'out0',
       }, 
       null as any,
@@ -191,7 +194,7 @@ describe('DataItems API', () =>
     ).toBe(1);
 
     const { results: [bundle] } = await bundlesApi.get(
-      { consumerId: outNode._id, taskId, bundle: 'b1' },
+      { consumerId: outNode._id, taskId, flowId: flowId1 },
       null as any,
       mockRes,
     );
@@ -200,7 +203,7 @@ describe('DataItems API', () =>
 
     expect(bundle.done).toBe(false);
 
-    expect(bundle.bundle).toBe('b1');
+    expect(bundle.flowId).toStrictEqual(flowId1);
 
     expect(bundle.items[0].data).toStrictEqual(['b1data2']);
   });
@@ -212,7 +215,7 @@ describe('DataItems API', () =>
       {
         data: ['pushtest'],
         done: false,
-        bundle: 'b1',
+        flowId: flowId1,
         // not connected so won't interfere with other bundles and items
         outputChannel: 'out3',
       }, 
@@ -225,7 +228,7 @@ describe('DataItems API', () =>
       {
         data: ['pushtest2'],
         done: true,
-        bundle: 'b1',
+        flowId: flowId1,
         // not connected so won't interfere with other bundles and items
         outputChannel: 'out3',
       }, 
@@ -239,7 +242,7 @@ describe('DataItems API', () =>
         {
           data: ['pushtest3'],
           done: true,
-          bundle: 'b1',
+          flowId: flowId1,
           // not connected so won't interfere with other bundles and items
           outputChannel: 'out3',
         }, 
@@ -264,7 +267,7 @@ describe('DataItems API', () =>
       {
         data: ['b1data3'],
         done: true,
-        bundle: 'b1',
+        flowId: flowId1,
         // output out1 is not connected to anything
         outputChannel: 'out1',
       }, 
@@ -288,7 +291,7 @@ describe('DataItems API', () =>
         {
           data: ['b2data1'],
           done: true,
-          bundle: 'b2',
+          flowId: flowId2,
           outputChannel: 'out0',
         }, 
       null as any,
@@ -305,7 +308,7 @@ describe('DataItems API', () =>
 
       expect(bundle.done).toBe(false);
 
-      expect(bundle.bundle).toBe('b2');
+      expect(bundle.flowId).toStrictEqual(flowId2);
     },
   );
 
@@ -316,7 +319,7 @@ describe('DataItems API', () =>
       {
         data: ['b1data1'],
         done: true,
-        bundle: 'b1',
+        flowId: flowId1,
         outputChannel: 'out0',
       }, 
       null as any,
@@ -328,7 +331,7 @@ describe('DataItems API', () =>
     ).toBe(4);
 
     const { results: [bundle] } = await bundlesApi.get(
-      { consumerId: outNode._id, taskId, bundle: 'b1' },
+      { consumerId: outNode._id, taskId, flowId: flowId1 },
       null as any,
       mockRes,
     );
@@ -338,7 +341,7 @@ describe('DataItems API', () =>
 
     expect(bundle.done).toBe(true);
 
-    expect(bundle.bundle).toBe('b1');
+    expect(bundle.flowId).toStrictEqual(flowId1);
   });
 });
 

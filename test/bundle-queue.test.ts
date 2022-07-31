@@ -14,6 +14,9 @@ const mockRes =
 } as any as Response;
 
 
+const flowId1 = new ObjectId('f1de9ee9ac751033dad45a62');
+const flowId2 = new ObjectId('f2de9ee9ac751033dad45a62');
+
 const workerId = new ObjectId('62de9ee9ac751033dad45a63');
 const consumerId = new ObjectId('62de9ee9ac751033dad45a64');
 const taskId = new ObjectId('62de9ee9ac751033dad45a65');
@@ -23,7 +26,7 @@ beforeAll(async () =>
   await bundles.insertMany(
     [
       {
-        bundle: 'b1',
+        flowId: flowId1,
         consumerId,
         taskId,
         createdAt: new Date(),
@@ -32,7 +35,7 @@ beforeAll(async () =>
         workerId,
       },
       {
-        bundle: 'b2',
+        flowId: flowId2,
         consumerId,
         taskId,
         createdAt: new Date(),

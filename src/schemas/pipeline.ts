@@ -96,7 +96,8 @@ const nodeProps =
   ),
 
   // responsible worker
-  workerId: objectId,
+  workerId: Type.Optional(objectId),
+  internalWorker: Type.Optional(Type.String()),
 
   // position in the pipeline UI
   position: Type.Object(
@@ -136,8 +137,12 @@ export const dataItem = Type.Object(
     // name of the output this data item belongs to
     outputChannel: Type.String(),
 
-    // grouping identifier for outputs that belong together e.g. _id of input (not _id of bundle!)
-    bundle: Type.String(),
+    // items with the same flowId can only exist once between two nodes
+    // items with the same flowId from different nodes to the same consumer are grouped as bundles
+    flowId: objectId,
+
+    // stack of all flowIds (except item.flowId) this item belongs to (pushed in split-, popped in join node)
+    flowStack: Type.Array(objectId),
 
     // set to true once all processing has completed
     done: Type.Boolean(),
@@ -149,7 +154,7 @@ export const dataItem = Type.Object(
 
 export const dataItemWrite = Type.Omit(
   writeType(dataItem),
-  ['taskId', 'nodeId'],
+  ['taskId', 'nodeId', 'flowStack'],
 );
 
 export type DataItem = Static<typeof dataItem>;
@@ -166,8 +171,8 @@ const bundleProps =
 
   taskId: objectId,
 
-  // same as dataItem.bundle
-  bundle: Type.String(),
+  // same as dataItem.flowIds[0]
+  flowId: objectId,
 
   // true iff all required data items are done
   done: Type.Boolean(),
