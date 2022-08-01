@@ -36,6 +36,13 @@ const indexes : CollectionIndexes =
     { done: 1 },
     { consumerId: 1 },
     { consumedAt: 1 },
+    {
+      consumerId: 1,
+      taskId: 1,
+      flowId: 1,
+      depth: 1,
+      $options: { unique: true },
+    },
   ],
 };
 

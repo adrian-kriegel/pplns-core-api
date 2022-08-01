@@ -128,12 +128,12 @@ describe('Tasks & Nodes API', () =>
           {
             nodeId: srcNode1._id,
             outputChannel: 'out0',
-            inputChannel: 'in1',
+            inputChannel: 'in0',
           },
           {
             nodeId: srcNode2._id,
             outputChannel: 'out0',
-            inputChannel: 'in0',
+            inputChannel: 'in1',
           },
         ],
       },
@@ -160,9 +160,9 @@ describe('Tasks & Nodes API', () =>
               inputChannel: 'in0',
             },
             {
-              nodeId: srcNode2._id,
+              nodeId: srcNode1._id,
               outputChannel: 'out0',
-              inputChannel: 'in0',
+              inputChannel: 'in1',
             },
           ],
         },
@@ -180,6 +180,7 @@ describe('DataItems API', () =>
     const item = await dataItemsApi.post(
       { nodeId: srcNode2._id, taskId },
       {
+        flowStack: [],
         data: ['b1data2'],
         done: true,
         flowId: flowId1,
@@ -198,6 +199,7 @@ describe('DataItems API', () =>
       null as any,
       mockRes,
     );
+    
 
     expect(bundle.inputItems.length).toBe(1);
     expect(bundle.inputItems[0].itemId).toStrictEqual(item._id);
@@ -214,6 +216,7 @@ describe('DataItems API', () =>
     await dataItemsApi.post(
       { nodeId: srcNode2._id, taskId },
       {
+        flowStack: [],
         data: ['pushtest'],
         done: false,
         flowId: flowId1,
@@ -227,6 +230,7 @@ describe('DataItems API', () =>
     const item = await dataItemsApi.post(
       { nodeId: srcNode2._id, taskId },
       {
+        flowStack: [],
         data: ['pushtest2'],
         done: true,
         flowId: flowId1,
@@ -241,6 +245,7 @@ describe('DataItems API', () =>
       () => dataItemsApi.post(
         { nodeId: srcNode2._id, taskId },
         {
+          flowStack: [],
           data: ['pushtest3'],
           done: true,
           flowId: flowId1,
@@ -266,6 +271,7 @@ describe('DataItems API', () =>
     await dataItemsApi.post(
       { nodeId: srcNode2._id, taskId },
       {
+        flowStack: [],
         data: ['b1data3'],
         done: true,
         flowId: flowId1,
@@ -290,6 +296,7 @@ describe('DataItems API', () =>
       const item = await dataItemsApi.post(
         { nodeId: srcNode1._id, taskId },
         {
+          flowStack: [],
           data: ['b2data1'],
           done: true,
           flowId: flowId2,
@@ -304,6 +311,7 @@ describe('DataItems API', () =>
       ).toBe(3);
 
       const bundle = await bundles.findOne({ 'inputItems.itemId': item._id });
+      
 
       expect(bundle.inputItems.length).toBe(1);
       expect(bundle.inputItems[0].itemId).toStrictEqual(item._id);
@@ -319,6 +327,7 @@ describe('DataItems API', () =>
     const item = await dataItemsApi.post(
       { nodeId: srcNode1._id, taskId },
       {
+        flowStack: [],
         data: ['b1data1'],
         done: true,
         flowId: flowId1,
@@ -337,11 +346,12 @@ describe('DataItems API', () =>
       null as any,
       mockRes,
     );
+    
+
+    expect(bundle.done).toBe(true);
 
     expect(bundle.inputItems.length).toBe(2);
     expect(bundle.inputItems[0].itemId).toStrictEqual(item._id);
-
-    expect(bundle.done).toBe(true);
 
     expect(bundle.flowId).toStrictEqual(flowId1);
   });
@@ -361,6 +371,7 @@ describe('Bundles API', () =>
     expect(total).toBe(1);
 
     const bundle = results[0];
+    
 
     expect(bundle.done).toBe(true);
 

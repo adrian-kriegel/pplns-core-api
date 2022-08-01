@@ -26,6 +26,7 @@ beforeAll(async () =>
   await bundles.insertMany(
     [
       {
+        depth: 0,
         flowId: flowId1,
         consumerId,
         taskId,
@@ -35,6 +36,7 @@ beforeAll(async () =>
         workerId,
       },
       {
+        depth: 0,
         flowId: flowId2,
         consumerId,
         taskId,

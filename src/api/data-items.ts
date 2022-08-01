@@ -37,6 +37,15 @@ type DataItemQuery = Static<typeof dataItemQuery>;
  * 
  * TODO: handle the edge case where the same output is connected to two inputs
  * 
+ * TODO: inputs from higher levels of splits/joins will first create their own bundle
+ *        and will then be added to all other bundles from the split
+ *        the initial bundle will not be filled as the flowId does not match
+ *        this leaves "undone" bundles with duplicate entries behind
+ * 
+ *        To fix this, it would probably make sense to check how "deep" inside a split an 
+ *        input is and then only create the bundle once the item comes in whose input is the
+ *        deepest (whose flowStack is the largest expected of all inputs).
+ * 
  * @param item dataitem
  * 
  * @returns Promise<void>
@@ -47,22 +56,27 @@ export async function onItemDone(
 {
   const { nodeId, outputChannel } = item;
 
-  const consumers = await nodes.find(
-    {
-      // find nodes where the data item is an input
-      inputs: { $elemMatch: { nodeId, outputChannel } },
-    },
+  // TODO: find bundles in one go using aggregation
+  const consumers = await nodes.aggregate<schemas.Node>(
+    [
+      {
+        $match: 
+        {
+          'taskId': item.taskId,
+          'inputs.outputChannel': outputChannel,
+          'inputs.nodeId': nodeId,
+          'inputs': { $elemMatch: { nodeId, outputChannel } },
+        },
+      },
+    ],
   ).toArray();
 
- 
   await Promise.all(
     consumers.map((consumer) => 
-      Promise.all(
-        [item].map((item) => upsertBundle(
-          nodeId,
-          consumer,
-          item,
-        )),
+      upsertBundle(
+        nodeId,
+        consumer,
+        item,
       ),
     ),
   );
@@ -101,10 +115,12 @@ export async function postDataItem(
         $push: 
         {
           data: { $each: item.data },
+          producerNodeIds: nodeId,
         },
         $setOnInsert:
         {
           createdAt: new Date(),
+          flowStack: item.flowStack,
         },
       },
       {

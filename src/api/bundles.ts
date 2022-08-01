@@ -55,6 +55,7 @@ collectionToGetHandler<BundleQuery, typeof schemas.bundleRead>(
   ],
 );
 
+
 /**
  * 
  * @param results bundles
@@ -152,7 +153,7 @@ export default resource(
       }
 
       const { results, total } = await getBundlesWithUnorderedItems(...args);
-      
+
       return {
         total: total || results.length,
         // ensure that the 'items' are in the same order as the itemIds (which are in the order the consumer expects)

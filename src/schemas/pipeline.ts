@@ -142,7 +142,10 @@ export const dataItem = Type.Object(
     flowId: objectId,
 
     // stack of all flowIds (except item.flowId) this item belongs to (pushed in split-, popped in join node)
-    flowStack: Type.Array(objectId),
+    flowStack: Type.Array(objectId, { default: [] }),
+
+    // list of all nodes this item (or its parents from splits) has passed through
+    producerNodeIds: Type.Array(objectId),
 
     // set to true once all processing has completed
     done: Type.Boolean(),
@@ -154,7 +157,7 @@ export const dataItem = Type.Object(
 
 export const dataItemWrite = Type.Omit(
   writeType(dataItem),
-  ['taskId', 'nodeId', 'flowStack'],
+  ['taskId', 'nodeId', 'producerNodeIds'],
 );
 
 export type DataItem = Static<typeof dataItem>;
@@ -171,12 +174,16 @@ const bundleProps =
     Type.Object(
       {
         itemId: objectId,
-        // producer node and output channel
+        position: Type.Integer(),
         nodeId: objectId,
         outputChannel: Type.String(),
+        inputChannel: Type.String(),
       },
     ),
   ),
+
+  // how many times a bundle with this flowId has been passed through this node already
+  depth: Type.Integer({ minimum: 0 }),
 
   taskId: objectId,
 

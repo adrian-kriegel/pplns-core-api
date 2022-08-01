@@ -49,18 +49,6 @@ async function validateNodeInputs(
     ({ inputChannel }) => inputChannel,
   );
 
-  const hasDuplicates = 
-    Object.keys(
-      Object.fromEntries(inputChannels.map((c) => [c, c])),
-    ).length !== inputChannels.length
-  ;
-
-  if (hasDuplicates)
-  {
-    throw badRequest()
-      .msg('Duplicate inputs.');
-  }
-
   for (const channel of inputChannels)
   {
     if (!(channel in worker.inputs))
