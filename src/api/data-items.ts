@@ -35,6 +35,8 @@ type DataItemQuery = Static<typeof dataItemQuery>;
  * Pushes item into its destination bundles.
  * Updates bundle status if bundle is full.
  * 
+ * TODO: handle the edge case where the same output is connected to two inputs
+ * 
  * @param item dataitem
  * 
  * @returns Promise<void>
@@ -52,12 +54,17 @@ export async function onItemDone(
     },
   ).toArray();
 
+ 
   await Promise.all(
-    consumers.map((consumer) => upsertBundle(
-      nodeId,
-      consumer,
-      item,
-    )),
+    consumers.map((consumer) => 
+      Promise.all(
+        [item].map((item) => upsertBundle(
+          nodeId,
+          consumer,
+          item,
+        )),
+      ),
+    ),
   );
 }
 

@@ -199,7 +199,8 @@ describe('DataItems API', () =>
       mockRes,
     );
 
-    expect(bundle.itemIds).toStrictEqual([item._id]);
+    expect(bundle.inputItems.length).toBe(1);
+    expect(bundle.inputItems[0].itemId).toStrictEqual(item._id);
 
     expect(bundle.done).toBe(false);
 
@@ -302,9 +303,10 @@ describe('DataItems API', () =>
         await dataItems.countDocuments(),
       ).toBe(3);
 
-      const bundle = await bundles.findOne({ itemIds: item._id });
+      const bundle = await bundles.findOne({ 'inputItems.itemId': item._id });
 
-      expect(bundle.itemIds).toStrictEqual([item._id]);
+      expect(bundle.inputItems.length).toBe(1);
+      expect(bundle.inputItems[0].itemId).toStrictEqual(item._id);
 
       expect(bundle.done).toBe(false);
 
@@ -336,8 +338,8 @@ describe('DataItems API', () =>
       mockRes,
     );
 
-    expect(bundle.itemIds.length).toBe(2);
-    expect(bundle.itemIds[0]).toStrictEqual(item._id);
+    expect(bundle.inputItems.length).toBe(2);
+    expect(bundle.inputItems[0].itemId).toStrictEqual(item._id);
 
     expect(bundle.done).toBe(true);
 

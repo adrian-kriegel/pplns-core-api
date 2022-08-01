@@ -30,7 +30,7 @@ const indexes : CollectionIndexes =
   ],
   bundles:
   [
-    { itemIds: 1 },
+    { 'inputItems.itemId': 1 },
     { taskId: 1 },
     { flowId: 1 },
     { done: 1 },

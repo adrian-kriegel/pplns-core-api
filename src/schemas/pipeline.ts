@@ -167,7 +167,16 @@ const bundleProps =
   createdAt: date,
 
   // items in this bundle in order of consumer.inputs
-  itemIds: Type.Array(objectId),
+  inputItems: Type.Array(
+    Type.Object(
+      {
+        itemId: objectId,
+        // producer node and output channel
+        nodeId: objectId,
+        outputChannel: Type.String(),
+      },
+    ),
+  ),
 
   taskId: objectId,
 
@@ -192,6 +201,7 @@ export const bundle = Type.Object(bundleProps);
 export const bundleRead = Type.Object(
   {
     ...bundleProps,
+
     items: Type.Array(dataItem),
   },
 );

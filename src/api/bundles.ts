@@ -47,7 +47,7 @@ collectionToGetHandler<BundleQuery, typeof schemas.bundleRead>(
       $lookup:
       {
         from: 'dataItems', // dataItems.collectionName, (won't work because of circular deps => TODO: fix)
-        localField: 'itemIds',
+        localField: 'inputItems.itemId',
         foreignField: '_id',
         as: 'items',
       },
@@ -69,9 +69,9 @@ function orderItemsInBundles(
       (
         {
           ...bundle,
-          items: bundle.itemIds
+          items: bundle.inputItems
             .map(
-              (itemId) => 
+              ({ itemId }) => 
                 (bundle as any as schemas.BundleRead).items.find(
                   ({ _id }) => itemId.equals(_id),
                 ),
@@ -133,7 +133,9 @@ export default resource(
         const [items, total] = await Promise.all(
           [
             bundle ? 
-              dataItems.find({ _id: { $in: bundle.itemIds } }).toArray() :
+              dataItems.find(
+                { _id: { $in: bundle.inputItems.map(({ itemId }) => itemId) } },
+              ).toArray() :
               Promise.resolve([]),
 
             bundles.countDocuments(findQuery),

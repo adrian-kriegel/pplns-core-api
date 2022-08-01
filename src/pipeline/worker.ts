@@ -10,7 +10,7 @@ export interface IWorker
   upsertBundle: (
     producerId : ObjectId,
     consumer : schemas.Node,
-    item : schemas.DataItem,
+    items : schemas.DataItem,
   ) => Promise<any>;
 }
 
@@ -58,9 +58,9 @@ export class ExternalWorker implements IWorker
         $push:
         {
           // push the value into the correct position
-          itemIds: 
+          inputItems: 
           {
-            $each: [itemId],
+            $each: [{ itemId, nodeId: producerId, outputChannel }],
             $position: consumer.inputs.findIndex(
               (input) => 
                 input.nodeId.equals(producerId) && 
@@ -84,10 +84,10 @@ export class ExternalWorker implements IWorker
         returnDocument: 'after',
       },
     );
-
+    console.log(value);
     if (
       !value.done &&
-      value.itemIds.length === consumer.inputs.length
+      value.inputItems.length === consumer.inputs.length
     )
     {
       await bundles.updateOne(

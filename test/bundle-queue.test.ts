@@ -31,7 +31,7 @@ beforeAll(async () =>
         taskId,
         createdAt: new Date(),
         done: true,
-        itemIds: [],
+        inputItems: [],
         workerId,
       },
       {
@@ -40,7 +40,7 @@ beforeAll(async () =>
         taskId,
         createdAt: new Date(),
         done: true,
-        itemIds: [],
+        inputItems: [],
         workerId,
       },
     ],
