@@ -95,6 +95,11 @@ const nodeProps =
     ),
   ),
 
+  params: Type.Optional(Type.Record(
+    Type.String(),
+    Type.Any(),
+  )),
+
   // responsible worker
   workerId: Type.Optional(objectId),
   internalWorker: Type.Optional(Type.String()),
@@ -111,6 +116,7 @@ const nodeProps =
 export const node = Type.Object(nodeProps);
 
 export const nodeWrite = Type.Omit(writeType(node), ['taskId']);
+
 export const nodeRead = Type.Object(
   {
     ...nodeProps,
@@ -122,36 +128,54 @@ export type Node = Static<typeof node>;
 export type NodeWrite = Static<typeof nodeWrite>;
 export type NodeRead = Static<typeof nodeRead>;
 
+const dataItemProps = 
+{
+  _id: objectId,
+
+  createdAt: date,
+
+  // _id of the task this item belongs to
+  taskId: objectId,
+
+  // _id of node which produced this data item
+  nodeId: objectId,
+
+  // name of the output this data item belongs to
+  outputChannel: Type.String(),
+
+  // items with the same flowId can only exist once between two nodes
+  // items with the same flowId from different nodes to the same consumer are grouped as bundles
+  flowId: objectId,
+
+  // stack of all flowIds (except item.flowId) this item belongs to (pushed in split-, popped in join node)
+  flowStack: Type.Array(
+    Type.Object(
+      {
+        flowId: objectId,
+        splitNodeId: objectId,
+        numEmitted: Type.Integer(),
+      },
+    ),
+  ),
+
+  // list of all nodes this item (or its parents from splits) has passed through
+  producerNodeIds: Type.Array(objectId),
+
+  // set to true once all processing has completed
+  done: Type.Boolean(),
+
+  // will automatically set done:true once data.length reaches this value
+  autoDoneAfter: Type.Optional(Type.Integer()),
+
+  // output data
+  data: Type.Array(Type.Any()),
+};
+
 export const dataItem = Type.Object(
   {
-    _id: objectId,
-
-    createdAt: date,
-
-    // _id of the task this item belongs to
-    taskId: objectId,
-
-    // _id of node which produced this data item
-    nodeId: objectId,
-
-    // name of the output this data item belongs to
-    outputChannel: Type.String(),
-
-    // items with the same flowId can only exist once between two nodes
-    // items with the same flowId from different nodes to the same consumer are grouped as bundles
-    flowId: objectId,
-
-    // stack of all flowIds (except item.flowId) this item belongs to (pushed in split-, popped in join node)
-    flowStack: Type.Array(objectId, { default: [] }),
-
-    // list of all nodes this item (or its parents from splits) has passed through
-    producerNodeIds: Type.Array(objectId),
-
-    // set to true once all processing has completed
-    done: Type.Boolean(),
-
-    // output data
-    data: Type.Array(Type.Any()),
+    ...dataItemProps,
+    flowId: Type.Optional(dataItemProps.flowId),
+    flowStack: Type.Optional(dataItemProps.flowStack),
   },
 );
 

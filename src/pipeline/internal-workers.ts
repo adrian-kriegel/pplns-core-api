@@ -3,6 +3,11 @@ import * as schemas from '../schemas/pipeline';
 
 import { IWorker } from './worker';
 
+import Split from './workers/split';
+import Join from './workers/join';
+import DataSource from './workers/data-source';
+import DataSink from './workers/data-sink';
+
 export type IInternalWorker = IWorker & 
   Omit<schemas.Worker, '_id' | 'createdAt'>;
 
@@ -35,3 +40,23 @@ export function registerInternalWorker(
 
   workers[workerId] = worker;
 }
+
+registerInternalWorker(
+  'split',
+  new Split(),
+);
+
+registerInternalWorker(
+  'join',
+  new Join(),
+);
+
+registerInternalWorker(
+  'data-source',
+  new DataSource(),
+);
+
+registerInternalWorker(
+  'data-sink',
+  new DataSink(),
+);

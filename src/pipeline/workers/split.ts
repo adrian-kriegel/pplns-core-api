@@ -1,7 +1,7 @@
 
 import { Type } from '@sinclair/typebox';
 import { ObjectId } from 'mongodb';
-import { onItemDone } from '../../api/data-items';
+import { postDataItem } from '../../api/data-items';
 import * as schemas from '../../schemas/pipeline';
 import { IInternalWorker } from '../internal-workers';
 
@@ -47,14 +47,24 @@ implements IInternalWorker
   {
     return Promise.all(
       items.data.map(
-        (data) => onItemDone(
+        (data) => postDataItem(
           {
-            _id: new ObjectId(),
-            createdAt: items.createdAt,
-            // give each item a new flowId
+            taskId: items.taskId, 
+            nodeId: splitNode._id,
+          },
+          {
+            // create new flowId for each new data item
             flowId: new ObjectId(),
-            // store the old flowId on the flow stack
-            flowStack: [...items.flowStack, items.flowId],
+
+            // push old flowId into the flow stack
+            flowStack: [
+              ...items.flowStack,
+              {
+                flowId: items.flowId,
+                splitNodeId: splitNode._id,
+                numEmitted: items.data.length,
+              },
+            ],
             taskId: items.taskId,
             nodeId: splitNode._id,
             outputChannel: Object.keys(this.outputs)[0],

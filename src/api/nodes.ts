@@ -10,18 +10,19 @@ import {
 import { Type, Static } from '@unologin/typebox-extended/typebox';
 import { badRequest, notFound } from 'express-lemur/lib/errors';
 
-import { assert404, resource } from 'express-lemur/lib/rest/rest-router';
+import { resource } from 'express-lemur/lib/rest/rest-router';
 import { Collection } from 'mongodb';
 
 import { checkTaskAccess } from '../middleware/resource-access';
 
 import {
-  getInternalWorker,
   IInternalWorker,
 } from '../pipeline/internal-workers';
 
+import { findWorkerForNode } from '../pipeline/worker';
+
 import * as schemas from '../schemas/pipeline';
-import { nodes, workers } from '../storage/database';
+import { nodes } from '../storage/database';
 import { simplePatch } from '../util/rest-util';
 
 const nodeQuery = Type.Object(
@@ -121,9 +122,7 @@ export default resource(
 
     post: async ({ taskId }, node) => 
     {
-      const worker = assert404(
-        await workers.findOne({ _id: node.workerId }),
-      );
+      const worker = await findWorkerForNode(node);
 
       await validateNodeInputs(node.inputs, worker);
 
@@ -134,7 +133,8 @@ export default resource(
       return {
         ...doc,
         _id: insertResult.insertedId,
-        worker,
+        // TODO: _id is not present in internal workers
+        worker: worker as any,
       };
     },
 
@@ -149,10 +149,8 @@ export default resource(
             await nodes.findOne({ _id, taskId })
         ; 
 
-        const worker = assert404(
-          internalWorker ? 
-            getInternalWorker(internalWorker) :
-            await workers.findOne({ _id: workerId }),
+        const worker = await findWorkerForNode(
+          { workerId, internalWorker },
         );
   
         await validateNodeInputs(newNode.inputs, worker); 

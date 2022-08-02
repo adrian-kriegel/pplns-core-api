@@ -111,6 +111,7 @@ export async function postDataItem(
         $set:
         {
           done: item.done,
+          autoDoneAfter: item.autoDoneAfter,
         },
         $push: 
         {
@@ -120,7 +121,8 @@ export async function postDataItem(
         $setOnInsert:
         {
           createdAt: new Date(),
-          flowStack: item.flowStack,
+          flowStack: item.flowStack || [],
+          flowId: item.flowId || new ObjectId(),
         },
       },
       {
@@ -130,10 +132,25 @@ export async function postDataItem(
     );
 
     const dbItem = updateResult.value;
-
-    if (dbItem.done)
+    
+    if (
+      dbItem.done ||
+      (
+        dbItem.autoDoneAfter &&
+        dbItem.data.length >= dbItem.autoDoneAfter
+      )
+    )
     {
-      await onItemDone(dbItem);
+      await Promise.all(
+        [
+          !dbItem.done ?
+            dataItems.updateOne(
+              { _id: dbItem._id },
+              { $set: { done: true } },
+            ) : Promise.resolve(),
+          onItemDone(dbItem),
+        ],
+      );
     }
 
     return dbItem;

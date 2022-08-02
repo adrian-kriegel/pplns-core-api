@@ -3,7 +3,7 @@ import { assert404 } from 'express-lemur/lib/rest/rest-router';
 import { ObjectId } from 'mongodb';
 import * as schemas from '../schemas/pipeline';
 import { bundles, dataItems, workers } from '../storage/database';
-import { getInternalWorker } from './internal-workers';
+import { getInternalWorker, IInternalWorker } from './internal-workers';
 
 export interface IWorker
 {
@@ -64,7 +64,12 @@ export class ExternalWorker implements IWorker
         done: false,
         // there may already be a bundle with a higher flow stack
         // which was mistakenly created after an item from a higher flow stack had finished
-        flowId: { $in: [item.flowId, ...item.flowStack] },
+        flowId: { 
+          $in: [
+            item.flowId,
+            ...item.flowStack.map(({ flowId }) => flowId),
+          ],
+        },
         depth: expectedDepth,
       },
       {
@@ -126,7 +131,7 @@ export class ExternalWorker implements IWorker
           taskId: item.taskId,
 
           // find any items in a parent flow
-          flowId: { $in: item.flowStack },
+          flowId: { $in: item.flowStack.map(({ flowId }) => flowId) },
 
           // both of the following expressions are redundant but they speed up the query through index lookups
           nodeId:
@@ -259,5 +264,21 @@ export function findInputForItem(
     ({ nodeId, outputChannel }) => 
       nodeId.equals(item.nodeId) &&
       outputChannel === item.outputChannel,
+  );
+}
+
+/**
+ * @returns worker for node
+ * @throws 404 if not found
+ */
+export async function findWorkerForNode(
+  { internalWorker, workerId } 
+  : Pick<schemas.Node, 'internalWorker' | 'workerId'>,
+) : Promise<schemas.Worker | IInternalWorker>
+{
+  return assert404(
+    internalWorker ? 
+      getInternalWorker(internalWorker) :
+      await workers.findOne({ _id: workerId }),
   );
 }
