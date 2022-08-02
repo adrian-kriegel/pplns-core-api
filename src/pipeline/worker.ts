@@ -3,6 +3,7 @@ import { assert404 } from 'express-lemur/lib/rest/rest-router';
 import { ObjectId } from 'mongodb';
 import * as schemas from '../schemas/pipeline';
 import { bundles, dataItems, workers } from '../storage/database';
+import Mutex from '../util/mutex';
 import { getInternalWorker, IInternalWorker } from './internal-workers';
 
 export interface IWorker
@@ -33,22 +34,61 @@ export class ExternalWorker implements IWorker
 
     return assert404(this.doc);
   }
-  
 
   /**
+   * Find any bundles with a larger flow stack and add to those.
+   * Will resolve to true if the item has been added to higher level bundles.
+   * @param consumer item
+   * @param item item
+   * @returns Promise<boolean> (true if there were bundles)
+   */
+  async addToHigherLevelBundles(
+    consumer : schemas.Node,
+    item : schemas.DataItem,
+  )
+  {
+    return Promise.all(
+      await bundles.find(
+        {
+          taskId: item.taskId,
+          consumerId: consumer._id,
+          done: false,
+          // check if there is a bundle whose flowId is "above" item.flowId
+          // this means that item.flowId is in bundle.lowerFlowIds
+          lowerFlowIds: item.flowId,
+        },
+      ).map(
+        (bundle) => 
+        {
+          return this.upsertBundle(
+            item.nodeId,
+            consumer,
+            {
+              ...item,
+              flowId: bundle.flowId, 
+            },
+            bundle._id,
+          );
+        },
+      ).toArray(),
+    );
+  }
+
+  /**
+   * Non "thread"-safe version o upsertBundle
    * @param producerId id of producer node
    * @param consumer consumer node
    * @param item data item
+   * @param specificBundleId provide if target bundle is known
    * @returns update result
    */
   async upsertBundle(
     producerId : ObjectId,
     consumer : schemas.Node,
     item : schemas.DataItem,
+    specificBundleId?: ObjectId,
   )
   {
-    // TODO use aggregation in update to udate in one go
-
     const expectedDepth = item.producerNodeIds.filter(
       (producerId) => producerId.equals(consumer._id),
     ).length;
@@ -57,21 +97,42 @@ export class ExternalWorker implements IWorker
 
     const input = findInputForItem(item, consumer);
 
-    const { value: bundle } = await bundles.findOneAndUpdate(
+    // if item needs to be added to higher level items, skip the logic below
+    if (
+      !specificBundleId &&
+      (await this.addToHigherLevelBundles(
+        consumer,
+        item,
+      )).length > 0
+    )
+    {
+      return;
+    }
+
+    const itemFlowIds = [
+      item.flowId,
+      ...item.flowStack.map(({ flowId }) => flowId),
+    ];
+
+    const bundleQuery = specificBundleId ?
+      {
+        _id: specificBundleId,
+      } :
       {
         taskId: item.taskId,
         consumerId: consumer._id,
         done: false,
-        // there may already be a bundle with a higher flow stack
-        // which was mistakenly created after an item from a higher flow stack had finished
+        // there may already be a bundle with a lower flow stack
+        // which was mistakenly created after an item from a lower flow stack had finished
         flowId: { 
-          $in: [
-            item.flowId,
-            ...item.flowStack.map(({ flowId }) => flowId),
-          ],
+          $in: itemFlowIds,
         },
         depth: expectedDepth,
-      },
+      }
+    ;
+
+    const { value: bundle } = await bundles.findOneAndUpdate(
+      bundleQuery,
       {
         $push: 
         {
@@ -84,6 +145,13 @@ export class ExternalWorker implements IWorker
             nodeId: item.nodeId,
             outputChannel: item.outputChannel,
             inputChannel: input.inputChannel,
+          },
+        },
+        $addToSet:
+        {
+          lowerFlowIds: 
+          {
+            $each: item.flowStack.map(({ flowId }) => flowId),
           },
         },
         $setOnInsert: 
@@ -101,7 +169,7 @@ export class ExternalWorker implements IWorker
         },
       },
       {
-        upsert: true,
+        upsert: !specificBundleId,
         returnDocument: 'after',
       },
     );
@@ -109,7 +177,7 @@ export class ExternalWorker implements IWorker
     /*
     TODO: this whole thing is only required for nodes that take in items from different levels of splits and joins
 
-    it will not return any higher level items if all inputs come from the same level
+    it will not return any lower level items if all inputs come from the same level
 
     determine levels and don't run this stuff if not required
     */
@@ -123,9 +191,9 @@ export class ExternalWorker implements IWorker
         ),
     );
 
-    // higher level items can be assumed to be done
+    // lower level items can be assumed to be done
     // because the split node will only split once done
-    const higherLevelItems = missingInputs.length ?
+    const lowerLevelItems = missingInputs.length ?
       await dataItems.find(
         {
           taskId: item.taskId,
@@ -166,7 +234,7 @@ export class ExternalWorker implements IWorker
       []
     ;
 
-    const higherLevelInputItems = higherLevelItems.map((item) => 
+    const lowerLevelInputItems = lowerLevelItems.map((item) => 
       (
         {
           position: Object.keys(worker.inputs).findIndex(
@@ -182,7 +250,7 @@ export class ExternalWorker implements IWorker
 
     const allInputItems : schemas.Bundle['inputItems'] = [
       ...bundle.inputItems,
-      ...higherLevelInputItems,
+      ...lowerLevelInputItems,
     ];
 
     const bundleDone =
@@ -194,7 +262,7 @@ export class ExternalWorker implements IWorker
       // bundle.done needs to be updated in the database
       (!bundle.done && bundleDone) || 
       // new items need to be added to the bundle
-      higherLevelItems.length > 0
+      lowerLevelItems.length > 0
     )
     {
       if (bundleDone)
@@ -221,7 +289,7 @@ export class ExternalWorker implements IWorker
           {
             $addToSet:
             {
-              inputItems: { $each: higherLevelInputItems },
+              inputItems: { $each: lowerLevelInputItems },
             },
           },
         );
@@ -237,15 +305,24 @@ export class ExternalWorker implements IWorker
 * @param item data item
 * @returns update result
 */
-export function upsertBundle(
+export async function upsertBundle(
   ...args : Parameters<IWorker['upsertBundle']>
 )
 {
   const consumer = args[1];
 
-  return consumer.internalWorker ? 
-    getInternalWorker(consumer.internalWorker).upsertBundle(...args) :
-    new ExternalWorker(consumer.workerId).upsertBundle(...args);
+  const mutex = await new Mutex(consumer._id.toHexString()).take();
+
+  try 
+  {
+    return consumer.internalWorker ? 
+      getInternalWorker(consumer.internalWorker).upsertBundle(...args) :
+      new ExternalWorker(consumer.workerId).upsertBundle(...args);
+  }
+  finally 
+  {
+    await mutex.free();
+  }
 }
 
 

@@ -43,6 +43,9 @@ const indexes : CollectionIndexes =
       depth: 1,
       $options: { unique: true },
     },
+    {
+      lowerFlowIds: 1,
+    },
   ],
 };
 

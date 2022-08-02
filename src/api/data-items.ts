@@ -37,15 +37,6 @@ type DataItemQuery = Static<typeof dataItemQuery>;
  * 
  * TODO: handle the edge case where the same output is connected to two inputs
  * 
- * TODO: inputs from higher levels of splits/joins will first create their own bundle
- *        and will then be added to all other bundles from the split
- *        the initial bundle will not be filled as the flowId does not match
- *        this leaves "undone" bundles with duplicate entries behind
- * 
- *        To fix this, it would probably make sense to check how "deep" inside a split an 
- *        input is and then only create the bundle once the item comes in whose input is the
- *        deepest (whose flowStack is the largest expected of all inputs).
- * 
  * @param item dataitem
  * 
  * @returns Promise<void>
@@ -93,6 +84,11 @@ export async function postDataItem(
   item : schemas.DataItemWrite | schemas.DataItem,
 )
 {
+  if (!Array.isArray(item.data))
+  {
+    item.data = [item.data];
+  }
+  
   // {taskId, nodeId, flowId, output} form a unique index (see db-indexes for dataItems)
   const query = 
   {

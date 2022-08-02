@@ -211,8 +211,11 @@ const bundleProps =
 
   taskId: objectId,
 
-  // same as dataItem.flowIds[0]
+  // same as dataItem.flowId highest flowId of all items
   flowId: objectId,
+
+  // all flowIds from the flowStack of all items in this bundle
+  lowerFlowIds: Type.Optional(Type.Array(objectId)),
 
   // true iff all required data items are done
   done: Type.Boolean(),

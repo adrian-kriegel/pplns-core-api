@@ -1,3 +1,6 @@
+/**
+ * Tests for queue behavior of the bundles API.
+ */
 
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';

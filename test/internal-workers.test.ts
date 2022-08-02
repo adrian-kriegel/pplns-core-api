@@ -1,12 +1,11 @@
 
 import { Response } from 'express';
 
-import nodesApi from '../src/api/nodes';
 import dataItemsApi from '../src/api/data-items';
 import bundlesApi from '../src/api/bundles';
 import { ObjectId } from 'mongodb';
-import { NodeRead } from '../src/schemas/pipeline';
-import { workers } from '../src/storage/database';
+import { InspectNode } from './util/inspect-node';
+import { createNode } from './util/api-util';
 
 const taskId = new ObjectId('62de9ee9ac751033dad45a62');
 
@@ -17,74 +16,22 @@ const mockRes =
   locals: { unologin: { user: { asuId: userId.toHexString() } } },
 } as any as Response;
 
-let inspectWorkerId;
-
 let dataSrcNodeId : ObjectId;
 let splitNodeId : ObjectId;
-let inspect1NodeId : ObjectId;
+let inspect1Node : InspectNode;
 let joinNodeId : ObjectId;
 let inspect2NodeId : ObjectId;
-
-const addInspectNode = async (inputNodeId : ObjectId) => 
-  ((await nodesApi.post?.(
-    {
-      taskId,
-    },
-    {
-      workerId: inspectWorkerId,
-      inputs: 
-      [
-        {
-          nodeId: inputNodeId,
-          outputChannel: 'out',
-          inputChannel: 'in',
-        },
-      ],
-      position: { x: 0, y: 0 },
-    },
-    null as any,
-    mockRes,
-  )) as NodeRead)._id
-;
-
-beforeAll(async () => 
-{
-  inspectWorkerId = (await workers.insertOne(
-    {
-      title: '',
-      description: '',
-      createdAt: new Date(),
-      inputs:
-      {
-        'in': { schema: {}, description: '' },
-      },
-      outputs:
-      {
-        'out': { schema: {}, description: '' },
-      },
-      params: {},
-    },
-  )).insertedId;
-});
 
 describe('DataSource node', () => 
 {
   it('Can be created like any other node.', async () => 
   {
-    const { _id } = await nodesApi.post?.(
-      {
-        taskId,
-      },
+    dataSrcNodeId = await createNode(
+      taskId,
       {
         internalWorker: 'data-source',
-        inputs: [],
-        position: { x: 0, y: 0 },
       },
-      null as any,
-      mockRes,
-    ) as NodeRead;
-
-    dataSrcNodeId = _id;
+    );
   });
 });
 
@@ -92,27 +39,19 @@ describe('Split node.', () =>
 {
   it('Can be created like any other node.', async () => 
   {
-    const { _id } = await nodesApi.post?.(
-      {
-        taskId,
-      },
+    splitNodeId = await createNode(
+      taskId,
       {
         internalWorker: 'split',
-        inputs: 
-        [
+        inputs: [
           {
             nodeId: dataSrcNodeId,
             outputChannel: 'data',
             inputChannel: 'in',
           },
         ],
-        position: { x: 0, y: 0 },
       },
-      null as any,
-      mockRes,
-    ) as NodeRead;
-
-    splitNodeId = _id;
+    );
   });
 });
 
@@ -120,32 +59,34 @@ describe('Join node.', () =>
 {
   it('Can be created like any other node.', async () => 
   {
-    inspect1NodeId = await addInspectNode(splitNodeId);
+    inspect1Node = new InspectNode(
+      taskId,
+      [{ nodeId: splitNodeId, outputChannel: 'out' }],
+    );
 
-    const { _id } = await nodesApi.post?.(
-      {
-        taskId,
-      },
+    await inspect1Node.register();
+
+    joinNodeId = await createNode(
+      taskId,
       {
         internalWorker: 'join',
         inputs: 
         [
           {
-            nodeId: inspect1NodeId,
+            nodeId: inspect1Node.nodeId,
             outputChannel: 'out',
             inputChannel: 'in',
           },
         ],
         params: { splitNodeId: splitNodeId },
-        position: { x: 0, y: 0 },
       },
-      null as any,
-      mockRes,
-    ) as NodeRead;
+    );
 
-    joinNodeId = _id;
+    inspect2NodeId = await new InspectNode(
+      taskId,
+      [{ nodeId: joinNodeId, outputChannel: 'out' }],
+    ).register();
 
-    inspect2NodeId = await addInspectNode(joinNodeId);
   });
 });
 
@@ -153,10 +94,8 @@ describe('DataSink node.', () =>
 {
   it('Can be created like any other node.', async () => 
   {
-    await nodesApi.post?.(
-      {
-        taskId,
-      },
+    await createNode(
+      taskId,
       {
         internalWorker: 'data-sink',
         inputs: 
@@ -167,11 +106,8 @@ describe('DataSink node.', () =>
             inputChannel: 'in',
           },
         ],
-        position: { x: 0, y: 0 },
       },
-      null as any,
-      mockRes,
-    ) as NodeRead;
+    );
   });
 });
 
@@ -214,7 +150,7 @@ describe('Split node', () =>
 
     // find all items produced by the split node
     const { results: inputBundles, total } = await bundlesApi.get?.(
-      { taskId, consumerId: inspect1NodeId },
+      { taskId, consumerId: inspect1Node.nodeId },
       null as any,
       mockRes,
     );
@@ -235,10 +171,8 @@ describe('Split node', () =>
 
     // simply re-emit the data from the inspect node
 
-    for (const bundle of inputBundles)
-    {
-      await dataItemsApi.post(
-        { nodeId: inspect1NodeId, taskId },
+    await inspect1Node.process(
+      (bundle) => [
         {
           // each bundle has one item with one data point
           data: [bundle.items[0].data[0]],
@@ -247,10 +181,8 @@ describe('Split node', () =>
           flowId: bundle.flowId,
           flowStack: bundle.items[0].flowStack,
         },
-        null as any,
-        mockRes,
-      );
-    }
+      ],
+    );
   });
 });
 

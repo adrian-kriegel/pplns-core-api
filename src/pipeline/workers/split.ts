@@ -38,14 +38,14 @@ implements IInternalWorker
    * @param items data item
    * @returns update result
    */
-  upsertBundle(
+  async upsertBundle(
     // producerId does not matter as the split node acts as the producer
     _ : ObjectId,
     splitNode : schemas.Node,
     items : schemas.DataItem,
   )
   {
-    return Promise.all(
+    return await Promise.all(
       items.data.map(
         (data) => postDataItem(
           {
