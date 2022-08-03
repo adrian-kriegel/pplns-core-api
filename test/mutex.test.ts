@@ -2,7 +2,7 @@
 import { ObjectId, UpdateResult } from 'mongodb';
 
 import collection from '../src/storage/database';
-import Mutex, { MutexOptions } from '../src/util/mutex';
+import Mutex, { MutexOptions, setMutexOptions } from '../src/util/mutex';
 
 type TestDoc = { _id: ObjectId; count: number };
 
@@ -54,6 +54,9 @@ describe('Mutex', () =>
 
   const testMutex = async (options : MutexOptions) => 
   {
+    // set global mutex options
+    setMutexOptions(options);
+
     // reset the document and test again using mutex  
     await coll.updateOne({ _id }, { $set: { count: 0 } });
 
@@ -85,7 +88,7 @@ describe('Mutex', () =>
       calls.map(
         async () => 
         {
-          const mutex = await new Mutex(_id.toHexString(), options).take();
+          const mutex = await new Mutex(_id.toHexString()).take();
            
           setControlState('grant');
           
@@ -110,8 +113,8 @@ describe('Mutex', () =>
 
     expect(doc.count).toBe(numConcurrentCalls);
 
-    // the local "queue" should be empty after all operations have finished
-    // TODO 
+    // the change stream should remove itself after it is empty
+    expect(Mutex.changeStreamsByMutexId).toStrictEqual({});
   };
 
 

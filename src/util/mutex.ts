@@ -35,6 +35,9 @@ class MutexChangeStream
 
   open : boolean = false;
 
+  // changed to true once the global mutex has been taken from the db
+  taken : boolean = false;
+
   //  all mutex instances connected to this stream
   mutexes : Mutex[] = [];
 
@@ -65,7 +68,13 @@ class MutexChangeStream
   private attemptTake()
   {
     return mutexes.insertOne({ _id: this.mutexId })
-      .then(() => this.trigger(true))
+      .then(
+        () => 
+        {
+          this.taken = true;
+          this.trigger(true);
+        },
+      )
       .catch(
         (e) =>
         {
@@ -100,13 +109,16 @@ class MutexChangeStream
         {
           try 
           {
-            const result = await mutexes.findOne(
-              { _id: this.mutexId },
-            );
-
-            if (!result)
+            if (!this.taken)
             {
-              this.trigger();
+              const result = await mutexes.findOne(
+                { _id: this.mutexId },
+              );
+  
+              if (!result)
+              {
+                this.trigger();
+              }
             }
           }
           catch (e)
@@ -121,6 +133,8 @@ class MutexChangeStream
       },
       this.pollingTime,
     );
+
+    this.initTimeout();
   }
 
   /** @returns void */
@@ -211,10 +225,12 @@ class MutexChangeStream
   }
 }
 
-const defaultMutexOptions : MutexOptions = 
+let options : MutexOptions = 
 {
   ignoreInternalTriggers: false,
 };
+
+export const setMutexOptions = (o : MutexOptions) => options = o;
 
 /**
  * Implements a mutex that works across multiple instances of this prgram.
@@ -233,7 +249,6 @@ export default class Mutex
   /** */
   constructor(
     private _id : string,
-    public options : MutexOptions = defaultMutexOptions,
   ) {}
 
   /**
@@ -279,8 +294,10 @@ export default class Mutex
       throw new Error('Tried to free mutex that has not been initialized.');
     }
 
-    if (this.options.ignoreInternalTriggers)
+    if (options.ignoreInternalTriggers)
     {
+      this.changeStream.taken = false;
+
       return mutexes.deleteOne({ _id: this._id });
     }
     else 
