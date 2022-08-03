@@ -2,7 +2,7 @@
 import { ObjectId, UpdateResult } from 'mongodb';
 
 import collection from '../src/storage/database';
-import Mutex, { MutexOptions } from '../src/util/mutex';
+import Mutex, { changeStreamsByMutexId, MutexOptions } from '../src/util/mutex';
 
 type TestDoc = { _id: ObjectId; count: number };
 
@@ -25,13 +25,13 @@ beforeAll(async () =>
 
 describe('Mutex', () => 
 {
-  const numConcurrentCalls = 20;
+  const numConcurrentCalls = 30;
 
-  jest.setTimeout(numConcurrentCalls * 200);
+  jest.setTimeout(numConcurrentCalls * 300);
 
   // helper array to be able to concurrently call using calls.map
-  const calls = [...Array(numConcurrentCalls)];
-
+  const calls = [...Array(numConcurrentCalls)].map((_, i) => i);
+  
   const validateResults = (results : UpdateResult[]) => 
   {
     expect(results.length)
@@ -57,16 +57,49 @@ describe('Mutex', () =>
     // reset the document and test again using mutex  
     await coll.updateOne({ _id }, { $set: { count: 0 } });
 
+    // check that the control flow follows a linear, repeating order
+    // if the functions were not protected by the mutex, the order would be arbitrary,
+    // as the state of one process may interfere with the state of another
+    let currentControlState : 'grant' | 'work' | 'free' = 'free';
+
+    const expectedControlStateOrder = ['grant', 'work', 'free'];
+
+    // checks if the control state is the expected successor to the current state
+    // and sets the control state
+    const setControlState = (s : typeof currentControlState) => 
+    {
+      const index = expectedControlStateOrder.findIndex(
+        (state) => currentControlState === state,
+      );
+
+      const expectedState = expectedControlStateOrder[
+        (index + 1) % expectedControlStateOrder.length
+      ];
+
+      expect(s).toBe(expectedState);
+
+      currentControlState = s;
+    };
+
     const goodResults = await Promise.all(
       calls.map(
         async () => 
         {
           const mutex = await new Mutex(_id.toHexString(), options).take();
-          const result = await unsafeFunction();
-
-          await mutex.free();
-
-          return result;
+          
+          setControlState('grant');
+          
+          try 
+          {
+            const result = await unsafeFunction();
+            setControlState('work');
+            return result;
+          }
+          finally 
+          {
+            setControlState('free');
+            await mutex.free();
+          }
         },
       ),
     );
@@ -76,6 +109,10 @@ describe('Mutex', () =>
     validateResults(goodResults);
 
     expect(doc.count).toBe(numConcurrentCalls);
+
+    // the local "queue" should be empty after all operations have finished
+    expect(changeStreamsByMutexId[_id.toHexString()].length)
+      .toBe(0);
   };
 
 

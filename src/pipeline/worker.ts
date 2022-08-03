@@ -313,14 +313,19 @@ export async function upsertBundle(
 
   const mutex = await new Mutex(consumer._id.toHexString()).take();
 
-  const result = await (consumer.internalWorker ? 
-    getInternalWorker(consumer.internalWorker).upsertBundle(...args) :
-    new ExternalWorker(consumer.workerId).upsertBundle(...args)
-  );
+  try 
+  {
+    const result = await (consumer.internalWorker ? 
+      getInternalWorker(consumer.internalWorker).upsertBundle(...args) :
+      new ExternalWorker(consumer.workerId).upsertBundle(...args)
+    );
 
-  await mutex.free();
-
-  return result;
+    return result;
+  }
+  finally
+  {
+    await mutex.free();
+  }
 }
 
 

@@ -27,7 +27,8 @@ type MockChangeCallback = (
   e?: Error,
 ) => void;
 
-const changeStreamsByMutexId : { [mutexId: string]: MockChangeStream[] } = 
+export const changeStreamsByMutexId : 
+{ [mutexId: string]: MockChangeStream[] } = 
 {
 
 };
@@ -50,10 +51,6 @@ class MockChangeStream
   /** */
   constructor(private mutexId: string)
   {
-    changeStreamsByMutexId[this.mutexId] ||= [];
-
-    changeStreamsByMutexId[this.mutexId].push(this);
-
     connection.onDisconnect(() => this.close());
   }
 
@@ -67,6 +64,16 @@ class MockChangeStream
     callback : MockChangeCallback,
   )
   {
+    if (this.callback)
+    {
+      throw new Error('MockChangeStream callback passed twice.');
+    }
+
+    changeStreamsByMutexId[this.mutexId] ||= [];
+
+    changeStreamsByMutexId[this.mutexId].push(this);
+
+
     this.callback = callback;
 
     this.interval = setInterval(
@@ -145,6 +152,19 @@ class MockChangeStream
   /** @returns void */
   close()
   {
+    if (this.mutexId in changeStreamsByMutexId)
+    {
+      // find and remove `this` from change streams
+      const ownIndex = changeStreamsByMutexId[this.mutexId].findIndex(
+        (s) => s === this,
+      );
+
+      if (ownIndex !== -1)
+      {
+        changeStreamsByMutexId[this.mutexId].splice(ownIndex, 1);
+      }
+    }
+
     this.clearTimers();
   }
 }
@@ -187,16 +207,18 @@ export default class Mutex
     return new Promise<Mutex>(
       (resolve, reject) => 
       {
+        const grant = async () => 
+        {
+          await this.changeStream.close();
+          resolve(this);
+        };
+
         mutexes.insertOne(
           {
             _id: this._id,
           },
         )
-          .then(() => 
-          {
-            this.changeStream.close();
-            resolve(this);
-          })
+          .then(grant)
           .catch((e) => 
           {
             if (e.code === 11000)
@@ -214,8 +236,7 @@ export default class Mutex
                     {
                       if (change.isInternalRelease)
                       {
-                        this.changeStream.close();
-                        resolve(this);
+                        grant();
                       }
                       else 
                       {
@@ -248,19 +269,11 @@ export default class Mutex
   /**
    * @returns Promise
    */
-  free()
+  async free()
   {
-    // remove own change stream
-    changeStreamsByMutexId[this._id].splice(
-      changeStreamsByMutexId[this._id].findIndex(
-        (s) => s === this.changeStream,
-      ),
-      1,
-    );
-
     const nextStream = this.options.ignoreInternalTriggers ?
       null : 
-      changeStreamsByMutexId[this._id].pop();
+      changeStreamsByMutexId[this._id]?.[0];
 
     if (nextStream)
     {
