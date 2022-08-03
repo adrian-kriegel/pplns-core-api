@@ -1,6 +1,6 @@
 
 import { ChangeStream } from 'mongodb';
-import collection from '../storage/database';
+import collection, { connection } from '../storage/database';
 
 export type MutexDoc = 
 {
@@ -9,23 +9,53 @@ export type MutexDoc =
 
 const mutexes = collection<MutexDoc>('mutexes');
 
-type MockChange<Doc> =
+type MockChange<Doc extends { _id: any }> =
 {
   operationType: string;
-  fullDocument: Doc;
+  fullDocument: { _id: Doc['_id']; };
+  isInternalRelease : boolean;
 }
+
+export type MutexOptions = 
+{
+  // set to true to disable internal mutex release (mainly used for testing)
+  ignoreInternalTriggers?: boolean;
+};
+
+type MockChangeCallback = (
+  change : MockChange<MutexDoc> | null,
+  e?: Error,
+) => void;
+
+const changeStreamsByMutexId : { [mutexId: string]: MockChangeStream[] } = 
+{
+
+};
 
 /**
  * Replacement for when collection.watch is not available.
+ * 
  */
 class MockChangeStream
 {
   pollingTime = 5;
 
-  pollingTimeout = 10000;
+  pollingTimeout = 30000;
+
+  callback : MockChangeCallback | null = null;
+
+  interval : ReturnType<typeof setInterval> | null = null;
+  timeout : ReturnType<typeof setTimeout> | null = null;
 
   /** */
-  constructor(private mutexId: string) {}
+  constructor(private mutexId: string)
+  {
+    changeStreamsByMutexId[this.mutexId] ||= [];
+
+    changeStreamsByMutexId[this.mutexId].push(this);
+
+    connection.onDisconnect(() => this.close());
+  }
 
   /**
    * @param _ event
@@ -34,44 +64,95 @@ class MockChangeStream
    */
   on(
     _ : 'change',
-    callback : (change : MockChange<MutexDoc>) => void,
+    callback : MockChangeCallback,
   )
   {
-    const interval = setInterval(
+    this.callback = callback;
+
+    this.interval = setInterval(
       async () => 
       {
-        const result = await mutexes.findOne(
-          { _id: this.mutexId },
-        );
-
-        if (!result)
+        if (connection.isConnected())
         {
-          clearInterval(interval);
+          try 
+          {
+            const result = await mutexes.findOne(
+              { _id: this.mutexId },
+            );
 
-          callback(
+            if (!result)
             {
-              fullDocument: { _id: this.mutexId },
-              operationType: 'TODO: I have not found any doc on this...',
-            },
-          );
+              this.trigger();
+            }
+          }
+          catch (e)
+          {
+            this.emitError(e);
+          }
+        }
+        else 
+        {
+          this.emitError(new Error('[Mutex] Connection has been closed.'));
         }
       },
       this.pollingTime,
     );
 
-    setTimeout(
+    this.timeout = setTimeout(
       () => 
       {
-        clearInterval(interval);
+        this.close();
         throw new Error('Mutex timeout ' + this.mutexId);
       },
       this.pollingTimeout,
     );
   }
 
+  /** @returns void  */
+  clearTimers()
+  {
+    clearInterval(this.interval);
+    clearTimeout(this.timeout);
+  }
+
+  /**
+   * 
+   * @param e error
+   * @returns void
+   */
+  emitError(e : Error)
+  {
+    this.clearTimers();
+    this.callback?.(null, e);
+  }
+
+  /**
+   * emits the change event
+   * @param isInternalRelease set to true if the event comes from a mutex on this server instance 
+   * @returns void
+   */
+  trigger(isInternalRelease = false) 
+  {
+    this.callback?.(
+      {
+        fullDocument: { _id: this.mutexId },
+        operationType: 'TODO: I have not found any doc on this...',
+        isInternalRelease,
+      },
+    );
+  }
+
   /** @returns void */
-  close() { }
+  close()
+  {
+    this.clearTimers();
+  }
 }
+
+const defaultMutexOptions : MutexOptions = 
+{
+  ignoreInternalTriggers: false,
+};
 
 /**
  * Implements a mutex that works across multiple instances of this prgram.
@@ -80,8 +161,13 @@ export default class Mutex
 {
   private changeStream : ChangeStream<MutexDoc> | MockChangeStream;
 
+  private isStreamOpen = false;
+
   /** */
-  constructor(private _id : string)
+  constructor(
+    private _id : string,
+    private options : MutexOptions = defaultMutexOptions,
+  )
   {
     if (process.env.MONGODB_IS_REPLICA_SET) 
     {
@@ -101,28 +187,53 @@ export default class Mutex
     return new Promise<Mutex>(
       (resolve, reject) => 
       {
-        mutexes.insertOne({ _id: this._id })
+        mutexes.insertOne(
+          {
+            _id: this._id,
+          },
+        )
           .then(() => 
           {
+            this.changeStream.close();
             resolve(this);
           })
           .catch((e) => 
           {
             if (e.code === 11000)
             {
-              this.changeStream.on('change', (change) => 
+              if (!this.isStreamOpen)
               {
-                if (
-                  change.fullDocument._id === this._id
-                )
+                this.isStreamOpen = true;
+                this.changeStream.on('change', (change, err) => 
                 {
-                  // the mutex MIGHT be free, so attempt to take again
-                  this.take()
-                    .then(resolve)
-                    .catch(reject)
-                  ;
-                }
-              });
+                  if (!err)
+                  {
+                    if (
+                      change.fullDocument._id === this._id
+                    )
+                    {
+                      if (change.isInternalRelease)
+                      {
+                        this.changeStream.close();
+                        resolve(this);
+                      }
+                      else 
+                      {
+                        // the mutex MIGHT be free, so attempt to take again
+                        this.take()
+                          .then(resolve)
+                          .catch(reject)
+                        ;
+                      }
+                    }
+                  }
+                  else 
+                  {
+                    reject(err);
+                  }
+                });
+                
+              }
             }
             else 
             {
@@ -135,12 +246,31 @@ export default class Mutex
   }
 
   /**
-   * @returns update result
+   * @returns Promise
    */
   free()
   {
-    return mutexes.deleteOne(
-      { _id: this._id },
+    // remove own change stream
+    changeStreamsByMutexId[this._id].splice(
+      changeStreamsByMutexId[this._id].findIndex(
+        (s) => s === this.changeStream,
+      ),
+      1,
     );
+
+    const nextStream = this.options.ignoreInternalTriggers ?
+      null : 
+      changeStreamsByMutexId[this._id].pop();
+
+    if (nextStream)
+    {
+      return nextStream.trigger(true);
+    }
+    else 
+    {
+      return mutexes.deleteOne(
+        { _id: this._id },
+      );
+    }
   }
 }

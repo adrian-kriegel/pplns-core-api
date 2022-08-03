@@ -71,24 +71,36 @@ test(
   'Input items from different split levels are bundled correctly.', 
   async () => 
   {
+    const inputData = [
+      'f1data1',
+      'f1data2',
+      'f1data3',
+    ];
+
     // emit first dataitem
     // this will emit a SINGLE item containnig the array
     await sourceNode.emit(
-      [
-        'f1data1',
-        'f1data2',
-        'f1data3',
-      ],
+      inputData,
     );
 
     const inputBundles = await inspectNode.consume();
-    
-    for (const bundle of inputBundles)
-    {
-      console.log(bundle.items);
-      console.log(bundle.items[0].flowStack);
-    }
 
     expect(inputBundles.length).toBe(3);
+
+    const data = inputBundles.map(
+      (bundle) => bundle.items.map((item) => item.data),
+    );
+    
+    const sortedData = inputData.map(
+      (str) => data.find(([[item1]]) => item1 === str),
+    );
+
+    const expectedData = inputData.map(
+      // nested array format is expected because sortedData = [item1.data, item2.data][]
+      // and item.data is always an array
+      (str) => [[str], inputData],
+    );
+
+    expect(sortedData).toStrictEqual(expectedData);
   },
 );

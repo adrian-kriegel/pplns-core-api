@@ -20,7 +20,7 @@ export interface IWorker
  */
 export class ExternalWorker implements IWorker
 {
-  private doc?: schemas.Worker;
+  private doc?: schemas.Worker | null;
 
   /** */
   constructor(
@@ -313,16 +313,14 @@ export async function upsertBundle(
 
   const mutex = await new Mutex(consumer._id.toHexString()).take();
 
-  try 
-  {
-    return consumer.internalWorker ? 
-      getInternalWorker(consumer.internalWorker).upsertBundle(...args) :
-      new ExternalWorker(consumer.workerId).upsertBundle(...args);
-  }
-  finally 
-  {
-    await mutex.free();
-  }
+  const result = await (consumer.internalWorker ? 
+    getInternalWorker(consumer.internalWorker).upsertBundle(...args) :
+    new ExternalWorker(consumer.workerId).upsertBundle(...args)
+  );
+
+  await mutex.free();
+
+  return result;
 }
 
 

@@ -10,7 +10,6 @@ config({ path: '.env.test' });
 import {
   dbName,
   connectFresh,
-  disconnect,
 } from '@unologin/server-common/lib/test-utils/db-testing';
 
 process.env.DB_NAME = dbName;
@@ -50,6 +49,3 @@ beforeAll(() =>
   );
 
 });
-
-afterAll(disconnect);
-afterAll(() => connection.disconnect());
