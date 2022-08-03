@@ -1,5 +1,9 @@
+/**
+ * TODO : implement mongodb ChangeStream
+ */
 
-import { ChangeStream } from 'mongodb';
+
+import { MongoError } from 'mongodb';
 import collection, { connection } from '../storage/database';
 
 export type MutexDoc = 
@@ -9,44 +13,30 @@ export type MutexDoc =
 
 const mutexes = collection<MutexDoc>('mutexes');
 
-type MockChange<Doc extends { _id: any }> =
-{
-  operationType: string;
-  fullDocument: { _id: Doc['_id']; };
-  isInternalRelease : boolean;
-}
-
 export type MutexOptions = 
 {
   // set to true to disable internal mutex release (mainly used for testing)
   ignoreInternalTriggers?: boolean;
 };
 
-type MockChangeCallback = (
-  change : MockChange<MutexDoc> | null,
-  e?: Error,
-) => void;
-
-export const changeStreamsByMutexId : 
-{ [mutexId: string]: MockChangeStream[] } = 
-{
-
-};
 
 /**
  * Replacement for when collection.watch is not available.
  * 
  */
-class MockChangeStream
+class MutexChangeStream
 {
   pollingTime = 5;
 
   pollingTimeout = 30000;
 
-  callback : MockChangeCallback | null = null;
-
   interval : ReturnType<typeof setInterval> | null = null;
   timeout : ReturnType<typeof setTimeout> | null = null;
+
+  open : boolean = false;
+
+  //  all mutex instances connected to this stream
+  mutexes : Mutex[] = [];
 
   /** */
   constructor(private mutexId: string)
@@ -55,26 +45,53 @@ class MockChangeStream
   }
 
   /**
-   * @param _ event
-   * @param callback callback
+   * @param mutex mutex
    * @returns void
    */
-  on(
-    _ : 'change',
-    callback : MockChangeCallback,
-  )
+  push(mutex : Mutex)
   {
-    if (this.callback)
+    this.mutexes.push(mutex);
+
+    if (!this.open)
     {
-      throw new Error('MockChangeStream callback passed twice.');
+      this.start();
     }
+  }
 
-    changeStreamsByMutexId[this.mutexId] ||= [];
+  /**
+   * Attempts to take the mutex from the database.
+   * @returns Promise<void | DeleteResult> 
+   */
+  private attemptTake()
+  {
+    return mutexes.insertOne({ _id: this.mutexId })
+      .then(() => this.trigger(true))
+      .catch(
+        (e) =>
+        {
+          if (
+            !(
+              e instanceof MongoError &&
+              e.code === 11000
+            )
+          ) 
+          {
+            this.emitError(e);
+          }
+        },  
+      )
+    ;
+  }
 
-    changeStreamsByMutexId[this.mutexId].push(this);
+  /**
+   * Start listening for changes.
+   * @returns void
+   */
+  private start()
+  {
+    this.open = true;
 
-
-    this.callback = callback;
+    this.attemptTake();
 
     this.interval = setInterval(
       async () => 
@@ -104,6 +121,12 @@ class MockChangeStream
       },
       this.pollingTime,
     );
+  }
+
+  /** @returns void */
+  initTimeout()
+  {
+    clearTimeout(this.timeout);
 
     this.timeout = setTimeout(
       () => 
@@ -118,6 +141,7 @@ class MockChangeStream
   /** @returns void  */
   clearTimers()
   {
+    this.open = false;
     clearInterval(this.interval);
     clearTimeout(this.timeout);
   }
@@ -129,43 +153,61 @@ class MockChangeStream
    */
   emitError(e : Error)
   {
-    this.clearTimers();
-    this.callback?.(null, e);
+    this.close();
+
+    if (this.mutexes.length > 0)
+    {
+      // TODO: reject in the correct mutex
+      this.mutexes[0].reject(e);
+    }
+    else 
+    {
+      throw e;
+    }
   }
 
   /**
    * emits the change event
    * @param isInternalRelease set to true if the event comes from a mutex on this server instance 
-   * @returns void
+   * @returns Promise 
    */
   trigger(isInternalRelease = false) 
   {
-    this.callback?.(
+    if (this.mutexes.length > 0)
+    {
+      const resolveMutex = () => 
       {
-        fullDocument: { _id: this.mutexId },
-        operationType: 'TODO: I have not found any doc on this...',
-        isInternalRelease,
-      },
-    );
+        // re-initialize the timeout
+        this.initTimeout();
+
+        // resolve the mutex
+        this.mutexes.pop().resolve();
+      };
+
+      if (isInternalRelease)
+      {
+        resolveMutex();
+      }
+      else 
+      {
+        this.attemptTake();
+      }
+    }
+    else 
+    {
+      return this.close();
+    }
   }
 
   /** @returns void */
   close()
   {
-    if (this.mutexId in changeStreamsByMutexId)
-    {
-      // find and remove `this` from change streams
-      const ownIndex = changeStreamsByMutexId[this.mutexId].findIndex(
-        (s) => s === this,
-      );
-
-      if (ownIndex !== -1)
-      {
-        changeStreamsByMutexId[this.mutexId].splice(ownIndex, 1);
-      }
-    }
+    delete Mutex.changeStreamsByMutexId[this.mutexId];
 
     this.clearTimers();
+    
+    // make the mutex available for other servers
+    return mutexes.deleteOne({ _id: this.mutexId });
   }
 }
 
@@ -179,25 +221,20 @@ const defaultMutexOptions : MutexOptions =
  */
 export default class Mutex
 {
-  private changeStream : ChangeStream<MutexDoc> | MockChangeStream;
+  private changeStream : MutexChangeStream | null;
 
-  private isStreamOpen = false;
+  public static changeStreamsByMutexId : 
+  { [mutexId: string]: MutexChangeStream } = {};
+
+  public resolve : (() => void) | null = null;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public reject : ((e : Error) => void) | null = null;
 
   /** */
   constructor(
     private _id : string,
-    private options : MutexOptions = defaultMutexOptions,
-  )
-  {
-    if (process.env.MONGODB_IS_REPLICA_SET) 
-    {
-      this.changeStream = mutexes.watch();
-    }
-    else
-    {
-      this.changeStream = new MockChangeStream(_id);
-    }
-  }
+    public options : MutexOptions = defaultMutexOptions,
+  ) {}
 
   /**
    * @returns Promise which resolves once the resource is taken
@@ -207,83 +244,48 @@ export default class Mutex
     return new Promise<Mutex>(
       (resolve, reject) => 
       {
-        const grant = async () => 
-        {
-          await this.changeStream.close();
-          resolve(this);
-        };
+        this.resolve = () => resolve(this);
+        this.reject = reject;
 
-        mutexes.insertOne(
-          {
-            _id: this._id,
-          },
-        )
-          .then(grant)
-          .catch((e) => 
-          {
-            if (e.code === 11000)
-            {
-              if (!this.isStreamOpen)
-              {
-                this.isStreamOpen = true;
-                this.changeStream.on('change', (change, err) => 
-                {
-                  if (!err)
-                  {
-                    if (
-                      change.fullDocument._id === this._id
-                    )
-                    {
-                      if (change.isInternalRelease)
-                      {
-                        grant();
-                      }
-                      else 
-                      {
-                        // the mutex MIGHT be free, so attempt to take again
-                        this.take()
-                          .then(resolve)
-                          .catch(reject)
-                        ;
-                      }
-                    }
-                  }
-                  else 
-                  {
-                    reject(err);
-                  }
-                });
-                
-              }
-            }
-            else 
-            {
-              reject(e);
-            }
-          })
-        ;
+        this.initListener();
       },
     );
   }
 
   /**
+   * @param resolve resolve function
+   * @returns void
+   */
+  private initListener()
+  {
+    // initialize a change stream for this mutex id if it has not been initialized already
+    this.changeStream = 
+      (
+        Mutex.changeStreamsByMutexId[this._id] ||= 
+          new MutexChangeStream(this._id)
+      )
+    ;
+
+    this.changeStream.push(this);
+  }
+
+  /**
    * @returns Promise
    */
-  async free()
+  free()
   {
-    const nextStream = this.options.ignoreInternalTriggers ?
-      null : 
-      changeStreamsByMutexId[this._id]?.[0];
-
-    if (nextStream)
+    if (!this.changeStream)
     {
-      return nextStream.trigger(true);
+      throw new Error('Tried to free mutex that has not been initialized.');
+    }
+
+    if (this.options.ignoreInternalTriggers)
+    {
+      return mutexes.deleteOne({ _id: this._id });
     }
     else 
     {
-      return mutexes.deleteOne(
-        { _id: this._id },
-      );
+      return this.changeStream.trigger(true);
     }
   }
 }
