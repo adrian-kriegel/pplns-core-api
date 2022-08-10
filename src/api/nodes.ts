@@ -16,6 +16,7 @@ import { Collection } from 'mongodb';
 import { checkTaskAccess } from '../middleware/resource-access';
 
 import {
+  getInternalWorker,
   IInternalWorker,
 } from '../pipeline/internal-workers';
 
@@ -94,8 +95,6 @@ export default resource(
 
     accessControl: ({ taskId }, _0, _1, res) => checkTaskAccess(taskId, res),
 
-    // [!] TODO: add map function to collectionToGetHandler for postprocessing
-    // then use it to fill in internal workers
     get: collectionToGetHandler<NodeQuery, typeof schemas.nodeRead>(
       nodes as Collection<any>,
       schemas.nodeRead,
@@ -118,6 +117,14 @@ export default resource(
           },
         },
       ],
+    ).map(
+      (node) => 
+      {
+        return {
+          ...node,
+          worker: node.worker || getInternalWorker(node.internalWorker),
+        };
+      },
     ),
 
     post: async ({ taskId }, node) => 
