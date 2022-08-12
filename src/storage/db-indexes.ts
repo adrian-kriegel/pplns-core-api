@@ -35,7 +35,7 @@ const indexes : CollectionIndexes =
     { flowId: 1 },
     { done: 1 },
     { consumerId: 1 },
-    { consumedAt: 1 },
+    { allTaken: 1 },
     {
       consumerId: 1,
       taskId: 1,

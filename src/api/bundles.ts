@@ -106,12 +106,15 @@ export default resource(
       if (q.consume)
       {
         // TODO: allow for taking more than one bundle at a time
-        
+
         const findQuery = removeUndefined(
           {
             ...q,
             done: true,
-            consumedAt: { $exists: false },
+            // note that allTaken: false is only used to speed up the query 
+            // semaphore-behavior is achieved through the $lt expression along with findOneAndUpdate $inc
+            allTaken: false,
+            $expr: { $lt: ['$numTaken', '$numAvailable'] },
             limit: undefined,
             consume: undefined,
           },
@@ -121,9 +124,9 @@ export default resource(
         const { value: bundle } = await bundles.findOneAndUpdate(
           findQuery,
           {
-            $set:
+            $inc:
             {
-              consumedAt: new Date(),
+              numTaken: 1,
             },
           },
           {
@@ -140,6 +143,14 @@ export default resource(
               Promise.resolve([]),
 
             bundles.countDocuments(findQuery),
+
+            // update allTaken if required
+            bundle && (bundle.numTaken == bundle.numAvailable) ?
+              bundles.updateOne(
+                { _id: bundle._id }, 
+                { $set: { allTaken: true } },
+              ) :
+              Promise.resolve(),
           ],
         );
 

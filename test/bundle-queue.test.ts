@@ -37,6 +37,9 @@ beforeAll(async () =>
         done: true,
         inputItems: [],
         workerId,
+        numAvailable: 1,
+        numTaken: 0,
+        allTaken: false,
       },
       {
         depth: 0,
@@ -47,6 +50,9 @@ beforeAll(async () =>
         done: true,
         inputItems: [],
         workerId,
+        numAvailable: 1,
+        numTaken: 0,
+        allTaken: false,
       },
     ],
   );
@@ -88,13 +94,9 @@ describe('Bundle API queue system', () =>
         ({ _id }) => consumeResults.find((bundle) => bundle._id.equals(_id)),
       );
 
-      expect(
-        // removing consume related fields because those will change
-        consumeResults.map(
-        // eslint-disable-next-line
-        ({ consumedAt, ...b }) => b,
-        ),
-      ).toStrictEqual(getResults);
+      expect(consumeResults).toStrictEqual(
+        getResults.map((r) => ({ ...r, numTaken: r.numTaken + 1 })),
+      );
 
       expect(consumeResults.length).toBe(2);
     },
@@ -105,7 +107,7 @@ describe('Bundle API queue system', () =>
     async ()=> 
     {
       // reset all bundles to be unconsumed
-      await bundles.updateMany({ }, { $unset: { consumedAt: 1 } });
+      await bundles.updateMany({ }, { $set: { numTaken: 0, allTaken: false } });
 
       const query = 
       {

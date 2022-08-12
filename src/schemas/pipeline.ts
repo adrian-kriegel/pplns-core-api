@@ -101,6 +101,9 @@ const nodeProps =
     ),
   ),
 
+  // how many times to process a single input bundle
+  numExecutions: Type.Optional(Type.Integer({ minimum: 1, default: 1 })),
+
   params: Type.Optional(Type.Record(
     Type.String(),
     Type.Any(),
@@ -232,8 +235,14 @@ const bundleProps =
   // worker responsible (redundant as this is stored in node too but improves queries)
   workerId: objectId,
 
-  // time the bundle is taken at (won't be available to consumers afterwards)
-  consumedAt: Type.Optional(date),
+  // how many times this bundle may be consumed
+  numAvailable: Type.Integer({ minimum: 1 }),
+
+  // how many times this bundle has been consumed (won't be available once this reaches node.numExecutions)
+  numTaken: Type.Integer({ minimum: 0 }),
+
+  // same as (numTaken === numAvailable)
+  allTaken: Type.Boolean(),
 };
 
 export const bundle = Type.Object(bundleProps);

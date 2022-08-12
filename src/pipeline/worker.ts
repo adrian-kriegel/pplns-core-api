@@ -166,6 +166,9 @@ export class ExternalWorker implements IWorker
 
           // see comment about flowId in query above
           flowId: item.flowId,
+
+          numTaken: 0,
+          numAvailable: consumer.numExecutions || 1,
         },
       },
       {
