@@ -137,6 +137,12 @@ export type Node = Static<typeof node>;
 export type NodeWrite = Static<typeof nodeWrite>;
 export type NodeRead = Static<typeof nodeRead>;
 
+export const flowIdSchema = Type.Union(
+  [Type.String(), objectId],
+);
+
+export type FlowId = Static<typeof flowIdSchema>;
+
 const dataItemProps = 
 {
   _id: objectId,
@@ -154,13 +160,13 @@ const dataItemProps =
 
   // items with the same flowId can only exist once between two nodes
   // items with the same flowId from different nodes to the same consumer are grouped as bundles
-  flowId: objectId,
+  flowId: flowIdSchema,
 
   // stack of all flowIds (except item.flowId) this item belongs to (pushed in split-, popped in join node)
   flowStack: Type.Array(
     Type.Object(
       {
-        flowId: objectId,
+        flowId: flowIdSchema,
         splitNodeId: objectId,
         numEmitted: Type.Integer(),
       },
@@ -221,7 +227,7 @@ const bundleProps =
   taskId: objectId,
 
   // same as dataItem.flowId highest flowId of all items
-  flowId: objectId,
+  flowId: flowIdSchema,
 
   // all flowIds from the flowStack of all items in this bundle
   lowerFlowIds: Type.Optional(Type.Array(objectId)),
