@@ -14,7 +14,7 @@ import { resource } from 'express-lemur/lib/rest/rest-router';
 import { Collection } from 'mongodb';
 import { checkTaskAccess } from '../middleware/resource-access';
 
-import * as schemas from '../schemas/pipeline';
+import * as schemas from '../pipeline/schemas';
 import { bundles, dataItems } from '../storage/database';
 
 import { mapMask } from '@unologin/server-common/lib/util/util';

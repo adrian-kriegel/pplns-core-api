@@ -1,7 +1,7 @@
 
 import { assert404 } from 'express-lemur/lib/rest/rest-router';
 import { ObjectId } from 'mongodb';
-import * as schemas from '../schemas/pipeline';
+import * as schemas from './schemas';
 import { bundles, dataItems, workers } from '../storage/database';
 import Mutex from '../util/mutex';
 import { getInternalWorker, IInternalWorker } from './internal-workers';

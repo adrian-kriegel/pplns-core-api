@@ -2,7 +2,7 @@
 import { parseObjectId } from '@unologin/server-common/lib/general/database';
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
-import { DataItem, Node, TaskWrite } from '../src/schemas/pipeline';
+import { DataItem, Node, TaskWrite } from '../src/pipeline/schemas';
 
 import tasksApi from '../src/api/tasks';
 import nodesApi from '../src/api/nodes';

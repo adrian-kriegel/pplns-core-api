@@ -2,7 +2,7 @@
 import { Type } from '@sinclair/typebox';
 import { ObjectId } from 'mongodb';
 import { postDataItem } from '../../api/data-items';
-import * as schemas from '../../schemas/pipeline';
+import * as schemas from '../schemas';
 import { IInternalWorker } from '../internal-workers';
 
 /** Splits up item contents into  */

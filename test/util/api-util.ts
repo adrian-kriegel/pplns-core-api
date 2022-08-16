@@ -1,7 +1,7 @@
 
 import { ObjectId } from 'mongodb';
 import nodesApi from '../../src/api/nodes';
-import { NodeRead, NodeWrite } from '../../src/schemas/pipeline';
+import { NodeRead, NodeWrite } from '../../src/pipeline/schemas';
 
 /**
  * @param taskId taskId

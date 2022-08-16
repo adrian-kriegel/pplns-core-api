@@ -9,7 +9,7 @@ import {
   DataItemWrite,
   NodeRead,
   Worker,
-} from '../../src/schemas/pipeline';
+} from '../../src/pipeline/schemas';
 
 import { workers } from '../../src/storage/database';
 

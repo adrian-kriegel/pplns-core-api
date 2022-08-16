@@ -16,7 +16,7 @@ import { checkTaskAccess } from '../middleware/resource-access';
 
 import { upsertBundle } from '../pipeline/worker';
 
-import * as schemas from '../schemas/pipeline';
+import * as schemas from '../pipeline/schemas';
 import { dataItems, nodes } from '../storage/database';
 
 const dataItemQuery = Type.Object(

@@ -3,7 +3,7 @@ import { Type } from '@sinclair/typebox';
 import { objectId } from '@unologin/server-common/lib/schemas/general';
 import { ObjectId } from 'mongodb';
 import { postDataItem } from '../../api/data-items';
-import * as schemas from '../../schemas/pipeline';
+import * as schemas from '../schemas';
 import { IInternalWorker } from '../internal-workers';
 
 /** Joins items that have been split using the Split node.  */

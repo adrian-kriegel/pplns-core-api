@@ -8,7 +8,7 @@ import {
 import { Type, Static } from '@unologin/typebox-extended/typebox';
 import { resource } from 'express-lemur/lib/rest/rest-router';
 
-import * as schemas from '../schemas/pipeline';
+import * as schemas from '../pipeline/schemas';
 import { workers } from '../storage/database';
 import { simplePatch } from '../util/rest-util';
 

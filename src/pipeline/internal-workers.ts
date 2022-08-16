@@ -1,5 +1,5 @@
 
-import * as schemas from '../schemas/pipeline';
+import * as schemas from './schemas';
 
 import { IWorker } from './worker';
 

@@ -7,7 +7,7 @@ import {
   Node,
   Task,
   Worker,
-} from '../schemas/pipeline';
+} from '../pipeline/schemas';
 
 import indexes from './db-indexes';
 

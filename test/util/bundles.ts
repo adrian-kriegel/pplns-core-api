@@ -1,5 +1,5 @@
 
-import { Bundle, BundleRead, Worker } from '../../src/schemas/pipeline';
+import { Bundle, BundleRead, Worker } from '../../src/pipeline/schemas';
 
 /**
  * Sort bundle input items either by inputs or alphabetically.

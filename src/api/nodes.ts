@@ -22,7 +22,7 @@ import {
 
 import { findWorkerForNode } from '../pipeline/worker';
 
-import * as schemas from '../schemas/pipeline';
+import * as schemas from '../pipeline/schemas';
 import { nodes } from '../storage/database';
 import { simplePatch } from '../util/rest-util';
 

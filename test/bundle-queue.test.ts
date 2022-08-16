@@ -7,7 +7,7 @@ import { ObjectId } from 'mongodb';
 import { bundles } from '../src/storage/database';
 
 import bundlesApi from '../src/api/bundles';
-import { BundleRead } from '../src/schemas/pipeline';
+import { BundleRead } from '../src/pipeline/schemas';
 
 const userId = new ObjectId('62de9ee9ac751033dad45a62');
 

@@ -15,7 +15,7 @@ import { resource } from 'express-lemur/lib/rest/rest-router';
 import { checkTaskAccess } from '../middleware/resource-access';
 
 
-import * as schemas from '../schemas/pipeline';
+import * as schemas from '../pipeline/schemas';
 import { tasks } from '../storage/database';
 import { getUser } from '../util/express-util';
 import { simplePatch } from '../util/rest-util';
