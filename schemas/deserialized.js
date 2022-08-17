@@ -1,9 +1,22 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+exports.__esModule = true;
 exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
-const typebox_1 = require("@unologin/typebox-extended/typebox");
-const general_1 = require("@unologin/server-common/lib/schemas/general");
-const writeType = (schema) => typebox_1.Type.Omit(schema, ['_id', 'createdAt']);
+var typebox_1 = require("@unologin/typebox-extended/typebox");
+var general_1 = require("@unologin/server-common/lib/schemas/general");
+var writeType = function (schema) {
+    return typebox_1.Type.Omit(schema, ['_id', 'createdAt']);
+};
 exports.task = typebox_1.Type.Object({
     _id: general_1.objectId,
     createdAt: general_1.date,
@@ -13,7 +26,7 @@ exports.task = typebox_1.Type.Object({
     // task-wide parameters for all nodes
     params: typebox_1.Type.Record(typebox_1.Type.String(), typebox_1.Type.Any()),
     // list of owners
-    owners: typebox_1.Type.Array(general_1.objectId),
+    owners: typebox_1.Type.Array(general_1.objectId)
 });
 // TODO: this should be JSON schema meta schema
 exports.dataTypeDefinition = typebox_1.Type.Any();
@@ -29,13 +42,13 @@ exports.worker = typebox_1.Type.Object({
     description: typebox_1.Type.Optional(typebox_1.Type.String()),
     inputs: exports.dataTypeRecord,
     outputs: exports.dataTypeRecord,
-    params: exports.dataTypeRecord,
+    params: exports.dataTypeRecord
 });
 // internal workers are not stored in the database and therefore do not have _id and createdAt
-const internalWorker = typebox_1.Type.Omit(exports.worker, ['_id', 'createdAt']);
+var internalWorker = typebox_1.Type.Omit(exports.worker, ['_id', 'createdAt']);
 exports.workerWrite = writeType(exports.worker);
 exports.taskWrite = writeType(exports.task);
-const nodeProps = {
+var nodeProps = {
     _id: general_1.objectId,
     createdAt: general_1.date,
     taskId: general_1.objectId,
@@ -45,10 +58,10 @@ const nodeProps = {
         // name of the output channel
         outputChannel: typebox_1.Type.String(),
         // name of the input channel
-        inputChannel: typebox_1.Type.String(),
+        inputChannel: typebox_1.Type.String()
     })),
     // how many times to process a single input bundle
-    numExecutions: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1, default: 1 })),
+    numExecutions: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1, "default": 1 })),
     params: typebox_1.Type.Optional(typebox_1.Type.Record(typebox_1.Type.String(), typebox_1.Type.Any())),
     // responsible worker
     workerId: typebox_1.Type.Optional(general_1.objectId),
@@ -56,17 +69,14 @@ const nodeProps = {
     // position in the pipeline UI
     position: typebox_1.Type.Object({
         x: typebox_1.Type.Number(),
-        y: typebox_1.Type.Number(),
-    }),
+        y: typebox_1.Type.Number()
+    })
 };
 exports.node = typebox_1.Type.Object(nodeProps);
 exports.nodeWrite = typebox_1.Type.Omit(writeType(exports.node), ['taskId']);
-exports.nodeRead = typebox_1.Type.Object({
-    ...nodeProps,
-    worker: typebox_1.Type.Union([exports.worker, internalWorker]),
-});
+exports.nodeRead = typebox_1.Type.Object(__assign(__assign({}, nodeProps), { worker: typebox_1.Type.Union([exports.worker, internalWorker]) }));
 exports.flowIdSchema = typebox_1.Type.Union([typebox_1.Type.String(), general_1.objectId]);
-const dataItemProps = {
+var dataItemProps = {
     _id: general_1.objectId,
     createdAt: general_1.date,
     // _id of the task this item belongs to
@@ -82,7 +92,7 @@ const dataItemProps = {
     flowStack: typebox_1.Type.Array(typebox_1.Type.Object({
         flowId: exports.flowIdSchema,
         splitNodeId: general_1.objectId,
-        numEmitted: typebox_1.Type.Integer(),
+        numEmitted: typebox_1.Type.Integer()
     })),
     // list of all nodes this item (or its parents from splits) has passed through
     producerNodeIds: typebox_1.Type.Array(general_1.objectId),
@@ -91,22 +101,18 @@ const dataItemProps = {
     // will automatically set done:true once data.length reaches this value
     autoDoneAfter: typebox_1.Type.Optional(typebox_1.Type.Integer()),
     // output data
-    data: typebox_1.Type.Array(typebox_1.Type.Any()),
+    data: typebox_1.Type.Array(typebox_1.Type.Any())
 };
-exports.dataItem = typebox_1.Type.Object({
-    ...dataItemProps,
-    flowId: typebox_1.Type.Optional(dataItemProps.flowId),
-    flowStack: typebox_1.Type.Optional(dataItemProps.flowStack),
-});
+exports.dataItem = typebox_1.Type.Object(__assign(__assign({}, dataItemProps), { flowId: typebox_1.Type.Optional(dataItemProps.flowId), flowStack: typebox_1.Type.Optional(dataItemProps.flowStack) }));
 exports.dataItemWrite = typebox_1.Type.Omit(writeType(exports.dataItem), ['taskId', 'nodeId', 'producerNodeIds']);
 exports.dataItemQuery = typebox_1.Type.Object({
     _id: typebox_1.Type.Optional(general_1.objectId),
     taskId: typebox_1.Type.Optional(general_1.objectId),
     nodeId: typebox_1.Type.Optional(general_1.objectId),
     done: typebox_1.Type.Optional(typebox_1.Type.Boolean()),
-    flowId: typebox_1.Type.Optional(exports.flowIdSchema),
+    flowId: typebox_1.Type.Optional(exports.flowIdSchema)
 });
-const bundleProps = {
+var bundleProps = {
     _id: general_1.objectId,
     createdAt: general_1.date,
     // items in this bundle in order of consumer.inputs
@@ -115,7 +121,7 @@ const bundleProps = {
         position: typebox_1.Type.Integer(),
         nodeId: general_1.objectId,
         outputChannel: typebox_1.Type.String(),
-        inputChannel: typebox_1.Type.String(),
+        inputChannel: typebox_1.Type.String()
     })),
     // how many times a bundle with this flowId has been passed through this node already
     depth: typebox_1.Type.Integer({ minimum: 0 }),
@@ -135,10 +141,7 @@ const bundleProps = {
     // how many times this bundle has been consumed (won't be available once this reaches node.numExecutions)
     numTaken: typebox_1.Type.Integer({ minimum: 0 }),
     // same as (numTaken === numAvailable)
-    allTaken: typebox_1.Type.Boolean(),
+    allTaken: typebox_1.Type.Boolean()
 };
 exports.bundle = typebox_1.Type.Object(bundleProps);
-exports.bundleRead = typebox_1.Type.Object({
-    ...bundleProps,
-    items: typebox_1.Type.Array(exports.dataItem),
-});
+exports.bundleRead = typebox_1.Type.Object(__assign(__assign({}, bundleProps), { items: typebox_1.Type.Array(exports.dataItem) }));

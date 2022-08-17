@@ -1,20 +1,20 @@
 import { Static } from '@unologin/typebox-extended/typebox';
 import type { TObject } from '@sinclair/typebox';
 export declare const task: TObject<{
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
     title: import("@sinclair/typebox").TString;
     description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     params: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
-    owners: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TString>;
+    owners: import("@sinclair/typebox").TArray<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
 }>;
 export declare const dataTypeDefinition: import("@sinclair/typebox").TAny;
 export declare type DataTypeDefinition = Static<typeof dataTypeDefinition>;
 export declare const dataTypeRecord: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
 export declare type DataTypeRecord = Static<typeof dataTypeRecord>;
 export declare const worker: TObject<{
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
     key: import("@sinclair/typebox").TString;
     title: import("@sinclair/typebox").TString;
     description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
@@ -23,8 +23,8 @@ export declare const worker: TObject<{
     params: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
 }>;
 export declare const workerWrite: TObject<Omit<{
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
     key: import("@sinclair/typebox").TString;
     title: import("@sinclair/typebox").TString;
     description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
@@ -35,27 +35,27 @@ export declare const workerWrite: TObject<Omit<{
 export declare type Worker = Static<typeof worker>;
 export declare type WorkerWrite = Static<typeof workerWrite>;
 export declare const taskWrite: TObject<Omit<{
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
     title: import("@sinclair/typebox").TString;
     description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     params: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
-    owners: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TString>;
+    owners: import("@sinclair/typebox").TArray<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
 }, "_id" | "createdAt">>;
 export declare type Task = Static<typeof task>;
 export declare type TaskWrite = Static<typeof taskWrite>;
 export declare const node: TObject<{
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
-    taskId: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
+    taskId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     inputs: import("@sinclair/typebox").TArray<TObject<{
-        nodeId: import("@sinclair/typebox").TString;
+        nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         outputChannel: import("@sinclair/typebox").TString;
         inputChannel: import("@sinclair/typebox").TString;
     }>>;
     numExecutions: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     params: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>>;
-    workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    workerId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
     internalWorker: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     position: TObject<{
         x: import("@sinclair/typebox").TNumber;
@@ -63,17 +63,17 @@ export declare const node: TObject<{
     }>;
 }>;
 export declare const nodeWrite: TObject<Omit<Omit<{
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
-    taskId: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
+    taskId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     inputs: import("@sinclair/typebox").TArray<TObject<{
-        nodeId: import("@sinclair/typebox").TString;
+        nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         outputChannel: import("@sinclair/typebox").TString;
         inputChannel: import("@sinclair/typebox").TString;
     }>>;
     numExecutions: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     params: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>>;
-    workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    workerId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
     internalWorker: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     position: TObject<{
         x: import("@sinclair/typebox").TNumber;
@@ -82,8 +82,8 @@ export declare const nodeWrite: TObject<Omit<Omit<{
 }, "_id" | "createdAt">, "taskId">>;
 export declare const nodeRead: TObject<{
     worker: import("@sinclair/typebox").TUnion<[TObject<{
-        _id: import("@sinclair/typebox").TString;
-        createdAt: import("@sinclair/typebox").TString;
+        _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+        createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
         key: import("@sinclair/typebox").TString;
         title: import("@sinclair/typebox").TString;
         description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
@@ -91,8 +91,8 @@ export declare const nodeRead: TObject<{
         outputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
         params: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
     }>, TObject<Omit<{
-        _id: import("@sinclair/typebox").TString;
-        createdAt: import("@sinclair/typebox").TString;
+        _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+        createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
         key: import("@sinclair/typebox").TString;
         title: import("@sinclair/typebox").TString;
         description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
@@ -100,17 +100,17 @@ export declare const nodeRead: TObject<{
         outputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
         params: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
     }, "_id" | "createdAt">>]>;
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
-    taskId: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
+    taskId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     inputs: import("@sinclair/typebox").TArray<TObject<{
-        nodeId: import("@sinclair/typebox").TString;
+        nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         outputChannel: import("@sinclair/typebox").TString;
         inputChannel: import("@sinclair/typebox").TString;
     }>>;
     numExecutions: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     params: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>>;
-    workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    workerId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
     internalWorker: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     position: TObject<{
         x: import("@sinclair/typebox").TNumber;
@@ -120,38 +120,38 @@ export declare const nodeRead: TObject<{
 export declare type Node = Static<typeof node>;
 export declare type NodeWrite = Static<typeof nodeWrite>;
 export declare type NodeRead = Static<typeof nodeRead>;
-export declare const flowIdSchema: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
+export declare const flowIdSchema: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>;
 export declare type FlowId = Static<typeof flowIdSchema>;
 export declare const dataItem: TObject<{
-    flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
+    flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>>;
     flowStack: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<TObject<{
-        flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
-        splitNodeId: import("@sinclair/typebox").TString;
+        flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>;
+        splitNodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         numEmitted: import("@sinclair/typebox").TInteger;
     }>>>;
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
-    taskId: import("@sinclair/typebox").TString;
-    nodeId: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
+    taskId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     outputChannel: import("@sinclair/typebox").TString;
-    producerNodeIds: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TString>;
+    producerNodeIds: import("@sinclair/typebox").TArray<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
     done: import("@sinclair/typebox").TBoolean;
     autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
 }>;
 export declare const dataItemWrite: TObject<Omit<Omit<{
-    flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
+    flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>>;
     flowStack: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<TObject<{
-        flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
-        splitNodeId: import("@sinclair/typebox").TString;
+        flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>;
+        splitNodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         numEmitted: import("@sinclair/typebox").TInteger;
     }>>>;
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
-    taskId: import("@sinclair/typebox").TString;
-    nodeId: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
+    taskId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     outputChannel: import("@sinclair/typebox").TString;
-    producerNodeIds: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TString>;
+    producerNodeIds: import("@sinclair/typebox").TArray<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
     done: import("@sinclair/typebox").TBoolean;
     autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
@@ -166,68 +166,68 @@ export declare type WorkerDataType<IO extends 'inputs' | 'outputs', W extends Pi
 export declare type DataInput<W extends WorkerWrite, C extends keyof W['inputs']> = WorkerDataType<'inputs', W, C>;
 export declare type DataOutput<W extends WorkerWrite, C extends keyof W['outputs']> = WorkerDataType<'outputs', W, C>;
 export declare const dataItemQuery: TObject<{
-    _id: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    taskId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    nodeId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    _id: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
+    taskId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
+    nodeId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
     done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
-    flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
+    flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>>;
 }>;
 export declare type DataItemQuery = Static<typeof dataItemQuery>;
 export declare const bundle: TObject<{
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
     inputItems: import("@sinclair/typebox").TArray<TObject<{
-        itemId: import("@sinclair/typebox").TString;
+        itemId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         position: import("@sinclair/typebox").TInteger;
-        nodeId: import("@sinclair/typebox").TString;
+        nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         outputChannel: import("@sinclair/typebox").TString;
         inputChannel: import("@sinclair/typebox").TString;
     }>>;
     depth: import("@sinclair/typebox").TInteger;
-    taskId: import("@sinclair/typebox").TString;
-    flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
-    lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>>;
+    taskId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>;
+    lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>>>;
     done: import("@sinclair/typebox").TBoolean;
-    consumerId: import("@sinclair/typebox").TString;
-    workerId: import("@sinclair/typebox").TString;
+    consumerId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    workerId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     numAvailable: import("@sinclair/typebox").TInteger;
     numTaken: import("@sinclair/typebox").TInteger;
     allTaken: import("@sinclair/typebox").TBoolean;
 }>;
 export declare const bundleRead: TObject<{
     items: import("@sinclair/typebox").TArray<TObject<{
-        flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
+        flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>>;
         flowStack: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<TObject<{
-            flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
-            splitNodeId: import("@sinclair/typebox").TString;
+            flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>;
+            splitNodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
             numEmitted: import("@sinclair/typebox").TInteger;
         }>>>;
-        _id: import("@sinclair/typebox").TString;
-        createdAt: import("@sinclair/typebox").TString;
-        taskId: import("@sinclair/typebox").TString;
-        nodeId: import("@sinclair/typebox").TString;
+        _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+        createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
+        taskId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+        nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         outputChannel: import("@sinclair/typebox").TString;
-        producerNodeIds: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TString>;
+        producerNodeIds: import("@sinclair/typebox").TArray<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
         done: import("@sinclair/typebox").TBoolean;
         autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
         data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
     }>>;
-    _id: import("@sinclair/typebox").TString;
-    createdAt: import("@sinclair/typebox").TString;
+    _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
     inputItems: import("@sinclair/typebox").TArray<TObject<{
-        itemId: import("@sinclair/typebox").TString;
+        itemId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         position: import("@sinclair/typebox").TInteger;
-        nodeId: import("@sinclair/typebox").TString;
+        nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         outputChannel: import("@sinclair/typebox").TString;
         inputChannel: import("@sinclair/typebox").TString;
     }>>;
     depth: import("@sinclair/typebox").TInteger;
-    taskId: import("@sinclair/typebox").TString;
-    flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
-    lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>>;
+    taskId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>;
+    lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>>>;
     done: import("@sinclair/typebox").TBoolean;
-    consumerId: import("@sinclair/typebox").TString;
-    workerId: import("@sinclair/typebox").TString;
+    consumerId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    workerId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     numAvailable: import("@sinclair/typebox").TInteger;
     numTaken: import("@sinclair/typebox").TInteger;
     allTaken: import("@sinclair/typebox").TBoolean;

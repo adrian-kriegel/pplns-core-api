@@ -2,7 +2,8 @@
 import { Static, Type } from '@unologin/typebox-extended/typebox';
 
 import { date, objectId } from '@unologin/server-common/lib/schemas/general';
-import { TObject, TProperties } from '@sinclair/typebox';
+
+import type { TObject, TProperties } from '@sinclair/typebox';
 
 const writeType = <T extends TProperties>(schema : TObject<T>) => 
   Type.Omit(schema, ['_id', 'createdAt'])
@@ -234,7 +235,7 @@ export const dataItemQuery = Type.Object(
     taskId: Type.Optional(objectId),
     nodeId: Type.Optional(objectId),
     done: Type.Optional(Type.Boolean()),
-    flowId: Type.Optional(Type.Boolean()),
+    flowId: Type.Optional(flowIdSchema),
   },
 );
 
@@ -302,4 +303,3 @@ export const bundleRead = Type.Object(
 
 export type Bundle = Static<typeof bundle>;
 export type BundleRead = Static<typeof bundleRead>;
-

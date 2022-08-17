@@ -1,0 +1,15 @@
+{
+    "compilerOptions": 
+    {
+      "target": "es2019",
+      "module": "commonjs",
+      "declaration": false,
+      "outDir": "./build",
+      "strict": false,
+      "esModuleInterop": true,
+      "allowJs": true
+    },
+    "include": ["serialize.d.ts", "../src/pipeline/schemas.ts"],
+    "exclude": ["node_modules", "**/__tests__/*", "test/**/*"]
+  }
+  

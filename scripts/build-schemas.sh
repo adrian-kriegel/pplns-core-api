@@ -12,8 +12,19 @@ PACKAGE_VERSION=$(cat package.json \
   | awk -F: '{ print $2 }' \
   | sed 's/[",]//g')
 
-# build the typescript files
-npx tsc ./src/pipeline/schemas.ts --outDir ./schemas/ --declaration
+# build the typescript files for the server-side schemas
+npx tsc ./src/pipeline/schemas.ts \
+  --outDir ./schemas/ \
+  --declaration
+
+mv schemas/schemas.d.ts schemas/deserialized.d.ts
+mv schemas/schemas.js schemas/deserialized.js
+
+# build the typescript files for the client-side schemas
+npx tsc \
+  --outDir ./schemas/ \
+  --declaration \
+  --project schemas/tsconfig.serialized.json
 
 # TODO: export the raw schemas as .json files
 
