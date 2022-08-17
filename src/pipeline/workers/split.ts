@@ -9,6 +9,7 @@ import { IInternalWorker } from '../internal-workers';
 export default class Split
 implements IInternalWorker
 {
+  readonly key = 'split';
   readonly title = 'Split';
   readonly description = 'Splits up provided item into multiple items.';
   

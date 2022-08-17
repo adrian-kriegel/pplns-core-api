@@ -8,6 +8,8 @@ import { IInternalWorker } from '../internal-workers';
 export default class DataSource
 implements IInternalWorker
 {
+  readonly key = 'data-source';
+  
   readonly title = 'Data Source';
 
   readonly description = 

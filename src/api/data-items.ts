@@ -1,13 +1,9 @@
 
-import {
-  objectId,
-} from '@unologin/server-common/lib/schemas/general';
 
 import {
   collectionToGetHandler, removeUndefined,
 } from '@unologin/server-common/lib/util/rest-util';
 
-import { Type, Static } from '@unologin/typebox-extended/typebox';
 import { badRequest, forbidden } from 'express-lemur/lib/errors';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
@@ -19,23 +15,11 @@ import { upsertBundle } from '../pipeline/worker';
 import * as schemas from '../pipeline/schemas';
 import { dataItems, nodes } from '../storage/database';
 
-const dataItemQuery = Type.Object(
-  {
-    _id: Type.Optional(objectId),
-    taskId: objectId,
-    nodeId: objectId,
-    done: Type.Optional(Type.Boolean()),
-    flowId: Type.Optional(Type.Boolean()),
-  },
-);
-
-type DataItemQuery = Static<typeof dataItemQuery>;
-
 /**
  * Pushes item into its destination bundles.
  * Updates bundle status if bundle is full.
  * 
- * TODO: handle the edge case where the same output is connected to two inputs
+ * TODO: handle the edge case where the same output is connected to two inputs on the same node
  * 
  * @param item dataitem
  * 
@@ -47,7 +31,6 @@ export async function onItemDone(
 {
   const { nodeId, outputChannel } = item;
 
-  // TODO: find bundles in one go using aggregation
   const consumers = await nodes.aggregate<schemas.Node>(
     [
       {
@@ -173,6 +156,7 @@ export default resource(
   {
     route: 
     [
+      '/outputs',
       '/tasks/:taskId/nodes/:nodeId/outputs',
     ],
 
@@ -182,7 +166,7 @@ export default resource(
     {
       read: schemas.dataItem,
       write: schemas.dataItemWrite,
-      query: dataItemQuery,
+      query: schemas.dataItemQuery,
     },
 
     accessControl: async ({ taskId, _id }, _0, { method }, res) => 
@@ -206,7 +190,7 @@ export default resource(
 
     getOne: (_0, _1, res) => res.locals.targetResource,
 
-    get: collectionToGetHandler<DataItemQuery, typeof schemas.dataItem>(
+    get: collectionToGetHandler<schemas.DataItemQuery, typeof schemas.dataItem>(
       dataItems,
       schemas.dataItem,
       (q) => removeUndefined(q),

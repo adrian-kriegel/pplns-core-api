@@ -8,6 +8,8 @@ import { IInternalWorker } from '../internal-workers';
 export default class DataSink
 implements IInternalWorker
 {
+  readonly key = 'data-sink';
+
   readonly title = 'Sink';
 
   readonly description = 

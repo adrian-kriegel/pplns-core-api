@@ -15,6 +15,7 @@ import { simplePatch } from '../util/rest-util';
 const workerQuery = Type.Object(
   {
     _id: Type.Optional(objectId),
+    key: Type.Optional(Type.String()),
   },
 );
 
@@ -57,5 +58,21 @@ export default resource(
     },
 
     patch: (q, doc) => simplePatch(workers, q, doc),
+
+    put: async (q, doc) => 
+    {
+      const result = await workers.findOneAndUpdate(
+        removeUndefined(q),
+        {
+          $set: doc,
+        },
+        {
+          upsert: true,
+          returnDocument: 'after',
+        },
+      );
+
+      return result.value; 
+    },
   },
 );

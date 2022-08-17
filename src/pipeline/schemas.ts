@@ -26,15 +26,8 @@ export const task = Type.Object(
   },
 );
 
-
-export const dataTypeDefinition = Type.Object(
-  {
-    description: Type.String(),
-
-    // TODO: jsonschema meta schema
-    schema: Type.Optional(Type.Any()),
-  },
-);
+// TODO: this should be JSON schema meta schema
+export const dataTypeDefinition = Type.Any();
 
 export type DataTypeDefinition = Static<typeof dataTypeDefinition>;
 
@@ -51,6 +44,9 @@ export const worker = Type.Object(
     _id: objectId,
 
     createdAt: date,
+
+    // unique key for each worker
+    key: Type.String(),
 
     // human readable title and description
     title: Type.String(),
@@ -199,8 +195,51 @@ export const dataItemWrite = Type.Omit(
   ['taskId', 'nodeId', 'producerNodeIds'],
 );
 
-export type DataItem = Static<typeof dataItem>;
-export type DataItemWrite = Static<typeof dataItemWrite>;
+// generic part of the DataItem type
+type DataItemGeneric<T, C> = 
+{
+  data: T[];
+  outputChannel: C;
+};
+
+export type DataItem<T=any, C = string> = 
+  Omit<Static<typeof dataItem>, keyof DataItemGeneric<T, C>> &
+  DataItemGeneric<T, C>
+;
+
+export type DataItemWrite<T=any, C = string> = 
+  Omit<Static<typeof dataItemWrite>, keyof DataItemGeneric<T, C>> & 
+  DataItemGeneric<T, C>
+;
+
+export type WorkerDataType<
+  IO extends 'inputs' | 'outputs',
+  W extends Pick<Worker, IO>,
+  C extends keyof W[IO]
+> = Static<W[IO][C]>;
+
+export type DataInput<W extends WorkerWrite, C extends keyof W['inputs']> =
+  WorkerDataType<'inputs', W, C>
+;
+
+export type DataOutput<
+  W extends WorkerWrite, 
+  C extends keyof W['outputs']
+> = WorkerDataType<'outputs', W, C>;
+
+
+export const dataItemQuery = Type.Object(
+  {
+    _id: Type.Optional(objectId),
+    taskId: Type.Optional(objectId),
+    nodeId: Type.Optional(objectId),
+    done: Type.Optional(Type.Boolean()),
+    flowId: Type.Optional(Type.Boolean()),
+  },
+);
+
+export type DataItemQuery = Static<typeof dataItemQuery>;
+
 
 const bundleProps = 
 {
@@ -230,7 +269,7 @@ const bundleProps =
   flowId: flowIdSchema,
 
   // all flowIds from the flowStack of all items in this bundle
-  lowerFlowIds: Type.Optional(Type.Array(objectId)),
+  lowerFlowIds: Type.Optional(Type.Array(flowIdSchema)),
 
   // true iff all required data items are done
   done: Type.Boolean(),

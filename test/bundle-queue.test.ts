@@ -107,7 +107,12 @@ describe('Bundle API queue system', () =>
     async ()=> 
     {
       // reset all bundles to be unconsumed
-      await bundles.updateMany({ }, { $set: { numTaken: 0, allTaken: false } });
+      await bundles.updateMany(
+        { },
+        { 
+          $set: { numTaken: 0, allTaken: false },
+        },
+      );
 
       const query = 
       {

@@ -1,0 +1,9 @@
+{
+  "name": "@pplns/schemas",
+  "version": "0.0.1",
+  "description": "Schemas for the pplns.",
+  "main": "schemas.js",
+  "author": "Adrian Kriegel",
+  "license": "MIT",
+  "private": true
+}

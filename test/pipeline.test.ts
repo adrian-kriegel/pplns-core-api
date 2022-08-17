@@ -37,6 +37,8 @@ beforeAll(async () =>
     {
       createdAt: new Date(),
 
+      key: 'worker1',
+      
       title: '',
       description: '',
 

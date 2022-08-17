@@ -10,6 +10,8 @@ import { IInternalWorker } from '../internal-workers';
 export default class Join
 implements IInternalWorker
 {
+  readonly key = 'join';
+
   readonly title = 'Join';
 
   readonly description = 
