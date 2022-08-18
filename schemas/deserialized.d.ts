@@ -232,6 +232,17 @@ export declare const bundleRead: TObject<{
     numTaken: import("@sinclair/typebox").TInteger;
     allTaken: import("@sinclair/typebox").TBoolean;
 }>;
+export declare const bundleQuery: TObject<{
+    _id: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
+    taskId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
+    consumerId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
+    workerId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
+    done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
+    flowId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
+    limit: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
+    consume: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
+}>;
+export declare type BundleQuery = Static<typeof bundleQuery>;
 export declare type Bundle = Static<typeof bundle>;
 export declare type BundleRead = Static<typeof bundleRead>;
 export {};

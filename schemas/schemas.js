@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
+exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
 const typebox_1 = require("@unologin/typebox-extended/typebox");
 const general_1 = require("@unologin/server-common/lib/schemas/general");
 const writeType = (schema) => typebox_1.Type.Omit(schema, ['_id', 'createdAt']);
@@ -141,4 +141,15 @@ exports.bundle = typebox_1.Type.Object(bundleProps);
 exports.bundleRead = typebox_1.Type.Object({
     ...bundleProps,
     items: typebox_1.Type.Array(exports.dataItem),
+});
+exports.bundleQuery = typebox_1.Type.Object({
+    _id: typebox_1.Type.Optional(general_1.objectId),
+    taskId: typebox_1.Type.Optional(general_1.objectId),
+    consumerId: typebox_1.Type.Optional(general_1.objectId),
+    workerId: typebox_1.Type.Optional(general_1.objectId),
+    done: typebox_1.Type.Optional(typebox_1.Type.Boolean()),
+    flowId: typebox_1.Type.Optional(general_1.objectId),
+    limit: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1 })),
+    // set to true if returned bundles should be consumed
+    consume: typebox_1.Type.Optional(typebox_1.Type.Boolean()),
 });

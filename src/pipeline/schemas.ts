@@ -301,5 +301,22 @@ export const bundleRead = Type.Object(
   },
 );
 
+
+export const bundleQuery = Type.Object(
+  {
+    _id: Type.Optional(objectId),
+    taskId: Type.Optional(objectId),
+    consumerId: Type.Optional(objectId),
+    workerId: Type.Optional(objectId),
+    done: Type.Optional(Type.Boolean()),
+    flowId: Type.Optional(objectId),
+    limit: Type.Optional(Type.Integer({ minimum: 1 })),
+    // set to true if returned bundles should be consumed
+    consume: Type.Optional(Type.Boolean()),
+  },
+);
+
+export type BundleQuery = Static<typeof bundleQuery>;
+
 export type Bundle = Static<typeof bundle>;
 export type BundleRead = Static<typeof bundleRead>;

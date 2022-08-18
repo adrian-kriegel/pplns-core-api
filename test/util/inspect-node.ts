@@ -53,6 +53,7 @@ export class InspectNode
   {
     this.workerId ||= (await workers.insertOne(
       {
+        key: 'inspect worker',
         title: '',
         description: '',
         createdAt: new Date(),

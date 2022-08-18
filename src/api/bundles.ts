@@ -1,14 +1,9 @@
 
-
 import {
-  objectId,
-} from '@unologin/server-common/lib/schemas/general';
-
-import {
-  collectionToGetHandler, defaultSort, removeUndefined,
+  collectionToGetHandler,
+  defaultSort,
+  removeUndefined,
 } from '@unologin/server-common/lib/util/rest-util';
-
-import { Type, Static } from '@unologin/typebox-extended/typebox';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
 import { Collection } from 'mongodb';
@@ -18,25 +13,11 @@ import * as schemas from '../pipeline/schemas';
 import { bundles, dataItems } from '../storage/database';
 
 import { mapMask } from '@unologin/server-common/lib/util/util';
-
-const bundleQuery = Type.Object(
-  {
-    _id: Type.Optional(objectId),
-    taskId: Type.Optional(objectId),
-    consumerId: Type.Optional(objectId),
-    workerId: Type.Optional(objectId),
-    done: Type.Optional(Type.Boolean()),
-    flowId: Type.Optional(objectId),
-    limit: Type.Optional(Type.Integer({ minimum: 1 })),
-    // set to true if returned bundles should be consumed
-    consume: Type.Optional(Type.Boolean()),
-  },
-);
-
-type BundleQuery = Static<typeof bundleQuery>;
+import { Type } from '@sinclair/typebox';
+import { notFound } from 'express-lemur/lib/errors';
 
 const getBundlesWithUnorderedItems = 
-collectionToGetHandler<BundleQuery, typeof schemas.bundleRead>(
+collectionToGetHandler<schemas.BundleQuery, typeof schemas.bundleRead>(
   bundles as Collection<any>,
   schemas.bundleRead,
   // remove all items from query that do not appear in the bundle schema (consume, limit, etc.)
@@ -87,6 +68,7 @@ export default resource(
     route: [
       '/tasks/:taskId/nodes/:consumerId/inputs',
       '/workers/:workerId/inputs',
+      '/nodes/:consumerId/inputs',
     ],
 
     id: '_id',
@@ -94,10 +76,43 @@ export default resource(
     schemas:
     {
       read: schemas.bundleRead,
-      query: bundleQuery,
+      query: schemas.bundleQuery,
+      write: Type.Object({}),
     },
 
     accessControl: ({ taskId }, _0, _1, res) => checkTaskAccess(taskId, res),
+
+    /**
+     * Put a bundle back to be consumed again.
+     * This may be done on error or timeout given that no items have been produced from this input.
+     * 
+     * TODO: make sure that either no data items have been emitted 
+     * with the same flowId and depth or that said items are not "done" yet
+     * 
+     * TODO: test
+     * 
+     * @param param0 query
+     * @returns _id
+     */
+    put: async ({ _id }) => 
+    {
+
+      const bundle = await bundles.updateOne(
+        { _id },
+        {
+          $inc: { numTaken: -1 },
+          $set: { allTaken: false },
+        },
+      );
+
+      if (bundle.matchedCount !== 1)
+      {
+        throw notFound()
+          .msg('Bundle not found.');
+      }
+
+      return _id as any;
+    },
 
     get: async (...args) => 
     { 
