@@ -4,4 +4,5 @@
 yarn lint
 yarn test
 
-yarn build-schemas
+yarn build-schemas && git add schemas
+yarn build-python-types && git add python-types

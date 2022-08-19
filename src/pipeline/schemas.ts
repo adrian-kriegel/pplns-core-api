@@ -121,7 +121,10 @@ const nodeProps =
 
 export const node = Type.Object(nodeProps);
 
-export const nodeWrite = Type.Omit(writeType(node), ['taskId']);
+export const nodeWrite = Type.Omit(
+  writeType<typeof nodeProps>(node), 
+  ['taskId'],
+);
 
 export const nodeRead = Type.Object(
   {
@@ -192,8 +195,8 @@ export const dataItem = Type.Object(
 );
 
 export const dataItemWrite = Type.Omit(
-  writeType(dataItem),
-  ['taskId', 'nodeId', 'producerNodeIds'],
+  dataItem,
+  ['taskId', 'nodeId', 'producerNodeIds', 'createdAt', '_id'],
 );
 
 // generic part of the DataItem type

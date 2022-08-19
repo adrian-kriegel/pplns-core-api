@@ -1,0 +1,38 @@
+{
+  "$id": "@ppln/schemas/task.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "params": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {}
+      }
+    },
+    "owners": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "_id",
+    "createdAt",
+    "title",
+    "params",
+    "owners"
+  ]
+}

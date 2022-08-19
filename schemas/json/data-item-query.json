@@ -1,0 +1,29 @@
+{
+  "$id": "@ppln/schemas/data-item-query.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "taskId": {
+      "type": "string"
+    },
+    "nodeId": {
+      "type": "string"
+    },
+    "done": {
+      "type": "boolean"
+    },
+    "flowId": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    }
+  }
+}

@@ -104,7 +104,7 @@ var dataItemProps = {
     data: typebox_1.Type.Array(typebox_1.Type.Any())
 };
 exports.dataItem = typebox_1.Type.Object(__assign(__assign({}, dataItemProps), { flowId: typebox_1.Type.Optional(dataItemProps.flowId), flowStack: typebox_1.Type.Optional(dataItemProps.flowStack) }));
-exports.dataItemWrite = typebox_1.Type.Omit(writeType(exports.dataItem), ['taskId', 'nodeId', 'producerNodeIds']);
+exports.dataItemWrite = typebox_1.Type.Omit(exports.dataItem, ['taskId', 'nodeId', 'producerNodeIds', 'createdAt', '_id']);
 exports.dataItemQuery = typebox_1.Type.Object({
     _id: typebox_1.Type.Optional(general_1.objectId),
     taskId: typebox_1.Type.Optional(general_1.objectId),

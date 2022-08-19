@@ -1,0 +1,1023 @@
+{
+  "type": "object",
+  "properties": {
+    "@ppln/schemas/task.json": {
+      "$id": "@ppln/schemas/task.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "_id",
+        "createdAt",
+        "title",
+        "params",
+        "owners"
+      ]
+    },
+    "@ppln/schemas/data-type-definition.json": {
+      "$id": "@ppln/schemas/data-type-definition.json"
+    },
+    "@ppln/schemas/data-type-record.json": {
+      "$id": "@ppln/schemas/data-type-record.json",
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {}
+      }
+    },
+    "@ppln/schemas/worker.json": {
+      "$id": "@ppln/schemas/worker.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "inputs": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "outputs": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        }
+      },
+      "required": [
+        "_id",
+        "createdAt",
+        "key",
+        "title",
+        "inputs",
+        "outputs",
+        "params"
+      ]
+    },
+    "@ppln/schemas/worker-write.json": {
+      "$id": "@ppln/schemas/worker-write.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "inputs": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "outputs": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        }
+      },
+      "required": [
+        "key",
+        "title",
+        "inputs",
+        "outputs",
+        "params"
+      ]
+    },
+    "@ppln/schemas/task-write.json": {
+      "$id": "@ppln/schemas/task-write.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "title",
+        "params",
+        "owners"
+      ]
+    },
+    "@ppln/schemas/node.json": {
+      "$id": "@ppln/schemas/node.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "nodeId": {
+                "type": "string"
+              },
+              "outputChannel": {
+                "type": "string"
+              },
+              "inputChannel": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "nodeId",
+              "outputChannel",
+              "inputChannel"
+            ]
+          }
+        },
+        "numExecutions": {
+          "minimum": 1,
+          "default": 1,
+          "type": "integer"
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "workerId": {
+          "type": "string"
+        },
+        "internalWorker": {
+          "type": "string"
+        },
+        "position": {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ]
+        }
+      },
+      "required": [
+        "_id",
+        "createdAt",
+        "taskId",
+        "inputs",
+        "position"
+      ]
+    },
+    "@ppln/schemas/node-write.json": {
+      "$id": "@ppln/schemas/node-write.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "nodeId": {
+                "type": "string"
+              },
+              "outputChannel": {
+                "type": "string"
+              },
+              "inputChannel": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "nodeId",
+              "outputChannel",
+              "inputChannel"
+            ]
+          }
+        },
+        "numExecutions": {
+          "minimum": 1,
+          "default": 1,
+          "type": "integer"
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "workerId": {
+          "type": "string"
+        },
+        "internalWorker": {
+          "type": "string"
+        },
+        "position": {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ]
+        }
+      },
+      "required": [
+        "inputs",
+        "position"
+      ]
+    },
+    "@ppln/schemas/node-read.json": {
+      "$id": "@ppln/schemas/node-read.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "nodeId": {
+                "type": "string"
+              },
+              "outputChannel": {
+                "type": "string"
+              },
+              "inputChannel": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "nodeId",
+              "outputChannel",
+              "inputChannel"
+            ]
+          }
+        },
+        "numExecutions": {
+          "minimum": 1,
+          "default": 1,
+          "type": "integer"
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "workerId": {
+          "type": "string"
+        },
+        "internalWorker": {
+          "type": "string"
+        },
+        "position": {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ]
+        },
+        "worker": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string"
+                },
+                "key": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "inputs": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^.*$": {}
+                  }
+                },
+                "outputs": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^.*$": {}
+                  }
+                },
+                "params": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^.*$": {}
+                  }
+                }
+              },
+              "required": [
+                "_id",
+                "createdAt",
+                "key",
+                "title",
+                "inputs",
+                "outputs",
+                "params"
+              ]
+            },
+            {
+              "additionalProperties": false,
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "inputs": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^.*$": {}
+                  }
+                },
+                "outputs": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^.*$": {}
+                  }
+                },
+                "params": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^.*$": {}
+                  }
+                }
+              },
+              "required": [
+                "key",
+                "title",
+                "inputs",
+                "outputs",
+                "params"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "_id",
+        "createdAt",
+        "taskId",
+        "inputs",
+        "position",
+        "worker"
+      ]
+    },
+    "@ppln/schemas/flow-id-schema.json": {
+      "$id": "@ppln/schemas/flow-id-schema.json",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "@ppln/schemas/data-item.json": {
+      "$id": "@ppln/schemas/data-item.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string"
+        },
+        "nodeId": {
+          "type": "string"
+        },
+        "outputChannel": {
+          "type": "string"
+        },
+        "flowId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "flowStack": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "flowId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "splitNodeId": {
+                "type": "string"
+              },
+              "numEmitted": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "flowId",
+              "splitNodeId",
+              "numEmitted"
+            ]
+          }
+        },
+        "producerNodeIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "done": {
+          "type": "boolean"
+        },
+        "autoDoneAfter": {
+          "type": "integer"
+        },
+        "data": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": [
+        "_id",
+        "createdAt",
+        "taskId",
+        "nodeId",
+        "outputChannel",
+        "producerNodeIds",
+        "done",
+        "data"
+      ]
+    },
+    "@ppln/schemas/data-item-write.json": {
+      "$id": "@ppln/schemas/data-item-write.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "outputChannel": {
+          "type": "string"
+        },
+        "flowId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "flowStack": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "flowId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "splitNodeId": {
+                "type": "string"
+              },
+              "numEmitted": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "flowId",
+              "splitNodeId",
+              "numEmitted"
+            ]
+          }
+        },
+        "done": {
+          "type": "boolean"
+        },
+        "autoDoneAfter": {
+          "type": "integer"
+        },
+        "data": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": [
+        "outputChannel",
+        "done",
+        "data"
+      ]
+    },
+    "@ppln/schemas/data-item-query.json": {
+      "$id": "@ppln/schemas/data-item-query.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string"
+        },
+        "nodeId": {
+          "type": "string"
+        },
+        "done": {
+          "type": "boolean"
+        },
+        "flowId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    "@ppln/schemas/bundle.json": {
+      "$id": "@ppln/schemas/bundle.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "inputItems": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "type": "string"
+              },
+              "position": {
+                "type": "integer"
+              },
+              "nodeId": {
+                "type": "string"
+              },
+              "outputChannel": {
+                "type": "string"
+              },
+              "inputChannel": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "itemId",
+              "position",
+              "nodeId",
+              "outputChannel",
+              "inputChannel"
+            ]
+          }
+        },
+        "depth": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "taskId": {
+          "type": "string"
+        },
+        "flowId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "lowerFlowIds": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "done": {
+          "type": "boolean"
+        },
+        "consumerId": {
+          "type": "string"
+        },
+        "workerId": {
+          "type": "string"
+        },
+        "numAvailable": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "numTaken": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "allTaken": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "_id",
+        "createdAt",
+        "inputItems",
+        "depth",
+        "taskId",
+        "flowId",
+        "done",
+        "consumerId",
+        "workerId",
+        "numAvailable",
+        "numTaken",
+        "allTaken"
+      ]
+    },
+    "@ppln/schemas/bundle-read.json": {
+      "$id": "@ppln/schemas/bundle-read.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "inputItems": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "type": "string"
+              },
+              "position": {
+                "type": "integer"
+              },
+              "nodeId": {
+                "type": "string"
+              },
+              "outputChannel": {
+                "type": "string"
+              },
+              "inputChannel": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "itemId",
+              "position",
+              "nodeId",
+              "outputChannel",
+              "inputChannel"
+            ]
+          }
+        },
+        "depth": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "taskId": {
+          "type": "string"
+        },
+        "flowId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "lowerFlowIds": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "done": {
+          "type": "boolean"
+        },
+        "consumerId": {
+          "type": "string"
+        },
+        "workerId": {
+          "type": "string"
+        },
+        "numAvailable": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "numTaken": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "allTaken": {
+          "type": "boolean"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "taskId": {
+                "type": "string"
+              },
+              "nodeId": {
+                "type": "string"
+              },
+              "outputChannel": {
+                "type": "string"
+              },
+              "flowId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "flowStack": {
+                "type": "array",
+                "items": {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "flowId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "splitNodeId": {
+                      "type": "string"
+                    },
+                    "numEmitted": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "flowId",
+                    "splitNodeId",
+                    "numEmitted"
+                  ]
+                }
+              },
+              "producerNodeIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "done": {
+                "type": "boolean"
+              },
+              "autoDoneAfter": {
+                "type": "integer"
+              },
+              "data": {
+                "type": "array",
+                "items": {}
+              }
+            },
+            "required": [
+              "_id",
+              "createdAt",
+              "taskId",
+              "nodeId",
+              "outputChannel",
+              "producerNodeIds",
+              "done",
+              "data"
+            ]
+          }
+        }
+      },
+      "required": [
+        "_id",
+        "createdAt",
+        "inputItems",
+        "depth",
+        "taskId",
+        "flowId",
+        "done",
+        "consumerId",
+        "workerId",
+        "numAvailable",
+        "numTaken",
+        "allTaken",
+        "items"
+      ]
+    },
+    "@ppln/schemas/bundle-query.json": {
+      "$id": "@ppln/schemas/bundle-query.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string"
+        },
+        "consumerId": {
+          "type": "string"
+        },
+        "workerId": {
+          "type": "string"
+        },
+        "done": {
+          "type": "boolean"
+        },
+        "flowId": {
+          "type": "string"
+        },
+        "limit": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "consume": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

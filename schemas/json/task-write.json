@@ -1,0 +1,30 @@
+{
+  "$id": "@ppln/schemas/task-write.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "params": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {}
+      }
+    },
+    "owners": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "title",
+    "params",
+    "owners"
+  ]
+}

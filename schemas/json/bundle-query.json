@@ -1,0 +1,32 @@
+{
+  "$id": "@ppln/schemas/bundle-query.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "taskId": {
+      "type": "string"
+    },
+    "consumerId": {
+      "type": "string"
+    },
+    "workerId": {
+      "type": "string"
+    },
+    "done": {
+      "type": "boolean"
+    },
+    "flowId": {
+      "type": "string"
+    },
+    "limit": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "consume": {
+      "type": "boolean"
+    }
+  }
+}

@@ -139,7 +139,7 @@ export declare const dataItem: TObject<{
     autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
 }>;
-export declare const dataItemWrite: TObject<Omit<Omit<{
+export declare const dataItemWrite: TObject<Omit<{
     flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
     flowStack: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<TObject<{
         flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
@@ -155,7 +155,7 @@ export declare const dataItemWrite: TObject<Omit<Omit<{
     done: import("@sinclair/typebox").TBoolean;
     autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
-}, "_id" | "createdAt">, "taskId" | "nodeId" | "producerNodeIds">>;
+}, "_id" | "createdAt" | "taskId" | "nodeId" | "producerNodeIds">>;
 declare type DataItemGeneric<T, C> = {
     data: T[];
     outputChannel: C;

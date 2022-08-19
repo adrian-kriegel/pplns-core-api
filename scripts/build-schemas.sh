@@ -26,7 +26,7 @@ npx tsc \
   --declaration \
   --project schemas/tsconfig.serialized.json
 
-# TODO: export the raw schemas as .json files
+node scripts/export-json-schemas.js
 
 # go to the schemas package
 cd schemas

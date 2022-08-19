@@ -1,0 +1,41 @@
+{
+  "$id": "@ppln/schemas/worker-write.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {}
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {}
+      }
+    },
+    "params": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {}
+      }
+    }
+  },
+  "required": [
+    "key",
+    "title",
+    "inputs",
+    "outputs",
+    "params"
+  ]
+}

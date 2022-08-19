@@ -1,0 +1,108 @@
+{
+  "$id": "@ppln/schemas/bundle.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "inputItems": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer"
+          },
+          "nodeId": {
+            "type": "string"
+          },
+          "outputChannel": {
+            "type": "string"
+          },
+          "inputChannel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "itemId",
+          "position",
+          "nodeId",
+          "outputChannel",
+          "inputChannel"
+        ]
+      }
+    },
+    "depth": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "taskId": {
+      "type": "string"
+    },
+    "flowId": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "lowerFlowIds": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "done": {
+      "type": "boolean"
+    },
+    "consumerId": {
+      "type": "string"
+    },
+    "workerId": {
+      "type": "string"
+    },
+    "numAvailable": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "numTaken": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "allTaken": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "_id",
+    "createdAt",
+    "inputItems",
+    "depth",
+    "taskId",
+    "flowId",
+    "done",
+    "consumerId",
+    "workerId",
+    "numAvailable",
+    "numTaken",
+    "allTaken"
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "$id": "@ppln/schemas/data-item.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "taskId": {
+      "type": "string"
+    },
+    "nodeId": {
+      "type": "string"
+    },
+    "outputChannel": {
+      "type": "string"
+    },
+    "flowId": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "flowStack": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "flowId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "splitNodeId": {
+            "type": "string"
+          },
+          "numEmitted": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "flowId",
+          "splitNodeId",
+          "numEmitted"
+        ]
+      }
+    },
+    "producerNodeIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "done": {
+      "type": "boolean"
+    },
+    "autoDoneAfter": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "array",
+      "items": {}
+    }
+  },
+  "required": [
+    "_id",
+    "createdAt",
+    "taskId",
+    "nodeId",
+    "outputChannel",
+    "producerNodeIds",
+    "done",
+    "data"
+  ]
+}

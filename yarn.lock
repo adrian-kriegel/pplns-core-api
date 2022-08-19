@@ -922,15 +922,15 @@
     uuid "^8.3.2"
     write-file-atomic "^3.0.3"
 
-"@sinclair/typebox@^0.23.4":
-  version "0.23.5"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.23.5.tgz#93f7b9f4e3285a7a9ade7557d9a8d36809cbc47d"
-  integrity sha512-AFBVi/iT4g20DHoujvMH1aEDn8fGJh4xsRGCP6d8RpLPMqsNPvW01Jcn0QysXTsg++/xj25NmJsGyH9xug/wKg==
+"@sinclair/typebox@0.23.4":
+  version "0.23.4"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.23.4.tgz#6ff93fd2585ce44f7481c9ff6af610fbb5de98a4"
+  integrity sha512-0/WqSvpVbCBAV1yPeko7eAczKbs78dNVAaX14quVlwOb2wxfKuXCx91h4NrEfkYK9zEnyVSW4JVI/trP3iS+Qg==
 
-"@sinclair/typebox@^0.24.1":
-  version "0.24.20"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.20.tgz#11a657875de6008622d53f56e063a6347c51a6dd"
-  integrity sha512-kVaO5aEFZb33nPMTZBxiPEkY+slxiPtqC7QX8f9B3eGOMBvEfuMfxp9DSTTCsRJPumPKjrge4yagyssO4q6qzQ==
+"@sinclair/typebox@^0.24.1", "@sinclair/typebox@^0.24.28":
+  version "0.24.28"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.28.tgz#15aa0b416f82c268b1573ab653e4413c965fe794"
+  integrity sha512-dgJd3HLOkLmz4Bw50eZx/zJwtBq65nms3N9VBYu5LTjJ883oBFkTyXRlCB/ZGGwqYpJJHA5zW2Ibhl5ngITfow==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -1483,10 +1483,9 @@
     superagent "^7.1.2"
 
 "@unologin/server-common@ssh://git@github.com:unologin/server-common":
-  version "2.12.0"
-  resolved "ssh://git@github.com:unologin/server-common#793fecb002fc54d4892152466de6aa0bfeea8436"
+  version "2.13.0"
+  resolved "ssh://git@github.com:unologin/server-common#f0c8df28a4d2f3ad0145ce436324bef22e8f77d6"
   dependencies:
-    "@sinclair/typebox" "^0.23.4"
     "@unologin/typebox-extended" "ssh://git@github.com:unologin/typebox-extended"
     express "^4.17.1"
     express-lemur "ssh://git@github.com:unologin/express-lemur"
@@ -1495,8 +1494,8 @@
     semver "^7.3.5"
 
 "@unologin/typebox-extended@ssh://git@github.com:unologin/typebox-extended":
-  version "0.0.1"
-  resolved "ssh://git@github.com:unologin/typebox-extended#aec3cc92dee1347b76e9fbb2c80c227a9c8ce79a"
+  version "0.0.2"
+  resolved "ssh://git@github.com:unologin/typebox-extended#68ef9500ed932df4242a83dc30e0ba721fc0c281"
 
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
@@ -6011,9 +6010,9 @@ levn@~0.3.0:
     type-check "~0.3.2"
 
 libphonenumber-js@^1.9.49:
-  version "1.10.11"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.10.11.tgz#0078756857bcc5c9dfe097123c6e04ea930e309b"
-  integrity sha512-ehoihx4HpRXO6FH/uJ0EnaEV4dVU+FDny+jv0S6k9JPyPsAIr0eXDAFvGRMBKE1daCtyHAaFSKCiuCxrOjVAzQ==
+  version "1.10.12"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.10.12.tgz#75ebe2f1887d12bbf45af5655fdb63f55f4ee05b"
+  integrity sha512-xTFBs3ipFQNmjCUkDj6ZzRJvs97IyazFHBKWtrQrLiYs0Zk0GANob1hkMRlQUQXbJrpQGwnI+/yU4oyD4ohvpw==
 
 lie@~3.3.0:
   version "3.3.0"
@@ -8898,6 +8897,12 @@ type@^2.0.0, type@^2.1.0, type@^2.5.0, type@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/type/-/type-2.6.0.tgz#3ca6099af5981d36ca86b78442973694278a219f"
   integrity sha512-eiDBDOmkih5pMbo9OqsqPRGMljLodLcwd5XD5JbtNB0o89xZAwynY9EdCDsJU7LtcVCClu9DvM7/0Ep1hYX3EQ==
+
+"typebox2python@ssh://git@github.com:unologin/typebox2python.git":
+  version "1.0.0"
+  resolved "ssh://git@github.com:unologin/typebox2python.git#2fc2f1568278f917cae9eb3fe4c5ed06cc04bf89"
+  dependencies:
+    husky "^8.0.1"
 
 typedarray-to-buffer@^3.1.5:
   version "3.1.5"

@@ -1,0 +1,67 @@
+{
+  "$id": "@ppln/schemas/node-write.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "inputs": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "nodeId": {
+            "type": "string"
+          },
+          "outputChannel": {
+            "type": "string"
+          },
+          "inputChannel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "nodeId",
+          "outputChannel",
+          "inputChannel"
+        ]
+      }
+    },
+    "numExecutions": {
+      "minimum": 1,
+      "default": 1,
+      "type": "integer"
+    },
+    "params": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {}
+      }
+    },
+    "workerId": {
+      "type": "string"
+    },
+    "internalWorker": {
+      "type": "string"
+    },
+    "position": {
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ]
+    }
+  },
+  "required": [
+    "inputs",
+    "position"
+  ]
+}

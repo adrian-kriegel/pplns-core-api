@@ -11,7 +11,8 @@
     "build": "sls package --stage=production",
     "deploy-dev": "sls deploy --stage=dev",
     "deploy-production": "sls deploy --stage=production",
-    "build-schemas": "sh ./scripts/build-schemas.sh"
+    "build-schemas": "sh ./scripts/build-schemas.sh",
+    "build-python-types": "node ./scripts/build-python-types.js"
   },
   "author": "Adrian Kriegel",
   "private": true,
@@ -43,11 +44,12 @@
     "ts-jest": "^26.5.6",
     "ts-loader": "^8.1.0",
     "ts-node-dev": "^1.1.6",
+    "typebox2python": "ssh://git@github.com:unologin/typebox2python.git",
     "typescript": "^4.7.4",
     "webpack": "^5.37.1"
   },
   "dependencies": {
-    "@sinclair/typebox": "^0.23.4",
+    "@sinclair/typebox": "0.23.4",
     "@unologin/node-api": "^2.2.3",
     "@unologin/server-common": "ssh://git@github.com:unologin/server-common",
     "@unologin/typebox-extended": "ssh://git@github.com:unologin/typebox-extended",
@@ -58,5 +60,8 @@
     "express-lemur": "ssh://git@github.com:unologin/express-lemur",
     "mongodb": "^4.8.0",
     "serverless-http": "^2.7.0"
+  },
+  "resolutions": {
+    "@sinclair/typebox": "^0.24.28"
   }
 }
