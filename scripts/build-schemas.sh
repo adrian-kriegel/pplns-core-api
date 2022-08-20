@@ -6,11 +6,7 @@
 #
 
 # get the current version of the pplns package
-PACKAGE_VERSION=$(cat package.json \
-  | grep version \
-  | head -1 \
-  | awk -F: '{ print $2 }' \
-  | sed 's/[",]//g')
+PACKAGE_VERSION=$(scripts/get-version.sh)
 
 # build the typescript files for the server-side schemas
 npx tsc ./src/pipeline/schemas.ts \

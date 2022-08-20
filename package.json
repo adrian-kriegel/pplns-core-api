@@ -12,7 +12,7 @@
     "deploy-dev": "sls deploy --stage=dev",
     "deploy-production": "sls deploy --stage=production",
     "build-schemas": "sh ./scripts/build-schemas.sh",
-    "build-python-types": "node ./scripts/build-python-types.js"
+    "build-python-types": "sh scripts/build-python-types.sh"
   },
   "author": "Adrian Kriegel",
   "private": true,

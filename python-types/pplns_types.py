@@ -266,3 +266,4 @@ BundleQuery = typing.TypedDict('BundleQuery',{
 'limit': typing.Optional[int],
 'consume': typing.Optional[bool]
 })
+version = '0.0.1'
