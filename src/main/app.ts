@@ -17,6 +17,8 @@ import nodes from '../api/nodes';
 import tasks from '../api/tasks';
 import workers from '../api/workers';
 
+import requestLogger from '../middleware/request-logger';
+
 const app = express();
 
 export = app;
@@ -31,6 +33,11 @@ app.use(cookieParser());
 app.use(unologin);
 
 app.use(express.json());
+
+if (process.env.PRINT_ALL_REQUESTS)
+{
+  app.use(requestLogger);
+}
 
 const restAPI = new RestRouter('rest');
 
