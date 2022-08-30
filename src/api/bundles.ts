@@ -69,6 +69,7 @@ export default resource(
       '/tasks/:taskId/nodes/:consumerId/inputs',
       '/workers/:workerId/inputs',
       '/nodes/:consumerId/inputs',
+      '/bundles',
     ],
 
     id: '_id',
