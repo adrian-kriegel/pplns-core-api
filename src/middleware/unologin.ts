@@ -12,13 +12,6 @@ const {
   logoutHandler,
 } = unologin.express;
 
-unologin.setup(
-  {
-    apiKey: process.env.UNOLOGIN_API_KEY,
-    cookiesDomain: process.env.UNOLOGIN_COOKIES_DOMAIN,
-  },
-);
-
 // disable secure cookies when running locally
 if (process.env.UNOLOGIN_ENV === 'local')
 {
@@ -78,6 +71,13 @@ if (process.env.DEBUG_DISABLE_AUTH === 'true')
 }
 else 
 {
+  unologin.setup(
+    {
+      apiKey: process.env.UNOLOGIN_API_KEY,
+      cookiesDomain: process.env.UNOLOGIN_COOKIES_DOMAIN,
+    },
+  );
+
   // always parse login 
   api.express().all('/*', parseLogin);
 }
