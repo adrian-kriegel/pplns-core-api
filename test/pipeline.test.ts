@@ -59,6 +59,7 @@ beforeAll(async () =>
   workerId = result.insertedId;
 });
 
+
 describe('Tasks & Nodes API', () => 
 {
   it('POST /tasks creates new task and sets creator as owner', async () => 
@@ -73,19 +74,19 @@ describe('Tasks & Nodes API', () =>
     };
 
     taskId = parseObjectId(
-    await tasksApi.post(
-      null as any,
-      task,
-      null as any,
-      mockRes,
-    ) as string,
+      (await tasksApi.post?.(
+        null as any,
+        task,
+        null as any,
+        mockRes,
+      ) as any)._id,
     );
 
-    const { results } = await tasksApi.get(
+    const { results } = await tasksApi.get?.(
       { _id: taskId },
-    null as any,
-    mockRes,
-    );
+      null as any,
+      mockRes,
+    ) as any;
 
     expect(results[0].owners)
       .toStrictEqual([userId]);
@@ -93,7 +94,7 @@ describe('Tasks & Nodes API', () =>
 
   it('POST /task/:taskId/nodes creates new nodes for task', async () => 
   {
-    srcNode1 = await nodesApi.post(
+    srcNode1 = await nodesApi.post?.(
       { taskId },
       {
         workerId,
@@ -108,7 +109,7 @@ describe('Tasks & Nodes API', () =>
     expect(srcNode1.taskId).toStrictEqual(taskId);
     expect(srcNode1._id).toBeDefined();
 
-    srcNode2 = await nodesApi.post(
+    srcNode2 = await nodesApi.post?.(
       { taskId },
       {
         workerId,
@@ -123,7 +124,7 @@ describe('Tasks & Nodes API', () =>
     expect(srcNode2.taskId).toStrictEqual(taskId);
     expect(srcNode2._id).toBeDefined();
 
-    outNode = await nodesApi.post(
+    outNode = await nodesApi.post?.(
       { taskId },
       {
         workerId,
@@ -181,7 +182,7 @@ describe('DataItems API', () =>
 {
   it('POST with done=true creates new data-item and bundle.', async () => 
   {
-    const item = await dataItemsApi.post(
+    const item = await dataItemsApi.post?.(
       { nodeId: srcNode2._id, taskId },
       {
         flowStack: [],
@@ -198,11 +199,11 @@ describe('DataItems API', () =>
       await dataItems.countDocuments(),
     ).toBe(1);
 
-    const { results: [bundle] } = await bundlesApi.get(
+    const { results: [bundle] } = await bundlesApi.get?.(
       { consumerId: outNode._id, taskId, flowId: flowId1 },
       null as any,
       mockRes,
-    );
+    ) as any;
     
 
     expect(bundle.inputItems.length).toBe(1);
@@ -217,7 +218,7 @@ describe('DataItems API', () =>
 
   it('POST with same {nodeId,bundle,output} will append data', async () => 
   {
-    await dataItemsApi.post(
+    await dataItemsApi.post?.(
       { nodeId: srcNode2._id, taskId },
       {
         flowStack: [],
@@ -231,7 +232,7 @@ describe('DataItems API', () =>
       mockRes,
     );
 
-    const item = await dataItemsApi.post(
+    const item = await dataItemsApi.post?.(
       { nodeId: srcNode2._id, taskId },
       {
         flowStack: [],
@@ -246,7 +247,7 @@ describe('DataItems API', () =>
     ) as DataItem;
 
     await expect(
-      () => dataItemsApi.post(
+      () => dataItemsApi.post?.(
         { nodeId: srcNode2._id, taskId },
         {
           flowStack: [],
@@ -272,7 +273,7 @@ describe('DataItems API', () =>
   {
     const bundlesCollection = await bundles.find({}).toArray();
 
-    await dataItemsApi.post(
+    await dataItemsApi.post?.(
       { nodeId: srcNode2._id, taskId },
       {
         flowStack: [],
@@ -297,7 +298,7 @@ describe('DataItems API', () =>
     'POST with done=true + different bundle creates new data-item and bundle.',
     async () => 
     {
-      const item = await dataItemsApi.post(
+      const item = await dataItemsApi.post?.(
         { nodeId: srcNode1._id, taskId },
         {
           flowStack: [],
@@ -317,18 +318,18 @@ describe('DataItems API', () =>
       const bundle = await bundles.findOne({ 'inputItems.itemId': item._id });
       
 
-      expect(bundle.inputItems.length).toBe(1);
-      expect(bundle.inputItems[0].itemId).toStrictEqual(item._id);
+      expect(bundle?.inputItems.length).toBe(1);
+      expect(bundle?.inputItems[0].itemId).toStrictEqual(item._id);
 
-      expect(bundle.done).toBe(false);
+      expect(bundle?.done).toBe(false);
 
-      expect(bundle.flowId).toStrictEqual(flowId2);
+      expect(bundle?.flowId).toStrictEqual(flowId2);
     },
   );
 
   it('POST with done=true creates new data-item, finishes bundle.', async () => 
   {
-    const item = await dataItemsApi.post(
+    const item = await dataItemsApi.post?.(
       { nodeId: srcNode1._id, taskId },
       {
         flowStack: [],
@@ -345,11 +346,11 @@ describe('DataItems API', () =>
       await dataItems.countDocuments(),
     ).toBe(4);
 
-    const { results: [bundle] } = await bundlesApi.get(
+    const { results: [bundle] } = await bundlesApi.get?.(
       { consumerId: outNode._id, taskId, flowId: flowId1 },
       null as any,
       mockRes,
-    );
+    ) as any;
     
 
     expect(bundle.done).toBe(true);
@@ -366,11 +367,11 @@ describe('Bundles API', () =>
   // if this test fails, it's likely the fault of the dataItems API
   it('bundle is available to consumer node', async () => 
   {
-    const { results, total } = await bundlesApi.get(
+    const { results, total } = await bundlesApi.get?.(
       { consumerId: outNode._id, taskId, done: true },
       null as any,
       mockRes,
-    );
+    ) as any; // TODO: type
 
     expect(total).toBe(1);
 

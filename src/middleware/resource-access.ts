@@ -5,7 +5,7 @@ import { Response } from 'express';
 
 import { getUser } from '../util/express-util';
 import { tasks } from '../storage/database';
-import { assert404 } from 'express-lemur/lib/rest/rest-router';
+
 import { unauthorized } from 'express-lemur/lib/errors';
 
 /**
@@ -24,15 +24,13 @@ export async function checkTaskAccess(
 {
   const user = getUser(res);
 
-  const task = assert404(
-    await tasks.findOne(
-      {
-        _id: taskId,
-      },
-    ),
+  const task = await tasks.findOne(
+    {
+      _id: taskId,
+    },
   );
 
-  if (task.owners.find((_id) => _id.equals(user.asuId)))
+  if (task && task.owners.find((_id) => _id.equals(user.asuId)))
   {
     res.locals.taskResource = task;
   }

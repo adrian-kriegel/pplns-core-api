@@ -58,16 +58,20 @@ export default resource(
     {
       const user = getUser(res);
 
-      task.owners = [parseObjectId(user.asuId)];
+      const taskToInsert = {
+        ...task,
+        owners: [parseObjectId(user.asuId)],
+        createdAt: new Date(),
+      };
 
       const insertResult = await tasks.insertOne(
-        {
-          ...task,
-          createdAt: new Date(),
-        },
+        taskToInsert,
       );
 
-      return insertResult.insertedId.toHexString();
+      return {
+        _id: insertResult.insertedId,
+        ...taskToInsert,
+      };
     },
 
     patch: ({ _id }, newTask) => 
