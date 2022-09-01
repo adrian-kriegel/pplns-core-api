@@ -8,7 +8,7 @@ Task = typing.TypedDict('Task',{
 '_id': str,
 'createdAt': str,
 'title': str,
-'description': typing.Optional[str],
+'description': typing.NotRequired[str],
 'params': dict[str, typing.Any],
 'owners': list[str]
 })
@@ -22,7 +22,7 @@ Worker = typing.TypedDict('Worker',{
 'createdAt': str,
 'key': str,
 'title': str,
-'description': typing.Optional[str],
+'description': typing.NotRequired[str],
 'inputs': dict[str, typing.Any],
 'outputs': dict[str, typing.Any],
 'params': dict[str, typing.Any]
@@ -31,7 +31,7 @@ Worker = typing.TypedDict('Worker',{
 WorkerWrite = typing.TypedDict('WorkerWrite',{
 'key': str,
 'title': str,
-'description': typing.Optional[str],
+'description': typing.NotRequired[str],
 'inputs': dict[str, typing.Any],
 'outputs': dict[str, typing.Any],
 'params': dict[str, typing.Any]
@@ -39,7 +39,7 @@ WorkerWrite = typing.TypedDict('WorkerWrite',{
 
 TaskWrite = typing.TypedDict('TaskWrite',{
 'title': str,
-'description': typing.Optional[str],
+'description': typing.NotRequired[str],
 'params': dict[str, typing.Any],
 'owners': list[str]
 })
@@ -53,10 +53,10 @@ Node = typing.TypedDict('Node',{
 'outputChannel': str,
 'inputChannel': str
 })],
-'numExecutions': typing.Optional[int],
-'params': typing.Optional[dict[str, typing.Any]],
-'workerId': typing.Optional[str],
-'internalWorker': typing.Optional[str],
+'numExecutions': typing.NotRequired[int],
+'params': typing.NotRequired[dict[str, typing.Any]],
+'workerId': typing.NotRequired[str],
+'internalWorker': typing.NotRequired[str],
 'position': typing.TypedDict('name.position',{
 'x': float,
 'y': float
@@ -69,10 +69,10 @@ NodeWrite = typing.TypedDict('NodeWrite',{
 'outputChannel': str,
 'inputChannel': str
 })],
-'numExecutions': typing.Optional[int],
-'params': typing.Optional[dict[str, typing.Any]],
-'workerId': typing.Optional[str],
-'internalWorker': typing.Optional[str],
+'numExecutions': typing.NotRequired[int],
+'params': typing.NotRequired[dict[str, typing.Any]],
+'workerId': typing.NotRequired[str],
+'internalWorker': typing.NotRequired[str],
 'position': typing.TypedDict('name.position',{
 'x': float,
 'y': float
@@ -88,10 +88,10 @@ NodeRead = typing.TypedDict('NodeRead',{
 'outputChannel': str,
 'inputChannel': str
 })],
-'numExecutions': typing.Optional[int],
-'params': typing.Optional[dict[str, typing.Any]],
-'workerId': typing.Optional[str],
-'internalWorker': typing.Optional[str],
+'numExecutions': typing.NotRequired[int],
+'params': typing.NotRequired[dict[str, typing.Any]],
+'workerId': typing.NotRequired[str],
+'internalWorker': typing.NotRequired[str],
 'position': typing.TypedDict('name.position',{
 'x': float,
 'y': float
@@ -102,7 +102,7 @@ typing.TypedDict('name.worker.0',{
 'createdAt': str,
 'key': str,
 'title': str,
-'description': typing.Optional[str],
+'description': typing.NotRequired[str],
 'inputs': dict[str, typing.Any],
 'outputs': dict[str, typing.Any],
 'params': dict[str, typing.Any]
@@ -110,7 +110,7 @@ typing.TypedDict('name.worker.0',{
 typing.TypedDict('name.worker.1',{
 'key': str,
 'title': str,
-'description': typing.Optional[str],
+'description': typing.NotRequired[str],
 'inputs': dict[str, typing.Any],
 'outputs': dict[str, typing.Any],
 'params': dict[str, typing.Any]
@@ -129,11 +129,11 @@ DataItem = typing.TypedDict('DataItem',{
 'taskId': str,
 'nodeId': str,
 'outputChannel': str,
-'flowId': typing.Optional[typing.Union[
+'flowId': typing.NotRequired[typing.Union[
 str,
 str
 ]],
-'flowStack': typing.Optional[list[typing.TypedDict('name.flowStack.items',{
+'flowStack': typing.NotRequired[list[typing.TypedDict('name.flowStack.items',{
 'flowId': typing.Union[
 str,
 str
@@ -143,17 +143,17 @@ str
 })]],
 'producerNodeIds': list[str],
 'done': bool,
-'autoDoneAfter': typing.Optional[int],
+'autoDoneAfter': typing.NotRequired[int],
 'data': list[typing.Any]
 })
 
 DataItemWrite = typing.TypedDict('DataItemWrite',{
 'outputChannel': str,
-'flowId': typing.Optional[typing.Union[
+'flowId': typing.NotRequired[typing.Union[
 str,
 str
 ]],
-'flowStack': typing.Optional[list[typing.TypedDict('name.flowStack.items',{
+'flowStack': typing.NotRequired[list[typing.TypedDict('name.flowStack.items',{
 'flowId': typing.Union[
 str,
 str
@@ -162,16 +162,16 @@ str
 'numEmitted': int
 })]],
 'done': bool,
-'autoDoneAfter': typing.Optional[int],
+'autoDoneAfter': typing.NotRequired[int],
 'data': list[typing.Any]
 })
 
 DataItemQuery = typing.TypedDict('DataItemQuery',{
-'_id': typing.Optional[str],
-'taskId': typing.Optional[str],
-'nodeId': typing.Optional[str],
-'done': typing.Optional[bool],
-'flowId': typing.Optional[typing.Union[
+'_id': typing.NotRequired[str],
+'taskId': typing.NotRequired[str],
+'nodeId': typing.NotRequired[str],
+'done': typing.NotRequired[bool],
+'flowId': typing.NotRequired[typing.Union[
 str,
 str
 ]]
@@ -193,7 +193,7 @@ Bundle = typing.TypedDict('Bundle',{
 str,
 str
 ],
-'lowerFlowIds': typing.Optional[list[typing.Union[
+'lowerFlowIds': typing.NotRequired[list[typing.Union[
 str,
 str
 ]]],
@@ -221,7 +221,7 @@ BundleRead = typing.TypedDict('BundleRead',{
 str,
 str
 ],
-'lowerFlowIds': typing.Optional[list[typing.Union[
+'lowerFlowIds': typing.NotRequired[list[typing.Union[
 str,
 str
 ]]],
@@ -237,11 +237,11 @@ str
 'taskId': str,
 'nodeId': str,
 'outputChannel': str,
-'flowId': typing.Optional[typing.Union[
+'flowId': typing.NotRequired[typing.Union[
 str,
 str
 ]],
-'flowStack': typing.Optional[list[typing.TypedDict('name.flowStack.items',{
+'flowStack': typing.NotRequired[list[typing.TypedDict('name.flowStack.items',{
 'flowId': typing.Union[
 str,
 str
@@ -251,19 +251,19 @@ str
 })]],
 'producerNodeIds': list[str],
 'done': bool,
-'autoDoneAfter': typing.Optional[int],
+'autoDoneAfter': typing.NotRequired[int],
 'data': list[typing.Any]
 })]
 })
 
 BundleQuery = typing.TypedDict('BundleQuery',{
-'_id': typing.Optional[str],
-'taskId': typing.Optional[str],
-'consumerId': typing.Optional[str],
-'workerId': typing.Optional[str],
-'done': typing.Optional[bool],
-'flowId': typing.Optional[str],
-'limit': typing.Optional[int],
-'consume': typing.Optional[bool]
+'_id': typing.NotRequired[str],
+'taskId': typing.NotRequired[str],
+'consumerId': typing.NotRequired[str],
+'workerId': typing.NotRequired[str],
+'done': typing.NotRequired[bool],
+'flowId': typing.NotRequired[str],
+'limit': typing.NotRequired[int],
+'consume': typing.NotRequired[bool]
 })
 version = '0.0.1'
