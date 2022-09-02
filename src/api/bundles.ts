@@ -21,7 +21,9 @@ collectionToGetHandler<schemas.BundleQuery, typeof schemas.bundleRead>(
   bundles as Collection<any>,
   schemas.bundleRead,
   // remove all items from query that do not appear in the bundle schema (consume, limit, etc.)
-  (q) => mapMask(q, Object.keys(schemas.bundle.properties) as any),
+  (q) => removeUndefined(   
+    mapMask(q, Object.keys(schemas.bundle.properties) as any),
+  ),
   defaultSort,
   [
     {
