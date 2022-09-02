@@ -199,7 +199,7 @@ str
 ]]],
 'done': bool,
 'consumerId': str,
-'workerId': str,
+'workerId': typing.NotRequired[str],
 'numAvailable': int,
 'numTaken': int,
 'allTaken': bool
@@ -227,7 +227,7 @@ str
 ]]],
 'done': bool,
 'consumerId': str,
-'workerId': str,
+'workerId': typing.NotRequired[str],
 'numAvailable': int,
 'numTaken': int,
 'allTaken': bool,

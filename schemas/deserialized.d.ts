@@ -189,7 +189,7 @@ export declare const bundle: TObject<{
     lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>>>;
     done: import("@sinclair/typebox").TBoolean;
     consumerId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
-    workerId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    workerId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
     numAvailable: import("@sinclair/typebox").TInteger;
     numTaken: import("@sinclair/typebox").TInteger;
     allTaken: import("@sinclair/typebox").TBoolean;
@@ -227,7 +227,7 @@ export declare const bundleRead: TObject<{
     lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>]>>>;
     done: import("@sinclair/typebox").TBoolean;
     consumerId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
-    workerId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
+    workerId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
     numAvailable: import("@sinclair/typebox").TInteger;
     numTaken: import("@sinclair/typebox").TInteger;
     allTaken: import("@sinclair/typebox").TBoolean;

@@ -282,7 +282,7 @@ const bundleProps =
   consumerId: objectId,
 
   // worker responsible (redundant as this is stored in node too but improves queries)
-  workerId: objectId,
+  workerId: Type.Optional(objectId),
 
   // how many times this bundle may be consumed
   numAvailable: Type.Integer({ minimum: 1 }),

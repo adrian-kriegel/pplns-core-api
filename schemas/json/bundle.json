@@ -100,7 +100,6 @@
     "flowId",
     "done",
     "consumerId",
-    "workerId",
     "numAvailable",
     "numTaken",
     "allTaken"

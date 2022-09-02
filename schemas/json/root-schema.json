@@ -782,7 +782,6 @@
         "flowId",
         "done",
         "consumerId",
-        "workerId",
         "numAvailable",
         "numTaken",
         "allTaken"
@@ -980,7 +979,6 @@
         "flowId",
         "done",
         "consumerId",
-        "workerId",
         "numAvailable",
         "numTaken",
         "allTaken",

@@ -189,7 +189,7 @@ export declare const bundle: TObject<{
     lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>>;
     done: import("@sinclair/typebox").TBoolean;
     consumerId: import("@sinclair/typebox").TString;
-    workerId: import("@sinclair/typebox").TString;
+    workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     numAvailable: import("@sinclair/typebox").TInteger;
     numTaken: import("@sinclair/typebox").TInteger;
     allTaken: import("@sinclair/typebox").TBoolean;
@@ -227,7 +227,7 @@ export declare const bundleRead: TObject<{
     lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>>;
     done: import("@sinclair/typebox").TBoolean;
     consumerId: import("@sinclair/typebox").TString;
-    workerId: import("@sinclair/typebox").TString;
+    workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     numAvailable: import("@sinclair/typebox").TInteger;
     numTaken: import("@sinclair/typebox").TInteger;
     allTaken: import("@sinclair/typebox").TBoolean;

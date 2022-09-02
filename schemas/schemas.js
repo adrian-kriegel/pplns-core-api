@@ -129,7 +129,7 @@ const bundleProps = {
     // node that may consume these items
     consumerId: general_1.objectId,
     // worker responsible (redundant as this is stored in node too but improves queries)
-    workerId: general_1.objectId,
+    workerId: typebox_1.Type.Optional(general_1.objectId),
     // how many times this bundle may be consumed
     numAvailable: typebox_1.Type.Integer({ minimum: 1 }),
     // how many times this bundle has been consumed (won't be available once this reaches node.numExecutions)
