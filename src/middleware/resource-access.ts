@@ -36,6 +36,8 @@ export async function checkTaskAccess(
   }
   else 
   {
-    throw unauthorized();
+    throw unauthorized()
+      .msg('Access denied for task ' + taskId)
+    ;
   }
 }

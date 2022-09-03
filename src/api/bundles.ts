@@ -71,6 +71,7 @@ export default resource(
       '/tasks/:taskId/nodes/:consumerId/inputs',
       '/workers/:workerId/inputs',
       '/nodes/:consumerId/inputs',
+      '/tasks/:taskId/bundles',
       '/bundles',
     ],
 
