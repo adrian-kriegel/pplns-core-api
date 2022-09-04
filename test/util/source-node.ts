@@ -2,6 +2,7 @@
 import { ObjectId } from 'mongodb';
 import { createNode } from './api-util';
 import dataItemsApi from '../../src/api/data-items';
+import { DataItem } from '../../src/pipeline/schemas';
 
 /** */
 export default class SourceNode
@@ -25,14 +26,31 @@ export default class SourceNode
   }
 
   /**
+   * @returns nodeId
+   */
+  getNodeId()
+  {
+    if (this.nodeId)
+    {
+      return this.nodeId;
+    }
+    else 
+    {
+      throw new Error(
+        'Please await sourceNode.register() before requesting nodeId.',
+      );
+    }
+  }
+
+  /**
    * Emit a single item containing the data.
    * @param data data
    * @returns Promise
    */
-  async emit(data : any)
+  async emit(data : any) : Promise<DataItem>
   {
-    return dataItemsApi.post(
-      { nodeId: this.nodeId, taskId: this.taskId },
+    return (dataItemsApi as any).post(
+      { nodeId: this.getNodeId(), taskId: this.taskId },
       {
         data: data,
         outputChannel: 'data',

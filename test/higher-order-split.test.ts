@@ -43,7 +43,7 @@ beforeAll(async () =>
       [
         {
           inputChannel: 'in',
-          nodeId: sourceNode.nodeId,
+          nodeId: sourceNode.getNodeId(),
           outputChannel: 'data',
         },
       ],
@@ -58,7 +58,7 @@ beforeAll(async () =>
         outputChannel: 'out',
       },
       {
-        nodeId: sourceNode.nodeId,
+        nodeId: sourceNode.getNodeId(),
         outputChannel: 'data',
       },
     ],
