@@ -12,6 +12,7 @@
     "build-schemas": "sh ./scripts/build-schemas.sh",
     "build-python-types": "sh scripts/build-python-types.sh",
     "start-test-server": "UNOLOGIN_ENV=test-server node build/main/server.js",
+    "start-test-server-dev": "UNOLOGIN_ENV=test-server ts-node-dev src/main/server.ts",
     "build": "tsc --skipLibCheck"
   },
   "author": "Adrian Kriegel",

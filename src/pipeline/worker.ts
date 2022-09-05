@@ -159,6 +159,7 @@ export class ExternalWorker implements IWorker
           // immediately set done to true if @param item is the only input
           done: consumer.inputs.length === 1,
           createdAt: new Date(),
+          allTaken: false,
         },
         $set:
         {
@@ -167,6 +168,7 @@ export class ExternalWorker implements IWorker
           // see comment about flowId in query above
           flowId: item.flowId,
 
+          // TODO: why is this in $set and not $setOnInsert?
           numTaken: 0,
           numAvailable: consumer.numExecutions || 1,
         },

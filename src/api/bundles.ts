@@ -65,6 +65,71 @@ function orderItemsInBundles(
   );
 }
 
+/**
+ * TODO: allow for taking more than one bundle at a time
+ * 
+ * @param query bundle query
+ * @returns get result
+ */
+export async function consumeBundles(query : schemas.BundleQuery)
+{
+  const findQuery = removeUndefined(
+    {
+      ...query,
+      done: true,
+      // note that allTaken: false is only used to speed up the query 
+      // semaphore-behavior is achieved through the $lt expression along with findOneAndUpdate $inc
+      allTaken: false,
+      $expr: { $lt: ['$numTaken', '$numAvailable'] },
+      limit: undefined,
+      consume: undefined,
+    },
+  );
+
+  const updateResult = await bundles.findOneAndUpdate(
+    findQuery,
+    {
+      $inc:
+      {
+        numTaken: 1,
+      },
+    },
+    {
+      returnDocument: 'after',
+    },
+  );
+
+  const bundle = updateResult.value;
+
+  const [items, total] = await Promise.all(
+    [
+      bundle ? 
+        dataItems.find(
+          { _id: { $in: bundle.inputItems.map(({ itemId }) => itemId) } },
+        ).toArray() :
+        Promise.resolve([]),
+
+      bundles.countDocuments(findQuery),
+
+      // update allTaken if required
+      bundle && (bundle.numTaken == bundle.numAvailable) ?
+        bundles.updateOne(
+          { _id: bundle._id }, 
+          { $set: { allTaken: true } },
+        ) :
+        Promise.resolve(),
+    ],
+  );
+
+  return { 
+    // total needs to be incremented as countDocuments is performed after consuming
+    total: bundle ? total + 1 : 0,
+    results: bundle ?
+      orderItemsInBundles([{ ...bundle, items }]) :
+      [],
+  };
+}
+
 export default resource(
   {
     route: [
@@ -120,76 +185,23 @@ export default resource(
 
     get: async (...args) => 
     { 
-      const q = args[0];
+      const query = args[0];
 
-      if (q.consume)
+      if (query.consume)
       {
-        // TODO: allow for taking more than one bundle at a time
-
-        const findQuery = removeUndefined(
-          {
-            ...q,
-            done: true,
-            // note that allTaken: false is only used to speed up the query 
-            // semaphore-behavior is achieved through the $lt expression along with findOneAndUpdate $inc
-            allTaken: false,
-            $expr: { $lt: ['$numTaken', '$numAvailable'] },
-            limit: undefined,
-            consume: undefined,
-          },
-        );
-
-        // TODO: check update success
-        const { value: bundle } = await bundles.findOneAndUpdate(
-          findQuery,
-          {
-            $inc:
-            {
-              numTaken: 1,
-            },
-          },
-          {
-            returnDocument: 'after',
-          },
-        );
-
-        const [items, total] = await Promise.all(
-          [
-            bundle ? 
-              dataItems.find(
-                { _id: { $in: bundle.inputItems.map(({ itemId }) => itemId) } },
-              ).toArray() :
-              Promise.resolve([]),
-
-            bundles.countDocuments(findQuery),
-
-            // update allTaken if required
-            bundle && (bundle.numTaken == bundle.numAvailable) ?
-              bundles.updateOne(
-                { _id: bundle._id }, 
-                { $set: { allTaken: true } },
-              ) :
-              Promise.resolve(),
-          ],
-        );
-
-        return { 
-          // total needs to be incremented as countDocuments is performed after consuming
-          total: total +1,
-          results: bundle ?
-            orderItemsInBundles([{ ...bundle, items }]) :
-            [],
+        return consumeBundles(query);
+      }
+      else 
+      {
+        const { results, total } = await getBundlesWithUnorderedItems(...args);
+        
+        return {
+          total: total || results.length,
+          // ensure that the 'items' are in the same order as the itemIds (which are in the order the consumer expects)
+          // TODO: somehow order the items in the aggregation lookup stage to avoid the mess below
+          results: orderItemsInBundles(results),
         };
       }
-
-      const { results, total } = await getBundlesWithUnorderedItems(...args);
-
-      return {
-        total: total || results.length,
-        // ensure that the 'items' are in the same order as the itemIds (which are in the order the consumer expects)
-        // TODO: somehow order the items in the aggregation lookup stage to avoid the mess below
-        results: orderItemsInBundles(results),
-      };
     },
   },
 );
