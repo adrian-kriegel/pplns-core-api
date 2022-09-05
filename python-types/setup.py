@@ -9,5 +9,8 @@ setup(name='pplns_types',
       description='Types for interfacing with @pplns/core-api.',
       author='Adrian Kriegel',
       author_email='info@unolog.in',
-      py_modules=['pplns_types']
+      py_modules=['pplns_types'],
+      requires=[
+            'typing_extensions',
+      ],
      )
