@@ -4,43 +4,268 @@
 
 import typing
 
-try:
+from typing_extensions import NotRequired
 
-  from typing import NotRequired
-
-except ImportError:
-
-  from typing_extensions import NotRequired
-
-Task = typing.Any
+Task = typing.TypedDict('Task',{
+'_id': str,
+'createdAt': str,
+'title': str,
+'description': NotRequired[str],
+'params': dict[str, typing.Any],
+'owners': list[str]
+})
 
 DataTypeDefinition = typing.Any
 
-DataTypeRecord = typing.Any
+DataTypeRecord = dict[str, typing.Any]
 
-Worker = typing.Any
+Worker = typing.TypedDict('Worker',{
+'_id': str,
+'createdAt': str,
+'key': str,
+'title': str,
+'description': NotRequired[str],
+'inputs': dict[str, typing.Any],
+'outputs': dict[str, typing.Any],
+'params': dict[str, typing.Any]
+})
 
-WorkerWrite = typing.Any
+WorkerWrite = typing.TypedDict('WorkerWrite',{
+'key': str,
+'title': str,
+'description': NotRequired[str],
+'inputs': dict[str, typing.Any],
+'outputs': dict[str, typing.Any],
+'params': dict[str, typing.Any]
+})
 
-TaskWrite = typing.Any
+TaskWrite = typing.TypedDict('TaskWrite',{
+'title': str,
+'description': NotRequired[str],
+'params': dict[str, typing.Any],
+'owners': list[str]
+})
 
-Node = typing.Any
+Node = typing.TypedDict('Node',{
+'_id': str,
+'createdAt': str,
+'taskId': str,
+'inputs': list[typing.TypedDict('name.inputs.items',{
+'nodeId': str,
+'outputChannel': str,
+'inputChannel': str
+})],
+'numExecutions': NotRequired[int],
+'params': NotRequired[dict[str, typing.Any]],
+'workerId': NotRequired[str],
+'internalWorker': NotRequired[str],
+'position': typing.TypedDict('name.position',{
+'x': float,
+'y': float
+})
+})
 
-NodeWrite = typing.Any
+NodeWrite = typing.TypedDict('NodeWrite',{
+'inputs': list[typing.TypedDict('name.inputs.items',{
+'nodeId': str,
+'outputChannel': str,
+'inputChannel': str
+})],
+'numExecutions': NotRequired[int],
+'params': NotRequired[dict[str, typing.Any]],
+'workerId': NotRequired[str],
+'internalWorker': NotRequired[str],
+'position': typing.TypedDict('name.position',{
+'x': float,
+'y': float
+})
+})
 
-NodeRead = typing.Any
+NodeRead = typing.TypedDict('NodeRead',{
+'_id': str,
+'createdAt': str,
+'taskId': str,
+'inputs': list[typing.TypedDict('name.inputs.items',{
+'nodeId': str,
+'outputChannel': str,
+'inputChannel': str
+})],
+'numExecutions': NotRequired[int],
+'params': NotRequired[dict[str, typing.Any]],
+'workerId': NotRequired[str],
+'internalWorker': NotRequired[str],
+'position': typing.TypedDict('name.position',{
+'x': float,
+'y': float
+}),
+'worker': typing.Union[
+typing.TypedDict('name.worker.0',{
+'_id': str,
+'createdAt': str,
+'key': str,
+'title': str,
+'description': NotRequired[str],
+'inputs': dict[str, typing.Any],
+'outputs': dict[str, typing.Any],
+'params': dict[str, typing.Any]
+}),
+typing.TypedDict('name.worker.1',{
+'key': str,
+'title': str,
+'description': NotRequired[str],
+'inputs': dict[str, typing.Any],
+'outputs': dict[str, typing.Any],
+'params': dict[str, typing.Any]
+})
+]
+})
 
-FlowIdSchema = typing.Any
+FlowIdSchema = typing.Union[
+str,
+str
+]
 
-DataItem = typing.Any
+DataItem = typing.TypedDict('DataItem',{
+'_id': str,
+'createdAt': str,
+'taskId': str,
+'nodeId': str,
+'outputChannel': str,
+'flowId': NotRequired[typing.Union[
+str,
+str
+]],
+'flowStack': NotRequired[list[typing.TypedDict('name.flowStack.items',{
+'flowId': typing.Union[
+str,
+str
+],
+'splitNodeId': str,
+'numEmitted': int
+})]],
+'producerNodeIds': list[str],
+'done': bool,
+'autoDoneAfter': NotRequired[int],
+'data': list[typing.Any]
+})
 
-DataItemWrite = typing.Any
+DataItemWrite = typing.TypedDict('DataItemWrite',{
+'outputChannel': str,
+'flowId': NotRequired[typing.Union[
+str,
+str
+]],
+'flowStack': NotRequired[list[typing.TypedDict('name.flowStack.items',{
+'flowId': typing.Union[
+str,
+str
+],
+'splitNodeId': str,
+'numEmitted': int
+})]],
+'done': bool,
+'autoDoneAfter': NotRequired[int],
+'data': list[typing.Any]
+})
 
-DataItemQuery = typing.Any
+DataItemQuery = typing.TypedDict('DataItemQuery',{
+'_id': NotRequired[str],
+'taskId': NotRequired[str],
+'nodeId': NotRequired[str],
+'done': NotRequired[bool],
+'flowId': NotRequired[typing.Union[
+str,
+str
+]]
+})
 
-Bundle = typing.Any
+Bundle = typing.TypedDict('Bundle',{
+'_id': str,
+'createdAt': str,
+'inputItems': list[typing.TypedDict('name.inputItems.items',{
+'itemId': str,
+'position': int,
+'nodeId': str,
+'outputChannel': str,
+'inputChannel': str
+})],
+'depth': int,
+'taskId': str,
+'flowId': typing.Union[
+str,
+str
+],
+'lowerFlowIds': NotRequired[list[typing.Union[
+str,
+str
+]]],
+'done': bool,
+'consumerId': str,
+'workerId': NotRequired[str],
+'numAvailable': int,
+'numTaken': int,
+'allTaken': bool
+})
 
-BundleRead = typing.Any
+BundleRead = typing.TypedDict('BundleRead',{
+'_id': str,
+'createdAt': str,
+'inputItems': list[typing.TypedDict('name.inputItems.items',{
+'itemId': str,
+'position': int,
+'nodeId': str,
+'outputChannel': str,
+'inputChannel': str
+})],
+'depth': int,
+'taskId': str,
+'flowId': typing.Union[
+str,
+str
+],
+'lowerFlowIds': NotRequired[list[typing.Union[
+str,
+str
+]]],
+'done': bool,
+'consumerId': str,
+'workerId': NotRequired[str],
+'numAvailable': int,
+'numTaken': int,
+'allTaken': bool,
+'items': list[typing.TypedDict('name.items.items',{
+'_id': str,
+'createdAt': str,
+'taskId': str,
+'nodeId': str,
+'outputChannel': str,
+'flowId': NotRequired[typing.Union[
+str,
+str
+]],
+'flowStack': NotRequired[list[typing.TypedDict('name.flowStack.items',{
+'flowId': typing.Union[
+str,
+str
+],
+'splitNodeId': str,
+'numEmitted': int
+})]],
+'producerNodeIds': list[str],
+'done': bool,
+'autoDoneAfter': NotRequired[int],
+'data': list[typing.Any]
+})]
+})
 
-BundleQuery = typing.Any
+BundleQuery = typing.TypedDict('BundleQuery',{
+'_id': NotRequired[str],
+'taskId': NotRequired[str],
+'consumerId': NotRequired[str],
+'workerId': NotRequired[str],
+'done': NotRequired[bool],
+'flowId': NotRequired[str],
+'limit': NotRequired[int],
+'consume': NotRequired[bool]
+})
 version = '0.0.1'
