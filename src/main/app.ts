@@ -47,5 +47,4 @@ restAPI.addResource(nodes);
 restAPI.addResource(tasks);
 restAPI.addResource(workers);
 
-// @ts-ignore TODO: check why "express" does not exist on RestRouter according to TS
 app.use(restAPI.express());

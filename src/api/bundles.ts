@@ -165,7 +165,6 @@ export default resource(
      */
     put: async ({ _id }) => 
     {
-
       const bundle = await bundles.updateOne(
         { _id },
         {

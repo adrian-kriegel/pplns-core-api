@@ -45,26 +45,14 @@ export default resource(
 
     post: async (q, doc) => 
     {
-      const worker : Omit<schemas.Worker, '_id'> = 
-      {
-        ...doc,
-        createdAt: new Date(),
-      };
-
-      return {
-        ...worker,
-        _id: (await (workers.insertOne(worker))).insertedId,
-      };
-    },
-
-    patch: (q, doc) => simplePatch(workers, q, doc),
-
-    put: async (q, doc) => 
-    {
       const result = await workers.findOneAndUpdate(
         removeUndefined(q),
         {
           $set: doc,
+          $setOnInsert:
+          {
+            createdAt: new Date(),
+          },
         },
         {
           upsert: true,
@@ -74,5 +62,7 @@ export default resource(
 
       return result.value; 
     },
+
+    patch: (q, doc) => simplePatch(workers, q, doc),
   },
 );
