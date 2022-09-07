@@ -10,7 +10,7 @@ import { ObjectId } from 'mongodb';
 export default class DataSink
 implements IInternalWorker
 {
-  readonly key = 'data-sink';
+  readonly _id = 'data-sink';
 
   readonly title = 'Sink';
 

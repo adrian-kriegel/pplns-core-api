@@ -99,6 +99,9 @@
       "additionalProperties": false,
       "type": "object",
       "properties": {
+        "_id": {
+          "type": "string"
+        },
         "title": {
           "type": "string"
         },
@@ -125,6 +128,48 @@
         }
       },
       "required": [
+        "_id",
+        "title",
+        "inputs",
+        "outputs",
+        "params"
+      ]
+    },
+    "@ppln/schemas/internal-worker.json": {
+      "$id": "@ppln/schemas/internal-worker.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "inputs": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "outputs": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {}
+          }
+        }
+      },
+      "required": [
+        "_id",
         "title",
         "inputs",
         "outputs",
@@ -418,6 +463,9 @@
               "additionalProperties": false,
               "type": "object",
               "properties": {
+                "_id": {
+                  "type": "string"
+                },
                 "title": {
                   "type": "string"
                 },
@@ -444,6 +492,7 @@
                 }
               },
               "required": [
+                "_id",
                 "title",
                 "inputs",
                 "outputs",

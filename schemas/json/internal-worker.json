@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/worker-write.json",
+  "$id": "@ppln/schemas/internal-worker.json",
   "additionalProperties": false,
   "type": "object",
   "properties": {

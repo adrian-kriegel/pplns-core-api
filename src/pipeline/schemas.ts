@@ -59,16 +59,15 @@ export const worker = Type.Object(
   },
 );
 
-// internal workers are not stored in the database and therefore do not have _id and createdAt
-const internalWorker = Type.Omit(
-  worker,
-  ['_id', 'createdAt'],
+export const workerWrite = Type.Omit(
+  worker, ['createdAt'],
 );
 
-export const workerWrite = writeType(worker);
+export const internalWorker = workerWrite;
 
 export type Worker = Static<typeof worker>;
 export type WorkerWrite = Static<typeof workerWrite>;
+export type InternalWorker = Static<typeof internalWorker>;
 
 export const taskWrite = writeType(task);
 

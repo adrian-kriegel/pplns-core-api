@@ -29,9 +29,19 @@ export declare const workerWrite: TObject<Omit<{
     inputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
     outputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
     params: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
-}, "_id" | "createdAt">>;
+}, "createdAt">>;
+export declare const internalWorker: TObject<Omit<{
+    _id: import("@sinclair/typebox").TString;
+    createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
+    title: import("@sinclair/typebox").TString;
+    description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    inputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
+    outputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
+    params: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
+}, "createdAt">>;
 export declare type Worker = Static<typeof worker>;
 export declare type WorkerWrite = Static<typeof workerWrite>;
+export declare type InternalWorker = Static<typeof internalWorker>;
 export declare const taskWrite: TObject<Omit<{
     _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
@@ -93,7 +103,7 @@ export declare const nodeRead: TObject<{
         inputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
         outputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
         params: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
-    }, "_id" | "createdAt">>]>;
+    }, "createdAt">>]>;
     _id: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     createdAt: import("@unologin/typebox-extended").TUserDefined<Date>;
     taskId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;

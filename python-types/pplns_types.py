@@ -30,6 +30,16 @@ Worker = typing.TypedDict('Worker',{
 })
 
 WorkerWrite = typing.TypedDict('WorkerWrite',{
+'_id': str,
+'title': str,
+'description': NotRequired[str],
+'inputs': dict[str, typing.Any],
+'outputs': dict[str, typing.Any],
+'params': dict[str, typing.Any]
+})
+
+InternalWorker = typing.TypedDict('InternalWorker',{
+'_id': str,
 'title': str,
 'description': NotRequired[str],
 'inputs': dict[str, typing.Any],
@@ -104,6 +114,7 @@ typing.TypedDict('name.worker.0',{
 'params': dict[str, typing.Any]
 }),
 typing.TypedDict('name.worker.1',{
+'_id': str,
 'title': str,
 'description': NotRequired[str],
 'inputs': dict[str, typing.Any],

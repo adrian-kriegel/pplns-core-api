@@ -8,8 +8,7 @@ import Join from './workers/join';
 import DataSource from './workers/data-source';
 import DataSink from './workers/data-sink';
 
-export type IInternalWorker = IWorker & 
-  Omit<schemas.Worker, '_id' | 'createdAt'>;
+export type IInternalWorker = IWorker & schemas.InternalWorker
 
 const workers : { [workerId: string]: IInternalWorker } = {};
 

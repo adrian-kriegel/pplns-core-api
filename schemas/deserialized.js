@@ -11,7 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 exports.__esModule = true;
-exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
+exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
 var typebox_1 = require("@unologin/typebox-extended/typebox");
 var general_1 = require("@unologin/server-common/lib/schemas/general");
 var writeType = function (schema) {
@@ -43,9 +43,8 @@ exports.worker = typebox_1.Type.Object({
     outputs: exports.dataTypeRecord,
     params: exports.dataTypeRecord
 });
-// internal workers are not stored in the database and therefore do not have _id and createdAt
-var internalWorker = typebox_1.Type.Omit(exports.worker, ['_id', 'createdAt']);
-exports.workerWrite = writeType(exports.worker);
+exports.workerWrite = typebox_1.Type.Omit(exports.worker, ['createdAt']);
+exports.internalWorker = exports.workerWrite;
 exports.taskWrite = writeType(exports.task);
 var nodeProps = {
     _id: general_1.objectId,
@@ -72,7 +71,7 @@ var nodeProps = {
 };
 exports.node = typebox_1.Type.Object(nodeProps);
 exports.nodeWrite = typebox_1.Type.Omit(writeType(exports.node), ['taskId']);
-exports.nodeRead = typebox_1.Type.Object(__assign(__assign({}, nodeProps), { worker: typebox_1.Type.Union([exports.worker, internalWorker]) }));
+exports.nodeRead = typebox_1.Type.Object(__assign(__assign({}, nodeProps), { worker: typebox_1.Type.Union([exports.worker, exports.internalWorker]) }));
 exports.flowIdSchema = typebox_1.Type.Union([typebox_1.Type.String(), general_1.objectId]);
 var dataItemProps = {
     _id: general_1.objectId,

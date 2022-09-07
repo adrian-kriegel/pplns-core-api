@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
+exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
 const typebox_1 = require("@unologin/typebox-extended/typebox");
 const general_1 = require("@unologin/server-common/lib/schemas/general");
 const writeType = (schema) => typebox_1.Type.Omit(schema, ['_id', 'createdAt']);
@@ -30,9 +30,8 @@ exports.worker = typebox_1.Type.Object({
     outputs: exports.dataTypeRecord,
     params: exports.dataTypeRecord,
 });
-// internal workers are not stored in the database and therefore do not have _id and createdAt
-const internalWorker = typebox_1.Type.Omit(exports.worker, ['_id', 'createdAt']);
-exports.workerWrite = writeType(exports.worker);
+exports.workerWrite = typebox_1.Type.Omit(exports.worker, ['createdAt']);
+exports.internalWorker = exports.workerWrite;
 exports.taskWrite = writeType(exports.task);
 const nodeProps = {
     _id: general_1.objectId,
@@ -61,7 +60,7 @@ exports.node = typebox_1.Type.Object(nodeProps);
 exports.nodeWrite = typebox_1.Type.Omit(writeType(exports.node), ['taskId']);
 exports.nodeRead = typebox_1.Type.Object({
     ...nodeProps,
-    worker: typebox_1.Type.Union([exports.worker, internalWorker]),
+    worker: typebox_1.Type.Union([exports.worker, exports.internalWorker]),
 });
 exports.flowIdSchema = typebox_1.Type.Union([typebox_1.Type.String(), general_1.objectId]);
 const dataItemProps = {
