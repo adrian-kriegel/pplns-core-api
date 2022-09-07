@@ -18,7 +18,7 @@ export default class SourceNode
     this.nodeId = await createNode(
       this.taskId,
       {
-        internalWorker: 'data-source',
+        workerId: 'data-source',
       },
     );
 

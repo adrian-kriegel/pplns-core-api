@@ -42,12 +42,10 @@ export type DataTypeRecord = Static<typeof dataTypeRecord>;
 // defines outline or blueprint for a node
 export const worker = Type.Object(
   {
-    _id: objectId,
+    // set by the worker itself
+    _id: Type.String(),
 
     createdAt: date,
-
-    // unique key for each worker
-    key: Type.String(),
 
     // human readable title and description
     title: Type.String(),
@@ -107,8 +105,7 @@ const nodeProps =
   )),
 
   // responsible worker
-  workerId: Type.Optional(objectId),
-  internalWorker: Type.Optional(Type.String()),
+  workerId: Type.Optional(Type.String()),
 
   // position in the pipeline UI
   position: Type.Object(
@@ -282,7 +279,7 @@ const bundleProps =
   consumerId: objectId,
 
   // worker responsible (redundant as this is stored in node too but improves queries)
-  workerId: Type.Optional(objectId),
+  workerId: Type.Optional(Type.String()),
 
   // how many times this bundle may be consumed
   numAvailable: Type.Integer({ minimum: 1 }),
@@ -310,7 +307,7 @@ export const bundleQuery = Type.Object(
     _id: Type.Optional(objectId),
     taskId: Type.Optional(objectId),
     consumerId: Type.Optional(objectId),
-    workerId: Type.Optional(objectId),
+    workerId: Type.Optional(Type.String()),
     done: Type.Optional(Type.Boolean()),
     flowId: Type.Optional(objectId),
     limit: Type.Optional(Type.Integer({ minimum: 1 })),

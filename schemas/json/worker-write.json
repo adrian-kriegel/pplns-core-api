@@ -3,9 +3,6 @@
   "additionalProperties": false,
   "type": "object",
   "properties": {
-    "key": {
-      "type": "string"
-    },
     "title": {
       "type": "string"
     },
@@ -32,7 +29,6 @@
     }
   },
   "required": [
-    "key",
     "title",
     "inputs",
     "outputs",

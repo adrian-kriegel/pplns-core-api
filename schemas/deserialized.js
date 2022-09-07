@@ -33,10 +33,9 @@ exports.dataTypeDefinition = typebox_1.Type.Any();
 exports.dataTypeRecord = typebox_1.Type.Record(typebox_1.Type.String(), exports.dataTypeDefinition);
 // defines outline or blueprint for a node
 exports.worker = typebox_1.Type.Object({
-    _id: general_1.objectId,
+    // set by the worker itself
+    _id: typebox_1.Type.String(),
     createdAt: general_1.date,
-    // unique key for each worker
-    key: typebox_1.Type.String(),
     // human readable title and description
     title: typebox_1.Type.String(),
     description: typebox_1.Type.Optional(typebox_1.Type.String()),
@@ -64,8 +63,7 @@ var nodeProps = {
     numExecutions: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1, "default": 1 })),
     params: typebox_1.Type.Optional(typebox_1.Type.Record(typebox_1.Type.String(), typebox_1.Type.Any())),
     // responsible worker
-    workerId: typebox_1.Type.Optional(general_1.objectId),
-    internalWorker: typebox_1.Type.Optional(typebox_1.Type.String()),
+    workerId: typebox_1.Type.Optional(typebox_1.Type.String()),
     // position in the pipeline UI
     position: typebox_1.Type.Object({
         x: typebox_1.Type.Number(),
@@ -135,7 +133,7 @@ var bundleProps = {
     // node that may consume these items
     consumerId: general_1.objectId,
     // worker responsible (redundant as this is stored in node too but improves queries)
-    workerId: typebox_1.Type.Optional(general_1.objectId),
+    workerId: typebox_1.Type.Optional(typebox_1.Type.String()),
     // how many times this bundle may be consumed
     numAvailable: typebox_1.Type.Integer({ minimum: 1 }),
     // how many times this bundle has been consumed (won't be available once this reaches node.numExecutions)
@@ -149,7 +147,7 @@ exports.bundleQuery = typebox_1.Type.Object({
     _id: typebox_1.Type.Optional(general_1.objectId),
     taskId: typebox_1.Type.Optional(general_1.objectId),
     consumerId: typebox_1.Type.Optional(general_1.objectId),
-    workerId: typebox_1.Type.Optional(general_1.objectId),
+    workerId: typebox_1.Type.Optional(typebox_1.Type.String()),
     done: typebox_1.Type.Optional(typebox_1.Type.Boolean()),
     flowId: typebox_1.Type.Optional(general_1.objectId),
     limit: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1 })),

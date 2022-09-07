@@ -20,7 +20,7 @@ const mockRes =
 } as any as Response;
 
 let taskId : ObjectId;
-let workerId : ObjectId;
+const workerId = 'worker1';
 
 const flowId1 = new ObjectId('f1de9ee9ac751033dad45a62');
 const flowId2 = new ObjectId('f2de9ee9ac751033dad45a62');
@@ -33,11 +33,11 @@ beforeAll(async () =>
 {
   const dataType = { description: '', schema: {} };
 
-  const result = await workers.insertOne(
+  await workers.insertOne(
     {
-      createdAt: new Date(),
+      _id: workerId,
 
-      key: 'worker1',
+      createdAt: new Date(),
       
       title: '',
       description: '',
@@ -55,8 +55,6 @@ beforeAll(async () =>
       params: {},
     },
   );
-
-  workerId = result.insertedId;
 });
 
 

@@ -49,9 +49,6 @@
     "workerId": {
       "type": "string"
     },
-    "internalWorker": {
-      "type": "string"
-    },
     "position": {
       "additionalProperties": false,
       "type": "object",

@@ -15,7 +15,6 @@ export declare type DataTypeRecord = Static<typeof dataTypeRecord>;
 export declare const worker: TObject<{
     _id: import("@sinclair/typebox").TString;
     createdAt: import("@sinclair/typebox").TString;
-    key: import("@sinclair/typebox").TString;
     title: import("@sinclair/typebox").TString;
     description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     inputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
@@ -25,7 +24,6 @@ export declare const worker: TObject<{
 export declare const workerWrite: TObject<Omit<{
     _id: import("@sinclair/typebox").TString;
     createdAt: import("@sinclair/typebox").TString;
-    key: import("@sinclair/typebox").TString;
     title: import("@sinclair/typebox").TString;
     description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     inputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
@@ -56,7 +54,6 @@ export declare const node: TObject<{
     numExecutions: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     params: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>>;
     workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    internalWorker: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     position: TObject<{
         x: import("@sinclair/typebox").TNumber;
         y: import("@sinclair/typebox").TNumber;
@@ -74,7 +71,6 @@ export declare const nodeWrite: TObject<Omit<Omit<{
     numExecutions: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     params: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>>;
     workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    internalWorker: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     position: TObject<{
         x: import("@sinclair/typebox").TNumber;
         y: import("@sinclair/typebox").TNumber;
@@ -84,7 +80,6 @@ export declare const nodeRead: TObject<{
     worker: import("@sinclair/typebox").TUnion<[TObject<{
         _id: import("@sinclair/typebox").TString;
         createdAt: import("@sinclair/typebox").TString;
-        key: import("@sinclair/typebox").TString;
         title: import("@sinclair/typebox").TString;
         description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
         inputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
@@ -93,7 +88,6 @@ export declare const nodeRead: TObject<{
     }>, TObject<Omit<{
         _id: import("@sinclair/typebox").TString;
         createdAt: import("@sinclair/typebox").TString;
-        key: import("@sinclair/typebox").TString;
         title: import("@sinclair/typebox").TString;
         description: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
         inputs: import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>;
@@ -111,7 +105,6 @@ export declare const nodeRead: TObject<{
     numExecutions: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     params: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TAny>>;
     workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
-    internalWorker: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     position: TObject<{
         x: import("@sinclair/typebox").TNumber;
         y: import("@sinclair/typebox").TNumber;

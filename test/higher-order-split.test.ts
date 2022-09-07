@@ -38,7 +38,7 @@ beforeAll(async () =>
   const splitId = await createNode(
     taskId,
     {
-      internalWorker: 'split',
+      workerId: 'split',
       inputs: 
       [
         {

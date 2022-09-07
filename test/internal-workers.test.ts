@@ -29,7 +29,7 @@ describe('DataSource node', () =>
     dataSrcNodeId = await createNode(
       taskId,
       {
-        internalWorker: 'data-source',
+        workerId: 'data-source',
       },
     );
   });
@@ -42,7 +42,7 @@ describe('Split node.', () =>
     splitNodeId = await createNode(
       taskId,
       {
-        internalWorker: 'split',
+        workerId: 'split',
         inputs: [
           {
             nodeId: dataSrcNodeId,
@@ -69,11 +69,11 @@ describe('Join node.', () =>
     joinNodeId = await createNode(
       taskId,
       {
-        internalWorker: 'join',
+        workerId: 'join',
         inputs: 
         [
           {
-            nodeId: inspect1Node.nodeId,
+            nodeId: inspect1Node.nodeId as ObjectId,
             outputChannel: 'out',
             inputChannel: 'in',
           },
@@ -97,7 +97,7 @@ describe('DataSink node.', () =>
     await createNode(
       taskId,
       {
-        internalWorker: 'data-sink',
+        workerId: 'data-sink',
         inputs: 
         [
           {
@@ -116,7 +116,7 @@ describe('Split node', () =>
   it('Splits input data array into individual items.', async () => 
   {
     // post data from source node 
-    await dataItemsApi.post(
+    await dataItemsApi.post?.(
       { nodeId: dataSrcNodeId, taskId },
       {
         data: 
@@ -132,7 +132,7 @@ describe('Split node', () =>
     );
 
     // post another item
-    await dataItemsApi.post(
+    await dataItemsApi.post?.(
       { nodeId: dataSrcNodeId, taskId },
       {
         data: 
@@ -150,10 +150,10 @@ describe('Split node', () =>
 
     // find all items produced by the split node
     const { results: inputBundles, total } = await bundlesApi.get?.(
-      { taskId, consumerId: inspect1Node.nodeId },
+      { taskId, consumerId: inspect1Node.nodeId as ObjectId },
       null as any,
       mockRes,
-    );
+    ) as any;
 
     expect(total).toBe(5);
     expect(inputBundles.length).toBe(5);
@@ -195,7 +195,7 @@ describe('Join node', () =>
       { taskId, consumerId: inspect2NodeId },
       null as any,
       mockRes,
-    );
+    ) as any;
 
     expect(total).toBe(2);
     expect(inputBundles.length).toBe(2);

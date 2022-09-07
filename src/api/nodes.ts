@@ -122,7 +122,7 @@ export default resource(
       {
         return {
           ...node,
-          worker: node.worker || getInternalWorker(node.internalWorker),
+          worker: node.worker || getInternalWorker(node.workerId),
         };
       },
     ),
@@ -150,14 +150,14 @@ export default resource(
       if ('inputs' in newNode)
       {
         // find the worker through either newNode or the database if not specified in PATCH
-        const { workerId, internalWorker } = 
-          'internalWorker' in newNode || 'workerId' in newNode ?
+        const { workerId } = 
+          'workerId' in newNode ?
             newNode :
             await nodes.findOne({ _id, taskId })
         ; 
 
         const worker = await findWorkerForNode(
-          { workerId, internalWorker },
+          { workerId },
         );
   
         await validateNodeInputs(newNode.inputs, worker); 

@@ -22,7 +22,6 @@ DataTypeRecord = dict[str, typing.Any]
 Worker = typing.TypedDict('Worker',{
 '_id': str,
 'createdAt': str,
-'key': str,
 'title': str,
 'description': NotRequired[str],
 'inputs': dict[str, typing.Any],
@@ -31,7 +30,6 @@ Worker = typing.TypedDict('Worker',{
 })
 
 WorkerWrite = typing.TypedDict('WorkerWrite',{
-'key': str,
 'title': str,
 'description': NotRequired[str],
 'inputs': dict[str, typing.Any],
@@ -58,7 +56,6 @@ Node = typing.TypedDict('Node',{
 'numExecutions': NotRequired[int],
 'params': NotRequired[dict[str, typing.Any]],
 'workerId': NotRequired[str],
-'internalWorker': NotRequired[str],
 'position': typing.TypedDict('name.position',{
 'x': float,
 'y': float
@@ -74,7 +71,6 @@ NodeWrite = typing.TypedDict('NodeWrite',{
 'numExecutions': NotRequired[int],
 'params': NotRequired[dict[str, typing.Any]],
 'workerId': NotRequired[str],
-'internalWorker': NotRequired[str],
 'position': typing.TypedDict('name.position',{
 'x': float,
 'y': float
@@ -93,7 +89,6 @@ NodeRead = typing.TypedDict('NodeRead',{
 'numExecutions': NotRequired[int],
 'params': NotRequired[dict[str, typing.Any]],
 'workerId': NotRequired[str],
-'internalWorker': NotRequired[str],
 'position': typing.TypedDict('name.position',{
 'x': float,
 'y': float
@@ -102,7 +97,6 @@ NodeRead = typing.TypedDict('NodeRead',{
 typing.TypedDict('name.worker.0',{
 '_id': str,
 'createdAt': str,
-'key': str,
 'title': str,
 'description': NotRequired[str],
 'inputs': dict[str, typing.Any],
@@ -110,7 +104,6 @@ typing.TypedDict('name.worker.0',{
 'params': dict[str, typing.Any]
 }),
 typing.TypedDict('name.worker.1',{
-'key': str,
 'title': str,
 'description': NotRequired[str],
 'inputs': dict[str, typing.Any],

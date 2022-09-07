@@ -60,9 +60,6 @@
         "createdAt": {
           "type": "string"
         },
-        "key": {
-          "type": "string"
-        },
         "title": {
           "type": "string"
         },
@@ -91,7 +88,6 @@
       "required": [
         "_id",
         "createdAt",
-        "key",
         "title",
         "inputs",
         "outputs",
@@ -103,9 +99,6 @@
       "additionalProperties": false,
       "type": "object",
       "properties": {
-        "key": {
-          "type": "string"
-        },
         "title": {
           "type": "string"
         },
@@ -132,7 +125,6 @@
         }
       },
       "required": [
-        "key",
         "title",
         "inputs",
         "outputs",
@@ -220,9 +212,6 @@
         "workerId": {
           "type": "string"
         },
-        "internalWorker": {
-          "type": "string"
-        },
         "position": {
           "additionalProperties": false,
           "type": "object",
@@ -288,9 +277,6 @@
           }
         },
         "workerId": {
-          "type": "string"
-        },
-        "internalWorker": {
           "type": "string"
         },
         "position": {
@@ -366,9 +352,6 @@
         "workerId": {
           "type": "string"
         },
-        "internalWorker": {
-          "type": "string"
-        },
         "position": {
           "additionalProperties": false,
           "type": "object",
@@ -395,9 +378,6 @@
                   "type": "string"
                 },
                 "createdAt": {
-                  "type": "string"
-                },
-                "key": {
                   "type": "string"
                 },
                 "title": {
@@ -428,7 +408,6 @@
               "required": [
                 "_id",
                 "createdAt",
-                "key",
                 "title",
                 "inputs",
                 "outputs",
@@ -439,9 +418,6 @@
               "additionalProperties": false,
               "type": "object",
               "properties": {
-                "key": {
-                  "type": "string"
-                },
                 "title": {
                   "type": "string"
                 },
@@ -468,7 +444,6 @@
                 }
               },
               "required": [
-                "key",
                 "title",
                 "inputs",
                 "outputs",

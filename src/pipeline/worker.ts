@@ -24,7 +24,7 @@ export class ExternalWorker implements IWorker
 
   /** */
   constructor(
-    public readonly _id: ObjectId,
+    public readonly _id: string,
   ) {}
 
   /** @returns worker document */
@@ -320,10 +320,10 @@ export async function upsertBundle(
 
   try 
   {
-    const result = await (consumer.internalWorker ? 
-      getInternalWorker(consumer.internalWorker).upsertBundle(...args) :
+    const result =
+      getInternalWorker(consumer.workerId)?.upsertBundle(...args) ||
       new ExternalWorker(consumer.workerId).upsertBundle(...args)
-    );
+    ;
 
     return result;
   }
@@ -357,13 +357,11 @@ export function findInputForItem(
  * @throws 404 if not found
  */
 export async function findWorkerForNode(
-  { internalWorker, workerId } 
-  : Pick<schemas.Node, 'internalWorker' | 'workerId'>,
+  { workerId } : Pick<schemas.Node, 'workerId'>,
 ) : Promise<schemas.Worker | IInternalWorker>
 {
   return assert404(
-    internalWorker ? 
-      getInternalWorker(internalWorker) :
-      await workers.findOne({ _id: workerId }),
+    getInternalWorker(workerId) ||
+    await workers.findOne({ _id: workerId }),
   );
 }

@@ -23,7 +23,7 @@ export type BundleProcessor = (
 /** "External" node that can be put inbetween nodes. */
 export class InspectNode
 {
-  public workerId : ObjectId | null = null;
+  public workerId = 'inspect_worker';
   public nodeId : ObjectId | null = null;
 
   public inputs : Worker['inputs'];
@@ -51,17 +51,25 @@ export class InspectNode
    */
   async register()
   {
-    this.workerId ||= (await workers.insertOne(
+    await workers.updateOne(
       {
-        key: 'inspect worker',
-        title: '',
-        description: '',
-        createdAt: new Date(),
-        inputs: this.inputs,
-        outputs: this.outputs,
-        params: {},
+        _id: this.workerId,
       },
-    )).insertedId;
+      {
+        $setOnInsert:
+        {
+          title: '',
+          description: '',
+          createdAt: new Date(),
+          inputs: this.inputs,
+          outputs: this.outputs,
+          params: {},
+        },
+      },
+      {
+        upsert: true,
+      },
+    );
 
     return this.nodeId = (await nodesApi.post?.(
       {
@@ -83,13 +91,13 @@ export class InspectNode
    * TODO: implement with consume=true and iterate
    * @returns bundles 
    */
-  async consume()
+  async consume() : Promise<BundleRead[]>
   {
     return (await bundlesApi.get?.(
-      { taskId: this.taskId, consumerId: this.nodeId },
+      { taskId: this.taskId, consumerId: this.nodeId as ObjectId },
       null as any,
       null as any,
-    )).results;
+    ) as any).results;
   }
 
   /**
@@ -107,8 +115,8 @@ export class InspectNode
 
       for (const item of itemsToEmit)
       {
-        await dataItemsApi.post(
-          { nodeId: this.nodeId, taskId: this.taskId },
+        await dataItemsApi.post?.(
+          { nodeId: this.nodeId as ObjectId, taskId: this.taskId },
           item,
           null as any,
           null as any,
