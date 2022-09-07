@@ -18,6 +18,7 @@ import tasks from '../api/tasks';
 import workers from '../api/workers';
 
 import requestLogger from '../middleware/request-logger';
+import util from '../api/util';
 
 const app = express();
 
@@ -38,6 +39,8 @@ if (process.env.PRINT_ALL_REQUESTS)
 {
   app.use(requestLogger);
 }
+
+app.use(util);
 
 const restAPI = new RestRouter('rest');
 
