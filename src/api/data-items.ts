@@ -6,14 +6,14 @@ import {
 
 import { badRequest, forbidden } from 'express-lemur/lib/errors';
 
-import { resource } from 'express-lemur/lib/rest/rest-router';
+import { assert404, resource } from 'express-lemur/lib/rest/rest-router';
 import { ObjectId } from 'mongodb';
 import { checkTaskAccess } from '../middleware/resource-access';
 
 import { upsertBundle } from '../pipeline/worker';
 
 import * as schemas from '../pipeline/schemas';
-import { dataItems, nodes } from '../storage/database';
+import { bundles, dataItems, nodes } from '../storage/database';
 
 /**
  * Pushes item into its destination bundles.
@@ -58,18 +58,30 @@ export async function onItemDone(
 
 /**
  * 
- * @param param0 { taskId, nodeId }
+ * @param param0 { taskId, nodeId, inputBundleId }
  * @param item item
  * @returns item
  */
 export async function postDataItem(
-  { taskId, nodeId } : { taskId: ObjectId, nodeId: ObjectId }, 
+  { taskId, nodeId, inputBundleId } : {
+    taskId: ObjectId,
+    nodeId: ObjectId,
+    inputBundleId?: ObjectId
+  }, 
   item : schemas.DataItemWrite | schemas.DataItem,
 )
 {
   if (!Array.isArray(item.data))
   {
     item.data = [item.data];
+  }
+
+  if (inputBundleId)
+  {
+    const bundle = assert404(await bundles.findOne({ _id: inputBundleId }));
+
+    item.flowId ??= bundle.flowId;
+    item.flowStack ??= bundle.flowStack;
   }
   
   // {taskId, nodeId, flowId, output} form a unique index (see db-indexes for dataItems)

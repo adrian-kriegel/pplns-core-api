@@ -180,6 +180,7 @@ export declare const dataItemQuery: TObject<{
     nodeId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
+    inputBundleId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
 }>;
 export declare type DataItemQuery = Static<typeof dataItemQuery>;
 export declare const bundle: TObject<{
@@ -196,6 +197,11 @@ export declare const bundle: TObject<{
     taskId: import("@sinclair/typebox").TString;
     flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
     lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>>;
+    flowStack: import("@sinclair/typebox").TArray<TObject<{
+        flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
+        splitNodeId: import("@sinclair/typebox").TString;
+        numEmitted: import("@sinclair/typebox").TInteger;
+    }>>;
     done: import("@sinclair/typebox").TBoolean;
     consumerId: import("@sinclair/typebox").TString;
     workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
@@ -234,6 +240,11 @@ export declare const bundleRead: TObject<{
     taskId: import("@sinclair/typebox").TString;
     flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
     lowerFlowIds: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>>;
+    flowStack: import("@sinclair/typebox").TArray<TObject<{
+        flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
+        splitNodeId: import("@sinclair/typebox").TString;
+        numEmitted: import("@sinclair/typebox").TInteger;
+    }>>;
     done: import("@sinclair/typebox").TBoolean;
     consumerId: import("@sinclair/typebox").TString;
     workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;

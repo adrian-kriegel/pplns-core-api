@@ -160,6 +160,7 @@ export class ExternalWorker implements IWorker
           done: consumer.inputs.length === 1,
           createdAt: new Date(),
           allTaken: false,
+          flowStack: item.flowStack,
         },
         $set:
         {
@@ -262,6 +263,9 @@ export class ExternalWorker implements IWorker
       allInputItems.length === consumer.inputs.length
     ;
 
+    // TODO: should be Parameters<(typeof bundles)['updateOne']>[1] imo but it seems to be diff. type
+    const bundleUpdate : any = { };
+    
     // if another update is required
     if (
       // bundle.done needs to be updated in the database
@@ -273,32 +277,38 @@ export class ExternalWorker implements IWorker
       if (bundleDone)
       {
         // once the bundle is done, sort the input items
-        return bundles.updateOne(
-          { _id: bundle._id, done: false },
-          {
-            $set: 
-            {
-              inputItems: allInputItems.sort(
-                ({ position: a }, { position: b }) => a - b,
-              ),
-              done: true,
-            },
-          },
-        );
+        bundleUpdate.$set = 
+        {
+          inputItems: allInputItems.sort(
+            ({ position: a }, { position: b }) => a - b,
+          ),
+          done: true,
+        };
       }
       else 
       {
-        // TODO set done using aggregation in updateOne 
-        return bundles.updateOne(
-          { _id: bundle._id, done: false },
-          {
-            $addToSet:
-            {
-              inputItems: { $each: lowerLevelInputItems },
-            },
-          },
-        );
+        bundleUpdate.$addToSet = 
+        {
+          inputItems: { $each: lowerLevelInputItems },
+        };
       }
+    }
+
+    // current item has a deeper flow stack
+    if (bundle.flowStack.length < item.flowStack.length)
+    {
+      bundleUpdate.$set ??= {};
+
+      bundleUpdate.$set.flowStack = item.flowStack;
+      bundleUpdate.$set.flowId = item.flowId;
+    }
+
+    if (Object.keys(bundleUpdate).length !== 0)
+    {
+      return bundles.updateOne(
+        { _id: bundle._id, done: false },
+        bundleUpdate,
+      );
     }
   }
 }

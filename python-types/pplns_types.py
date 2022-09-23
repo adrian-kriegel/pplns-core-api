@@ -189,7 +189,8 @@ DataItemQuery = typing.TypedDict('DataItemQuery',{
 'flowId': NotRequired[typing.Union[
 str,
 str
-]]
+]],
+'inputBundleId': NotRequired[str]
 })
 
 Bundle = typing.TypedDict('Bundle',{
@@ -212,6 +213,14 @@ str
 str,
 str
 ]]],
+'flowStack': list[typing.TypedDict('name.flowStack.items',{
+'flowId': typing.Union[
+str,
+str
+],
+'splitNodeId': str,
+'numEmitted': int
+})],
 'done': bool,
 'consumerId': str,
 'workerId': NotRequired[str],
@@ -240,6 +249,14 @@ str
 str,
 str
 ]]],
+'flowStack': list[typing.TypedDict('name.flowStack.items',{
+'flowId': typing.Union[
+str,
+str
+],
+'splitNodeId': str,
+'numEmitted': int
+})],
 'done': bool,
 'consumerId': str,
 'workerId': NotRequired[str],

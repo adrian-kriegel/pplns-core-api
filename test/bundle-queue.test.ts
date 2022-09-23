@@ -31,6 +31,7 @@ beforeAll(async () =>
       {
         depth: 0,
         flowId: flowId1,
+        flowStack: [],
         consumerId,
         taskId,
         createdAt: new Date(),
@@ -44,6 +45,7 @@ beforeAll(async () =>
       {
         depth: 0,
         flowId: flowId2,
+        flowStack: [],
         consumerId,
         taskId,
         createdAt: new Date(),

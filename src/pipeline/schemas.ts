@@ -239,6 +239,8 @@ export const dataItemQuery = Type.Object(
     nodeId: Type.Optional(objectId),
     done: Type.Optional(Type.Boolean()),
     flowId: Type.Optional(flowIdSchema),
+    // the input that produced this item as an output
+    inputBundleId: Type.Optional(objectId),
   },
 );
 
@@ -274,6 +276,9 @@ const bundleProps =
 
   // all flowIds from the flowStack of all items in this bundle
   lowerFlowIds: Type.Optional(Type.Array(flowIdSchema)),
+
+  // flow stack of deepest item
+  flowStack: flowStackSchema,
 
   // true iff all required data items are done
   done: Type.Boolean(),

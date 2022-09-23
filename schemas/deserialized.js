@@ -108,7 +108,9 @@ exports.dataItemQuery = typebox_1.Type.Object({
     taskId: typebox_1.Type.Optional(general_1.objectId),
     nodeId: typebox_1.Type.Optional(general_1.objectId),
     done: typebox_1.Type.Optional(typebox_1.Type.Boolean()),
-    flowId: typebox_1.Type.Optional(exports.flowIdSchema)
+    flowId: typebox_1.Type.Optional(exports.flowIdSchema),
+    // the input that produced this item as an output
+    inputBundleId: typebox_1.Type.Optional(general_1.objectId)
 });
 var bundleProps = {
     _id: general_1.objectId,
@@ -128,6 +130,8 @@ var bundleProps = {
     flowId: exports.flowIdSchema,
     // all flowIds from the flowStack of all items in this bundle
     lowerFlowIds: typebox_1.Type.Optional(typebox_1.Type.Array(exports.flowIdSchema)),
+    // flow stack of deepest item
+    flowStack: exports.flowStackSchema,
     // true iff all required data items are done
     done: typebox_1.Type.Boolean(),
     // node that may consume these items

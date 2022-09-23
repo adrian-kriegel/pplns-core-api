@@ -70,6 +70,36 @@
         ]
       }
     },
+    "flowStack": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "flowId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "splitNodeId": {
+            "type": "string"
+          },
+          "numEmitted": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "flowId",
+          "splitNodeId",
+          "numEmitted"
+        ]
+      }
+    },
     "done": {
       "type": "boolean"
     },
@@ -98,6 +128,7 @@
     "depth",
     "taskId",
     "flowId",
+    "flowStack",
     "done",
     "consumerId",
     "numAvailable",

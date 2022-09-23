@@ -384,3 +384,7 @@ describe('Bundles API', () =>
     ).toStrictEqual([['b1data1'], ['b1data2']]);
   });
 });
+
+test.todo(
+  'bundle.flowId and bundle.flowStack are determined by the deepest item',
+);
