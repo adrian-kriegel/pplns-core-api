@@ -129,6 +129,15 @@ str,
 str
 ]
 
+FlowStackSchema = list[typing.TypedDict('FlowStackSchema.items',{
+'flowId': typing.Union[
+str,
+str
+],
+'splitNodeId': str,
+'numEmitted': int
+})]
+
 DataItem = typing.TypedDict('DataItem',{
 '_id': str,
 'createdAt': str,

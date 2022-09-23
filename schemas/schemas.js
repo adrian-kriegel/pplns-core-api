@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
+exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowStackSchema = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
 const typebox_1 = require("@unologin/typebox-extended/typebox");
 const general_1 = require("@unologin/server-common/lib/schemas/general");
 const writeType = (schema) => typebox_1.Type.Omit(schema, ['_id', 'createdAt']);
@@ -63,6 +63,11 @@ exports.nodeRead = typebox_1.Type.Object({
     worker: typebox_1.Type.Union([exports.worker, exports.internalWorker]),
 });
 exports.flowIdSchema = typebox_1.Type.Union([typebox_1.Type.String(), general_1.objectId]);
+exports.flowStackSchema = typebox_1.Type.Array(typebox_1.Type.Object({
+    flowId: exports.flowIdSchema,
+    splitNodeId: general_1.objectId,
+    numEmitted: typebox_1.Type.Integer(),
+}));
 const dataItemProps = {
     _id: general_1.objectId,
     createdAt: general_1.date,
@@ -76,11 +81,7 @@ const dataItemProps = {
     // items with the same flowId from different nodes to the same consumer are grouped as bundles
     flowId: exports.flowIdSchema,
     // stack of all flowIds (except item.flowId) this item belongs to (pushed in split-, popped in join node)
-    flowStack: typebox_1.Type.Array(typebox_1.Type.Object({
-        flowId: exports.flowIdSchema,
-        splitNodeId: general_1.objectId,
-        numEmitted: typebox_1.Type.Integer(),
-    })),
+    flowStack: exports.flowStackSchema,
     // list of all nodes this item (or its parents from splits) has passed through
     producerNodeIds: typebox_1.Type.Array(general_1.objectId),
     // set to true once all processing has completed

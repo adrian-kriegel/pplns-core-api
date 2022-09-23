@@ -139,6 +139,18 @@ export const flowIdSchema = Type.Union(
 
 export type FlowId = Static<typeof flowIdSchema>;
 
+export const flowStackSchema = Type.Array(
+  Type.Object(
+    {
+      flowId: flowIdSchema,
+      splitNodeId: objectId,
+      numEmitted: Type.Integer(),
+    },
+  ),
+);
+
+export type FlowStack = Static<typeof flowStackSchema>;
+
 const dataItemProps = 
 {
   _id: objectId,
@@ -159,15 +171,7 @@ const dataItemProps =
   flowId: flowIdSchema,
 
   // stack of all flowIds (except item.flowId) this item belongs to (pushed in split-, popped in join node)
-  flowStack: Type.Array(
-    Type.Object(
-      {
-        flowId: flowIdSchema,
-        splitNodeId: objectId,
-        numEmitted: Type.Integer(),
-      },
-    ),
-  ),
+  flowStack: flowStackSchema,
 
   // list of all nodes this item (or its parents from splits) has passed through
   producerNodeIds: Type.Array(objectId),

@@ -11,7 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 exports.__esModule = true;
-exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
+exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowStackSchema = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
 var typebox_1 = require("@unologin/typebox-extended/typebox");
 var general_1 = require("@unologin/server-common/lib/schemas/general");
 var writeType = function (schema) {
@@ -73,6 +73,11 @@ exports.node = typebox_1.Type.Object(nodeProps);
 exports.nodeWrite = typebox_1.Type.Omit(writeType(exports.node), ['taskId']);
 exports.nodeRead = typebox_1.Type.Object(__assign(__assign({}, nodeProps), { worker: typebox_1.Type.Union([exports.worker, exports.internalWorker]) }));
 exports.flowIdSchema = typebox_1.Type.Union([typebox_1.Type.String(), general_1.objectId]);
+exports.flowStackSchema = typebox_1.Type.Array(typebox_1.Type.Object({
+    flowId: exports.flowIdSchema,
+    splitNodeId: general_1.objectId,
+    numEmitted: typebox_1.Type.Integer()
+}));
 var dataItemProps = {
     _id: general_1.objectId,
     createdAt: general_1.date,
@@ -86,11 +91,7 @@ var dataItemProps = {
     // items with the same flowId from different nodes to the same consumer are grouped as bundles
     flowId: exports.flowIdSchema,
     // stack of all flowIds (except item.flowId) this item belongs to (pushed in split-, popped in join node)
-    flowStack: typebox_1.Type.Array(typebox_1.Type.Object({
-        flowId: exports.flowIdSchema,
-        splitNodeId: general_1.objectId,
-        numEmitted: typebox_1.Type.Integer()
-    })),
+    flowStack: exports.flowStackSchema,
     // list of all nodes this item (or its parents from splits) has passed through
     producerNodeIds: typebox_1.Type.Array(general_1.objectId),
     // set to true once all processing has completed

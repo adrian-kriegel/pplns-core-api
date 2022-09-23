@@ -125,6 +125,12 @@ export declare type NodeWrite = Static<typeof nodeWrite>;
 export declare type NodeRead = Static<typeof nodeRead>;
 export declare const flowIdSchema: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
 export declare type FlowId = Static<typeof flowIdSchema>;
+export declare const flowStackSchema: import("@sinclair/typebox").TArray<TObject<{
+    flowId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>;
+    splitNodeId: import("@sinclair/typebox").TString;
+    numEmitted: import("@sinclair/typebox").TInteger;
+}>>;
+export declare type FlowStack = Static<typeof flowStackSchema>;
 export declare const dataItem: TObject<{
     flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
     flowStack: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TArray<TObject<{

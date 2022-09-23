@@ -20,7 +20,7 @@ const mockRes =
 const flowId1 = new ObjectId('f1de9ee9ac751033dad45a62');
 const flowId2 = new ObjectId('f2de9ee9ac751033dad45a62');
 
-const workerId = new ObjectId('62de9ee9ac751033dad45a63');
+const workerId = 'some-worker-id';
 const consumerId = new ObjectId('62de9ee9ac751033dad45a64');
 const taskId = new ObjectId('62de9ee9ac751033dad45a65');
 
