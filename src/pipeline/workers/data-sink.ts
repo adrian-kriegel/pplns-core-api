@@ -56,6 +56,7 @@ implements IInternalWorker
         consumerId: consumer._id,
         done: true,
         flowId: item.flowId || new ObjectId(),
+        flowStack: item.flowStack,
         taskId: item.taskId,
         numAvailable: 1,
         numTaken: 0,

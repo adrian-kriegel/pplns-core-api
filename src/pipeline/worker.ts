@@ -5,6 +5,7 @@ import * as schemas from './schemas';
 import { bundles, dataItems, workers } from '../storage/database';
 import Mutex from '../util/mutex';
 import { getInternalWorker, IInternalWorker } from './internal-workers';
+import { listFileSystemWorkers } from './worker-management';
 
 export interface IWorker
 {
@@ -363,6 +364,34 @@ export function findInputForItem(
 }
 
 /**
+ * 
+ * @param workerId workerId
+ * @returns Promise<Worker>
+ * @throws 404 if not found
+ */
+export async function findWorker(workerId: string)
+{
+  let worker = 
+    getInternalWorker(workerId) ||
+    await workers.findOne({ _id: workerId })
+  ;
+
+  if (!worker)
+  {
+    worker = (await listFileSystemWorkers())
+      .find(({_id}) => _id == workerId)
+    ;
+
+    if (worker)
+    {
+      await workers.insertOne(worker);
+    }
+  }
+
+  return worker;
+}
+
+/**
  * @returns worker for node
  * @throws 404 if not found
  */
@@ -370,8 +399,5 @@ export async function findWorkerForNode(
   { workerId } : Pick<schemas.Node, 'workerId'>,
 ) : Promise<schemas.Worker | IInternalWorker>
 {
-  return assert404(
-    getInternalWorker(workerId) ||
-    await workers.findOne({ _id: workerId }),
-  );
+  return findWorker(workerId);
 }
