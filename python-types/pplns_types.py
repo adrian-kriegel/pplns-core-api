@@ -157,7 +157,7 @@ str
 'numEmitted': int
 })]],
 'producerNodeIds': list[str],
-'done': bool,
+'done': NotRequired[bool],
 'autoDoneAfter': NotRequired[int],
 'data': list[typing.Any]
 })
@@ -176,7 +176,7 @@ str
 'splitNodeId': str,
 'numEmitted': int
 })]],
-'done': bool,
+'done': NotRequired[bool],
 'autoDoneAfter': NotRequired[int],
 'data': list[typing.Any]
 })
@@ -282,7 +282,7 @@ str
 'numEmitted': int
 })]],
 'producerNodeIds': list[str],
-'done': bool,
+'done': NotRequired[bool],
 'autoDoneAfter': NotRequired[int],
 'data': list[typing.Any]
 })]

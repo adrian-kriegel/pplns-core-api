@@ -95,7 +95,7 @@ var dataItemProps = {
     // list of all nodes this item (or its parents from splits) has passed through
     producerNodeIds: typebox_1.Type.Array(general_1.objectId),
     // set to true once all processing has completed
-    done: typebox_1.Type.Boolean(),
+    done: typebox_1.Type.Optional(typebox_1.Type.Boolean({ "default": false })),
     // will automatically set done:true once data.length reaches this value
     autoDoneAfter: typebox_1.Type.Optional(typebox_1.Type.Integer()),
     // output data

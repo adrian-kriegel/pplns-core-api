@@ -64,8 +64,8 @@ export async function onItemDone(
  */
 export async function postDataItem(
   { taskId, nodeId, inputBundleId } : {
-    taskId: ObjectId,
-    nodeId: ObjectId,
+    taskId?: ObjectId,
+    nodeId?: ObjectId,
     inputBundleId?: ObjectId
   }, 
   item : schemas.DataItemWrite | schemas.DataItem,
@@ -82,6 +82,20 @@ export async function postDataItem(
 
     item.flowId ??= bundle.flowId;
     item.flowStack ??= bundle.flowStack;
+
+    if (nodeId && !nodeId.equals(bundle.consumerId))
+    {
+      throw badRequest()
+        .msg(
+          'nodeId does not match nodeId determined via inputBundleId',
+        ).data(
+          { nodeId, inputBundle: bundle },
+        )
+      ;
+    }
+
+    nodeId ??= bundle.consumerId;
+    taskId ??= bundle.taskId;
   }
   
   // {taskId, nodeId, flowId, output} form a unique index (see db-indexes for dataItems)

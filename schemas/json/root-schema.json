@@ -620,6 +620,7 @@
           }
         },
         "done": {
+          "default": false,
           "type": "boolean"
         },
         "autoDoneAfter": {
@@ -637,7 +638,6 @@
         "nodeId",
         "outputChannel",
         "producerNodeIds",
-        "done",
         "data"
       ]
     },
@@ -690,6 +690,7 @@
           }
         },
         "done": {
+          "default": false,
           "type": "boolean"
         },
         "autoDoneAfter": {
@@ -702,7 +703,6 @@
       },
       "required": [
         "outputChannel",
-        "done",
         "data"
       ]
     },
@@ -1066,6 +1066,7 @@
                 }
               },
               "done": {
+                "default": false,
                 "type": "boolean"
               },
               "autoDoneAfter": {
@@ -1083,7 +1084,6 @@
               "nodeId",
               "outputChannel",
               "producerNodeIds",
-              "done",
               "data"
             ]
           }

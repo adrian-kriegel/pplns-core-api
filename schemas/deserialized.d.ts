@@ -144,7 +144,7 @@ export declare const dataItem: TObject<{
     nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     outputChannel: import("@sinclair/typebox").TString;
     producerNodeIds: import("@sinclair/typebox").TArray<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
-    done: import("@sinclair/typebox").TBoolean;
+    done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
 }>;
@@ -161,7 +161,7 @@ export declare const dataItemWrite: TObject<Omit<{
     nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
     outputChannel: import("@sinclair/typebox").TString;
     producerNodeIds: import("@sinclair/typebox").TArray<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
-    done: import("@sinclair/typebox").TBoolean;
+    done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
 }, "_id" | "createdAt" | "taskId" | "nodeId" | "producerNodeIds">>;
@@ -223,7 +223,7 @@ export declare const bundleRead: TObject<{
         nodeId: import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>;
         outputChannel: import("@sinclair/typebox").TString;
         producerNodeIds: import("@sinclair/typebox").TArray<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
-        done: import("@sinclair/typebox").TBoolean;
+        done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
         autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
         data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
     }>>;

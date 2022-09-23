@@ -177,7 +177,7 @@ const dataItemProps =
   producerNodeIds: Type.Array(objectId),
 
   // set to true once all processing has completed
-  done: Type.Boolean(),
+  done: Type.Optional(Type.Boolean({ default: false })),
 
   // will automatically set done:true once data.length reaches this value
   autoDoneAfter: Type.Optional(Type.Integer()),

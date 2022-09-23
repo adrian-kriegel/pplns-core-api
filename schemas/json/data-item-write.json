@@ -47,6 +47,7 @@
       }
     },
     "done": {
+      "default": false,
       "type": "boolean"
     },
     "autoDoneAfter": {
@@ -59,7 +60,6 @@
   },
   "required": [
     "outputChannel",
-    "done",
     "data"
   ]
 }
