@@ -186,6 +186,8 @@ export declare const dataItemQuery: TObject<{
     done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
     inputBundleId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    sort: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TLiteral<1>, import("@sinclair/typebox").TLiteral<-1>]>>>;
+    limit: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
 }>;
 export declare type DataItemQuery = Static<typeof dataItemQuery>;
 export declare const bundle: TObject<{

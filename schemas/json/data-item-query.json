@@ -27,6 +27,27 @@
     },
     "inputBundleId": {
       "type": "string"
+    },
+    "sort": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "anyOf": [
+            {
+              "const": 1,
+              "type": "number"
+            },
+            {
+              "const": -1,
+              "type": "number"
+            }
+          ]
+        }
+      }
+    },
+    "limit": {
+      "minimum": 1,
+      "type": "integer"
     }
   }
 }

@@ -249,6 +249,13 @@ export const dataItemQuery = Type.Object(
     flowId: Type.Optional(flowIdSchema),
     // the input that produced this item as an output
     inputBundleId: Type.Optional(objectId),
+    sort: Type.Optional(
+      Type.Record(
+        Type.String(), 
+        Type.Union([Type.Literal(1), Type.Literal(-1)]),
+      ),
+    ),
+    limit: Type.Optional(Type.Integer({ minimum: 1 })),
   },
 );
 

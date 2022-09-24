@@ -195,7 +195,12 @@ DataItemQuery = typing.TypedDict('DataItemQuery',{
 str,
 str
 ]],
-'inputBundleId': NotRequired[str]
+'inputBundleId': NotRequired[str],
+'sort': NotRequired[dict[str, typing.Union[
+1,
+-1
+]]],
+'limit': NotRequired[int]
 })
 
 Bundle = typing.TypedDict('Bundle',{

@@ -162,13 +162,20 @@ export async function postDataItem(
   }
   catch (e)
   {
+    console.log(e);
     // since "upsert" is used above, "11000" (duplicate key) can only happen
     // if item is done already and thus should not be changed anymore
     if (e.code === 11000)
     {
       throw badRequest()
         .msg('Item is "done". Update rejected.')
-        .data({ taskId, nodeId, output: item.outputChannel })
+        .data(
+          { 
+            taskId,
+            nodeId,
+            item,
+          },
+        )
       ;
     }
     else 
@@ -219,7 +226,15 @@ export default resource(
     get: collectionToGetHandler<schemas.DataItemQuery, typeof schemas.dataItem>(
       dataItems,
       schemas.dataItem,
-      (q) => removeUndefined(q),
+      (q) => removeUndefined(
+        {
+          ...q,
+          limit: undefined,
+          offset: undefined,
+          sort: undefined,
+        },
+      ),
+      ({ sort }) => sort || { _id: -1 },
     ),
 
     post: postDataItem,

@@ -20,6 +20,8 @@ import workers from '../api/workers';
 import requestLogger from '../middleware/request-logger';
 import util from '../api/util';
 
+import jsonQueryParser from '../middleware/json-query-parser';
+
 const app = express();
 
 export = app;
@@ -32,7 +34,7 @@ app.use(connection.expressSetup);
 app.use(cookieParser());
 
 app.use(unologin);
-
+app.use(jsonQueryParser);
 app.use(express.json());
 
 if (process.env.PRINT_ALL_REQUESTS)

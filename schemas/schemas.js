@@ -109,6 +109,8 @@ exports.dataItemQuery = typebox_1.Type.Object({
     flowId: typebox_1.Type.Optional(exports.flowIdSchema),
     // the input that produced this item as an output
     inputBundleId: typebox_1.Type.Optional(general_1.objectId),
+    sort: typebox_1.Type.Optional(typebox_1.Type.Record(typebox_1.Type.String(), typebox_1.Type.Union([typebox_1.Type.Literal(1), typebox_1.Type.Literal(-1)]))),
+    limit: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1 })),
 });
 const bundleProps = {
     _id: general_1.objectId,
