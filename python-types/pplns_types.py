@@ -197,10 +197,11 @@ str
 ]],
 'inputBundleId': NotRequired[str],
 'sort': NotRequired[dict[str, typing.Union[
-1,
--1
+typing.Literal[1],
+typing.Literal[-1]
 ]]],
-'limit': NotRequired[int]
+'limit': NotRequired[int],
+'offset': NotRequired[int]
 })
 
 Bundle = typing.TypedDict('Bundle',{

@@ -253,9 +253,11 @@ export const dataItemQuery = Type.Object(
       Type.Record(
         Type.String(), 
         Type.Union([Type.Literal(1), Type.Literal(-1)]),
+        { default: { _id: -1 } },
       ),
     ),
     limit: Type.Optional(Type.Integer({ minimum: 1 })),
+    offset: Type.Optional(Type.Integer({ minimum: 0 })),
   },
 );
 

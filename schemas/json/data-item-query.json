@@ -29,6 +29,9 @@
       "type": "string"
     },
     "sort": {
+      "default": {
+        "_id": -1
+      },
       "type": "object",
       "patternProperties": {
         "^.*$": {
@@ -47,6 +50,10 @@
     },
     "limit": {
       "minimum": 1,
+      "type": "integer"
+    },
+    "offset": {
+      "minimum": 0,
       "type": "integer"
     }
   }
