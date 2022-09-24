@@ -129,6 +129,14 @@ export const nodeRead = Type.Object(
   },
 );
 
+export const nodeQuery = Type.Object(
+  {
+    _id: Type.Optional(objectId),
+    taskId: Type.Optional(objectId),
+  },
+);
+
+export type NodeQuery = Static<typeof nodeQuery>;
 export type Node = Static<typeof node>;
 export type NodeWrite = Static<typeof nodeWrite>;
 export type NodeRead = Static<typeof nodeRead>;

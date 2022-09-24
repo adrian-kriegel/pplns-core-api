@@ -1,0 +1,13 @@
+{
+  "$id": "@ppln/schemas/node-query.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "taskId": {
+      "type": "string"
+    }
+  }
+}

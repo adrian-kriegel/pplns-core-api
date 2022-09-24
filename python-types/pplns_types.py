@@ -124,6 +124,11 @@ typing.TypedDict('name.worker.1',{
 ]
 })
 
+NodeQuery = typing.TypedDict('NodeQuery',{
+'_id': NotRequired[str],
+'taskId': NotRequired[str]
+})
+
 FlowIdSchema = typing.Union[
 str,
 str

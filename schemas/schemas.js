@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowStackSchema = exports.flowIdSchema = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
+exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowStackSchema = exports.flowIdSchema = exports.nodeQuery = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
 const typebox_1 = require("@unologin/typebox-extended/typebox");
 const general_1 = require("@unologin/server-common/lib/schemas/general");
 const writeType = (schema) => typebox_1.Type.Omit(schema, ['_id', 'createdAt']);
@@ -61,6 +61,10 @@ exports.nodeWrite = typebox_1.Type.Omit(writeType(exports.node), ['taskId']);
 exports.nodeRead = typebox_1.Type.Object({
     ...nodeProps,
     worker: typebox_1.Type.Union([exports.worker, exports.internalWorker]),
+});
+exports.nodeQuery = typebox_1.Type.Object({
+    _id: typebox_1.Type.Optional(general_1.objectId),
+    taskId: typebox_1.Type.Optional(general_1.objectId),
 });
 exports.flowIdSchema = typebox_1.Type.Union([typebox_1.Type.String(), general_1.objectId]);
 exports.flowStackSchema = typebox_1.Type.Array(typebox_1.Type.Object({

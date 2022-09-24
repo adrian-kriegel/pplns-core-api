@@ -120,6 +120,11 @@ export declare const nodeRead: TObject<{
         y: import("@sinclair/typebox").TNumber;
     }>;
 }>;
+export declare const nodeQuery: TObject<{
+    _id: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    taskId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+}>;
+export declare type NodeQuery = Static<typeof nodeQuery>;
 export declare type Node = Static<typeof node>;
 export declare type NodeWrite = Static<typeof nodeWrite>;
 export declare type NodeRead = Static<typeof nodeRead>;

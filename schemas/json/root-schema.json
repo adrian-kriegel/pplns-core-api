@@ -511,6 +511,19 @@
         "worker"
       ]
     },
+    "@ppln/schemas/node-query.json": {
+      "$id": "@ppln/schemas/node-query.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string"
+        }
+      }
+    },
     "@ppln/schemas/flow-id-schema.json": {
       "$id": "@ppln/schemas/flow-id-schema.json",
       "anyOf": [

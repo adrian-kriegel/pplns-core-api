@@ -1,16 +1,11 @@
 
 import {
-  objectId,
-} from '@unologin/server-common/lib/schemas/general';
-
-import {
   collectionToGetHandler, defaultSort, removeUndefined,
 } from '@unologin/server-common/lib/util/rest-util';
 
-import { Type, Static } from '@unologin/typebox-extended/typebox';
 import { badRequest, notFound } from 'express-lemur/lib/errors';
 
-import { resource } from 'express-lemur/lib/rest/rest-router';
+import { assert404, resource } from 'express-lemur/lib/rest/rest-router';
 import { Collection } from 'mongodb';
 
 import { checkTaskAccess } from '../middleware/resource-access';
@@ -26,14 +21,6 @@ import * as schemas from '../pipeline/schemas';
 import { nodes } from '../storage/database';
 import { simplePatch } from '../util/rest-util';
 
-const nodeQuery = Type.Object(
-  {
-    _id: Type.Optional(objectId),
-    taskId: objectId,
-  },
-);
-
-type NodeQuery = Static<typeof nodeQuery>;
 
 /**
  * 
@@ -82,7 +69,10 @@ async function validateNodeInputs(
 
 export default resource(
   {
-    route: '/tasks/:taskId/nodes',
+    route: [
+      '/tasks/:taskId/nodes',
+      '/nodes',
+    ],
 
     id: '_id',
 
@@ -90,12 +80,24 @@ export default resource(
     {
       read: schemas.nodeRead,
       write: schemas.nodeWrite,
-      query: nodeQuery,
+      query: schemas.nodeQuery,
     },
 
-    accessControl: ({ taskId }, _0, _1, res) => checkTaskAccess(taskId, res),
+    accessControl: async (query, _0, _1, res) => 
+    {
+      let taskId = query.taskId;
 
-    get: collectionToGetHandler<NodeQuery, typeof schemas.nodeRead>(
+      if (!taskId)
+      {
+        const node = assert404(await nodes.findOne({ _id: query._id }));
+
+        taskId = node.taskId;
+      }
+
+      return checkTaskAccess(taskId, res);
+    },
+
+    get: collectionToGetHandler<schemas.NodeQuery, typeof schemas.nodeRead>(
       nodes as Collection<any>,
       schemas.nodeRead,
       (q) => removeUndefined(q),
