@@ -62,6 +62,7 @@ implements IInternalWorker
         numTaken: 0,
         depth: 0,
         allTaken: false,
+        consumptions: [],
       },
     );
   }
