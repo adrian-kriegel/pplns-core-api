@@ -321,7 +321,8 @@ str
 'done': NotRequired[bool],
 'autoDoneAfter': NotRequired[int],
 'data': list[typing.Any]
-})]
+})],
+'consumptionId': NotRequired[str]
 })
 
 BundleQuery = typing.TypedDict('BundleQuery',{
@@ -339,4 +340,6 @@ BundleQuery = typing.TypedDict('BundleQuery',{
 BundleWrite = typing.TypedDict('BundleWrite',{
 'consumptionId': str
 })
+version = '0.0.1'
+
 version = '0.0.1'

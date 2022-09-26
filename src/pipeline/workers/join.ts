@@ -64,24 +64,21 @@ implements IInternalWorker
       ),
       1,
     )[0];
-    
-    const dataItem : schemas.DataItemWrite = 
-    {
-      flowId: poppedFlow.flowId,
-      // item.flowStack has been altered by splice above
-      flowStack: item.flowStack,
-      outputChannel: Object.keys(this.outputs)[0],
-      data: item.data,
-      autoDoneAfter: poppedFlow.numEmitted,
-      done: false,
-    };
 
     return postDataItem(
       {
         taskId: item.taskId,
         nodeId: joinNode._id,
       },
-      dataItem,
+      {
+        flowId: poppedFlow.flowId,
+        // item.flowStack has been altered by splice above
+        flowStack: item.flowStack,
+        outputChannel: Object.keys(this.outputs)[0],
+        data: item.data,
+        autoDoneAfter: poppedFlow.numEmitted,
+        done: false,
+      },
     );
   }
 }

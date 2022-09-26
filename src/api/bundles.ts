@@ -154,7 +154,7 @@ export async function consumeBundles(query : schemas.BundleQuery)
     // total needs to be incremented as countDocuments is performed after consuming
     total: bundle ? total + 1 : 0,
     results: bundle ?
-      orderItemsInBundles([{ ...bundle, items }]) :
+      orderItemsInBundles([{ ...bundle, items, consumptionId }]) :
       [],
   };
 }

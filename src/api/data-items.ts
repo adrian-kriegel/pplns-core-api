@@ -64,11 +64,19 @@ export async function onItemDone(
  * @returns item
  */
 export async function postDataItem(
-  { taskId, nodeId, consumptionId } : Pick<
+  { taskId, nodeId } : Pick<
     schemas.DataItemQuery, 
-    'taskId' | 'nodeId' | 'consumptionId'
+    'taskId' | 'nodeId'
   >,
-  item : schemas.DataItemWrite | schemas.DataItem,
+  item : 
+    schemas.DataItemWrite | 
+    schemas.DataItem | 
+    // allows internal nodes to explicitly change the flow
+    (
+      Omit<schemas.DataItemWrite, 'consumptionId'> & 
+      { flowId: schemas.FlowId, flowStack: schemas.FlowStack }
+    )
+  ,
 )
 {
   if (!Array.isArray(item.data))
@@ -78,10 +86,16 @@ export async function postDataItem(
 
   let bundle : schemas.Bundle | null = null;
 
-  if (consumptionId)
+  let flowStack : schemas.DataItem['flowStack'] = 
+    'flowStack' in item ?
+      item['flowStack'] : 
+      []
+  ;
+
+  if ('consumptionId' in item && item['consumptionId'])
   {
     const bundleUpdate = await bundles.findOneAndUpdate(
-      { 'consumptions._id': consumptionId },
+      { 'consumptions._id': item.consumptionId },
       {
         $set:
         {
@@ -141,7 +155,7 @@ export async function postDataItem(
     }
 
     item.flowId ??= bundle.flowId;
-    item.flowStack ??= bundle.flowStack;
+    flowStack = bundle.flowStack;
 
     nodeId ??= bundle.consumerId;
     taskId ??= bundle.taskId;
@@ -175,7 +189,7 @@ export async function postDataItem(
         $setOnInsert:
         {
           createdAt: new Date(),
-          flowStack: item.flowStack || [],
+          flowStack,
           flowId: item.flowId || new ObjectId(),
         },
       },

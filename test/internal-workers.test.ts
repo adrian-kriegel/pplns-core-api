@@ -126,6 +126,7 @@ describe('Split node', () =>
         ],
         done: true,
         outputChannel: 'data',
+        consumptionId: null,
       },
       null as any,
       mockRes,
@@ -143,6 +144,7 @@ describe('Split node', () =>
         ],
         done: true,
         outputChannel: 'data',
+        consumptionId: null,
       },
       null as any,
       mockRes,
@@ -180,6 +182,7 @@ describe('Split node', () =>
           outputChannel: 'out',
           flowId: bundle.flowId,
           flowStack: bundle.items[0].flowStack,
+          consumptionId: bundle.consumptionId,
         },
       ],
     );

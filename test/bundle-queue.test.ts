@@ -99,7 +99,13 @@ describe('Bundle API queue system', () =>
       );
 
       // reset consumptions as they will be changed after consume=true 
-      consumeResults.forEach((r) => r.consumptions = []);
+      consumeResults.forEach(
+        (r) =>
+        {
+          r.consumptions = [];
+          delete r.consumptionId;
+        },
+      );
 
       expect(consumeResults).toStrictEqual(
         getResults.map((r) => ({ ...r, numTaken: r.numTaken + 1 })),

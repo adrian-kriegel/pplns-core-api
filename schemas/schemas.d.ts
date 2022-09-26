@@ -143,6 +143,7 @@ export declare const dataItem: TObject<{
         splitNodeId: import("@sinclair/typebox").TString;
         numEmitted: import("@sinclair/typebox").TInteger;
     }>>>;
+    consumptionId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, any]>;
     _id: import("@sinclair/typebox").TString;
     createdAt: import("@sinclair/typebox").TString;
     taskId: import("@sinclair/typebox").TString;
@@ -160,6 +161,7 @@ export declare const dataItemWrite: TObject<Omit<{
         splitNodeId: import("@sinclair/typebox").TString;
         numEmitted: import("@sinclair/typebox").TInteger;
     }>>>;
+    consumptionId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, any]>;
     _id: import("@sinclair/typebox").TString;
     createdAt: import("@sinclair/typebox").TString;
     taskId: import("@sinclair/typebox").TString;
@@ -169,7 +171,7 @@ export declare const dataItemWrite: TObject<Omit<{
     done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
-}, "_id" | "createdAt" | "taskId" | "nodeId" | "producerNodeIds">>;
+}, "_id" | "createdAt" | "taskId" | "nodeId" | "producerNodeIds" | "flowStack">>;
 declare type DataItemGeneric<T, C> = {
     data: T[];
     outputChannel: C;
@@ -185,7 +187,6 @@ export declare const dataItemQuery: TObject<{
     nodeId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
-    consumptionId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     sort: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TLiteral<1>, import("@sinclair/typebox").TLiteral<-1>]>>>;
     limit: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     offset: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
@@ -236,6 +237,7 @@ export declare const bundleRead: TObject<{
             splitNodeId: import("@sinclair/typebox").TString;
             numEmitted: import("@sinclair/typebox").TInteger;
         }>>>;
+        consumptionId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, any]>;
         _id: import("@sinclair/typebox").TString;
         createdAt: import("@sinclair/typebox").TString;
         taskId: import("@sinclair/typebox").TString;
@@ -246,6 +248,7 @@ export declare const bundleRead: TObject<{
         autoDoneAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
         data: import("@sinclair/typebox").TArray<import("@sinclair/typebox").TAny>;
     }>>;
+    consumptionId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     _id: import("@sinclair/typebox").TString;
     createdAt: import("@sinclair/typebox").TString;
     inputItems: import("@sinclair/typebox").TArray<TObject<{

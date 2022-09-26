@@ -99,16 +99,16 @@ exports.dataItem = typebox_1.Type.Object({
     ...dataItemProps,
     flowId: typebox_1.Type.Optional(dataItemProps.flowId),
     flowStack: typebox_1.Type.Optional(dataItemProps.flowStack),
+    // the consumptionId of  the input that produced this item as an output
+    consumptionId: typebox_1.Type.Union([general_1.objectId, null]),
 });
-exports.dataItemWrite = typebox_1.Type.Omit(exports.dataItem, ['taskId', 'nodeId', 'producerNodeIds', 'createdAt', '_id']);
+exports.dataItemWrite = typebox_1.Type.Omit(exports.dataItem, ['taskId', 'nodeId', 'producerNodeIds', 'createdAt', '_id', 'flowStack']);
 exports.dataItemQuery = typebox_1.Type.Object({
     _id: typebox_1.Type.Optional(general_1.objectId),
     taskId: typebox_1.Type.Optional(general_1.objectId),
     nodeId: typebox_1.Type.Optional(general_1.objectId),
     done: typebox_1.Type.Optional(typebox_1.Type.Boolean()),
     flowId: typebox_1.Type.Optional(exports.flowIdSchema),
-    // the consumptionId of  the input that produced this item as an output
-    consumptionId: typebox_1.Type.Optional(general_1.objectId),
     sort: typebox_1.Type.Optional(typebox_1.Type.Record(typebox_1.Type.String(), typebox_1.Type.Union([typebox_1.Type.Literal(1), typebox_1.Type.Literal(-1)]), { default: { _id: -1 } })),
     limit: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1 })),
     offset: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 0 })),
@@ -156,6 +156,7 @@ exports.bundle = typebox_1.Type.Object(bundleProps);
 exports.bundleRead = typebox_1.Type.Object({
     ...bundleProps,
     items: typebox_1.Type.Array(exports.dataItem),
+    consumptionId: typebox_1.Type.Optional(general_1.objectId),
 });
 exports.bundleQuery = typebox_1.Type.Object({
     _id: typebox_1.Type.Optional(general_1.objectId),
@@ -170,7 +171,7 @@ exports.bundleQuery = typebox_1.Type.Object({
     // set if the bundle should be automatically unconsumed after n seconds
     unconsumeAfter: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1 })),
 });
-// used when unconsuming bunldes
+// used when unconsuming bundles
 exports.bundleWrite = typebox_1.Type.Object({
     consumptionId: general_1.objectId,
 });

@@ -199,12 +199,15 @@ export const dataItem = Type.Object(
     ...dataItemProps,
     flowId: Type.Optional(dataItemProps.flowId),
     flowStack: Type.Optional(dataItemProps.flowStack),
+
+    // the consumptionId of  the input that produced this item as an output
+    consumptionId: Type.Union([objectId, null]),
   },
 );
 
 export const dataItemWrite = Type.Omit(
   dataItem,
-  ['taskId', 'nodeId', 'producerNodeIds', 'createdAt', '_id'],
+  ['taskId', 'nodeId', 'producerNodeIds', 'createdAt', '_id', 'flowStack'],
 );
 
 // generic part of the DataItem type
@@ -247,8 +250,6 @@ export const dataItemQuery = Type.Object(
     nodeId: Type.Optional(objectId),
     done: Type.Optional(Type.Boolean()),
     flowId: Type.Optional(flowIdSchema),
-    // the consumptionId of  the input that produced this item as an output
-    consumptionId: Type.Optional(objectId),
     sort: Type.Optional(
       Type.Record(
         Type.String(), 
@@ -334,6 +335,8 @@ export const bundleRead = Type.Object(
     ...bundleProps,
 
     items: Type.Array(dataItem),
+
+    consumptionId: Type.Optional(objectId),
   },
 );
 
@@ -356,7 +359,7 @@ export const bundleQuery = Type.Object(
   },
 );
 
-// used when unconsuming bunldes
+// used when unconsuming bundles
 export const bundleWrite = Type.Object(
   {
     consumptionId: objectId,

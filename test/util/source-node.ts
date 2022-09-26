@@ -52,6 +52,7 @@ export default class SourceNode
     return (dataItemsApi as any).post(
       { nodeId: this.getNodeId(), taskId: this.taskId },
       {
+        consumptionId: null,
         data: data,
         outputChannel: 'data',
         done: true,

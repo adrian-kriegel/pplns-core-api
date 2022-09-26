@@ -183,11 +183,11 @@ describe('DataItems API', () =>
     const item = await dataItemsApi.post?.(
       { nodeId: srcNode2._id, taskId },
       {
-        flowStack: [],
         data: ['b1data2'],
         done: true,
         flowId: flowId1,
         outputChannel: 'out0',
+        consumptionId: null,
       }, 
       null as any,
       mockRes,
@@ -219,7 +219,7 @@ describe('DataItems API', () =>
     await dataItemsApi.post?.(
       { nodeId: srcNode2._id, taskId },
       {
-        flowStack: [],
+        consumptionId: null,
         data: ['pushtest'],
         done: false,
         flowId: flowId1,
@@ -233,7 +233,7 @@ describe('DataItems API', () =>
     const item = await dataItemsApi.post?.(
       { nodeId: srcNode2._id, taskId },
       {
-        flowStack: [],
+        consumptionId: null,
         data: ['pushtest2'],
         done: true,
         flowId: flowId1,
@@ -248,7 +248,7 @@ describe('DataItems API', () =>
       () => dataItemsApi.post?.(
         { nodeId: srcNode2._id, taskId },
         {
-          flowStack: [],
+          consumptionId: null,
           data: ['pushtest3'],
           done: true,
           flowId: flowId1,
@@ -274,7 +274,7 @@ describe('DataItems API', () =>
     await dataItemsApi.post?.(
       { nodeId: srcNode2._id, taskId },
       {
-        flowStack: [],
+        consumptionId: null,
         data: ['b1data3'],
         done: true,
         flowId: flowId1,
@@ -299,7 +299,7 @@ describe('DataItems API', () =>
       const item = await dataItemsApi.post?.(
         { nodeId: srcNode1._id, taskId },
         {
-          flowStack: [],
+          consumptionId: null,
           data: ['b2data1'],
           done: true,
           flowId: flowId2,
@@ -330,7 +330,7 @@ describe('DataItems API', () =>
     const item = await dataItemsApi.post?.(
       { nodeId: srcNode1._id, taskId },
       {
-        flowStack: [],
+        consumptionId: null,
         data: ['b1data1'],
         done: true,
         flowId: flowId1,
