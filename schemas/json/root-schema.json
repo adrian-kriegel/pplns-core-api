@@ -746,7 +746,7 @@
             }
           ]
         },
-        "inputBundleId": {
+        "consumptionId": {
           "type": "string"
         },
         "sort": {
@@ -778,6 +778,34 @@
           "type": "integer"
         }
       }
+    },
+    "@ppln/schemas/bundle-consumption.json": {
+      "$id": "@ppln/schemas/bundle-consumption.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "expiresAt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "done": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "_id",
+        "expiresAt",
+        "done"
+      ]
     },
     "@ppln/schemas/bundle.json": {
       "$id": "@ppln/schemas/bundle.json",
@@ -900,6 +928,36 @@
         },
         "allTaken": {
           "type": "boolean"
+        },
+        "consumptions": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "expiresAt": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "done": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "_id",
+              "expiresAt",
+              "done"
+            ]
+          }
         }
       },
       "required": [
@@ -914,7 +972,8 @@
         "consumerId",
         "numAvailable",
         "numTaken",
-        "allTaken"
+        "allTaken",
+        "consumptions"
       ]
     },
     "@ppln/schemas/bundle-read.json": {
@@ -1039,6 +1098,36 @@
         "allTaken": {
           "type": "boolean"
         },
+        "consumptions": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "expiresAt": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "done": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "_id",
+              "expiresAt",
+              "done"
+            ]
+          }
+        },
         "items": {
           "type": "array",
           "items": {
@@ -1143,6 +1232,7 @@
         "numAvailable",
         "numTaken",
         "allTaken",
+        "consumptions",
         "items"
       ]
     },
@@ -1175,8 +1265,25 @@
         },
         "consume": {
           "type": "boolean"
+        },
+        "unconsumeAfter": {
+          "minimum": 1,
+          "type": "integer"
         }
       }
+    },
+    "@ppln/schemas/bundle-write.json": {
+      "$id": "@ppln/schemas/bundle-write.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "consumptionId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "consumptionId"
+      ]
     }
   }
 }

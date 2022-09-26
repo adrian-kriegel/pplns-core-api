@@ -41,6 +41,7 @@ beforeAll(async () =>
         numAvailable: 1,
         numTaken: 0,
         allTaken: false,
+        consumptions: [],
       },
       {
         depth: 0,
@@ -55,6 +56,7 @@ beforeAll(async () =>
         numAvailable: 1,
         numTaken: 0,
         allTaken: false,
+        consumptions: [],
       },
     ],
   );
@@ -95,6 +97,9 @@ describe('Bundle API queue system', () =>
       consumeResults = getResults.map(
         ({ _id }) => consumeResults.find((bundle) => bundle._id.equals(_id)),
       );
+
+      // reset consumptions as they will be changed after consume=true 
+      consumeResults.forEach((r) => r.consumptions = []);
 
       expect(consumeResults).toStrictEqual(
         getResults.map((r) => ({ ...r, numTaken: r.numTaken + 1 })),

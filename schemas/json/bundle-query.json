@@ -27,6 +27,10 @@
     },
     "consume": {
       "type": "boolean"
+    },
+    "unconsumeAfter": {
+      "minimum": 1,
+      "type": "integer"
     }
   }
 }

@@ -195,13 +195,22 @@ DataItemQuery = typing.TypedDict('DataItemQuery',{
 str,
 str
 ]],
-'inputBundleId': NotRequired[str],
+'consumptionId': NotRequired[str],
 'sort': NotRequired[dict[str, typing.Union[
 typing.Literal[1],
 typing.Literal[-1]
 ]]],
 'limit': NotRequired[int],
 'offset': NotRequired[int]
+})
+
+BundleConsumption = typing.TypedDict('BundleConsumption',{
+'_id': str,
+'expiresAt': typing.Union[
+str,
+None
+],
+'done': bool
 })
 
 Bundle = typing.TypedDict('Bundle',{
@@ -237,7 +246,15 @@ str
 'workerId': NotRequired[str],
 'numAvailable': int,
 'numTaken': int,
-'allTaken': bool
+'allTaken': bool,
+'consumptions': list[typing.TypedDict('name.consumptions.items',{
+'_id': str,
+'expiresAt': typing.Union[
+str,
+None
+],
+'done': bool
+})]
 })
 
 BundleRead = typing.TypedDict('BundleRead',{
@@ -274,6 +291,14 @@ str
 'numAvailable': int,
 'numTaken': int,
 'allTaken': bool,
+'consumptions': list[typing.TypedDict('name.consumptions.items',{
+'_id': str,
+'expiresAt': typing.Union[
+str,
+None
+],
+'done': bool
+})],
 'items': list[typing.TypedDict('name.items.items',{
 '_id': str,
 'createdAt': str,
@@ -307,6 +332,11 @@ BundleQuery = typing.TypedDict('BundleQuery',{
 'done': NotRequired[bool],
 'flowId': NotRequired[str],
 'limit': NotRequired[int],
-'consume': NotRequired[bool]
+'consume': NotRequired[bool],
+'unconsumeAfter': NotRequired[int]
+})
+
+BundleWrite = typing.TypedDict('BundleWrite',{
+'consumptionId': str
 })
 version = '0.0.1'

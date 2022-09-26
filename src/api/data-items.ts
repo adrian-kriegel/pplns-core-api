@@ -14,6 +14,7 @@ import { upsertBundle } from '../pipeline/worker';
 
 import * as schemas from '../pipeline/schemas';
 import { bundles, dataItems, nodes } from '../storage/database';
+import { unconsume } from '../pipeline/bundle-consumptions';
 
 /**
  * Pushes item into its destination bundles.
@@ -63,11 +64,10 @@ export async function onItemDone(
  * @returns item
  */
 export async function postDataItem(
-  { taskId, nodeId, inputBundleId } : {
-    taskId?: ObjectId,
-    nodeId?: ObjectId,
-    inputBundleId?: ObjectId
-  }, 
+  { taskId, nodeId, consumptionId } : Pick<
+    schemas.DataItemQuery, 
+    'taskId' | 'nodeId' | 'consumptionId'
+  >,
   item : schemas.DataItemWrite | schemas.DataItem,
 )
 {
@@ -76,23 +76,72 @@ export async function postDataItem(
     item.data = [item.data];
   }
 
-  if (inputBundleId)
-  {
-    const bundle = assert404(await bundles.findOne({ _id: inputBundleId }));
+  let bundle : schemas.Bundle | null = null;
 
-    item.flowId ??= bundle.flowId;
-    item.flowStack ??= bundle.flowStack;
+  if (consumptionId)
+  {
+    const bundleUpdate = await bundles.findOneAndUpdate(
+      { 'consumptions._id': consumptionId },
+      {
+        $set:
+        {
+          done: true,
+        },
+      },
+      {
+        // this is important in order to check the value of "done"
+        returnDocument: 'before',
+        projection: { 'consumptions.$': 1 },
+      },
+    );
+
+    bundle = assert404(bundleUpdate.value);
+
+    // will be the only element (see projection above)
+    const con = bundle.consumptions[0] as schemas.BundleConsumption;
+
+    if (con.done)
+    {
+      // [!] TODO: this prevents nodes from populating multiple output channels at once
+      // this should be permitted 
+      // some nodes may have multiple outputs that are NOT set at once (like filters which filter into categories)
+      // possible solution: 
+      //    only set "done" to true if the node has a single output
+      //    any nodes with multiple outputs will have to notify the server that they are done   
+      //    processing this consumption using a separate endpoint
+      //                    
+      //    this feature may work well in conjunction with a "batch-emit" feature for nodes to populate
+      //    outputs at once
+      throw badRequest()
+        .msg('An item related to the consumptionId has been emitted before.')
+        .data({ bundle })
+      ;
+    }
+
+    if (con.expiresAt <= new Date())
+    {
+      await unconsume(bundle._id, con._id);
+
+      throw badRequest()
+        .msg('Consumption has expired. Consume again in order to emit items.')
+        .data({ bundle, conumptionn: con })
+      ;
+    }
+
 
     if (nodeId && !nodeId.equals(bundle.consumerId))
     {
       throw badRequest()
         .msg(
-          'nodeId does not match nodeId determined via inputBundleId',
+          'nodeId does not match consumerId determined via consumptionId',
         ).data(
           { nodeId, inputBundle: bundle },
         )
       ;
     }
+
+    item.flowId ??= bundle.flowId;
+    item.flowStack ??= bundle.flowStack;
 
     nodeId ??= bundle.consumerId;
     taskId ??= bundle.taskId;

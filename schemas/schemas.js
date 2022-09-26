@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bundleQuery = exports.bundleRead = exports.bundle = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowStackSchema = exports.flowIdSchema = exports.nodeQuery = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
+exports.bundleWrite = exports.bundleQuery = exports.bundleRead = exports.bundle = exports.bundleConsumption = exports.dataItemQuery = exports.dataItemWrite = exports.dataItem = exports.flowStackSchema = exports.flowIdSchema = exports.nodeQuery = exports.nodeRead = exports.nodeWrite = exports.node = exports.taskWrite = exports.internalWorker = exports.workerWrite = exports.worker = exports.dataTypeRecord = exports.dataTypeDefinition = exports.task = void 0;
 const typebox_1 = require("@unologin/typebox-extended/typebox");
 const general_1 = require("@unologin/server-common/lib/schemas/general");
 const writeType = (schema) => typebox_1.Type.Omit(schema, ['_id', 'createdAt']);
@@ -107,11 +107,16 @@ exports.dataItemQuery = typebox_1.Type.Object({
     nodeId: typebox_1.Type.Optional(general_1.objectId),
     done: typebox_1.Type.Optional(typebox_1.Type.Boolean()),
     flowId: typebox_1.Type.Optional(exports.flowIdSchema),
-    // the input that produced this item as an output
-    inputBundleId: typebox_1.Type.Optional(general_1.objectId),
+    // the consumptionId of  the input that produced this item as an output
+    consumptionId: typebox_1.Type.Optional(general_1.objectId),
     sort: typebox_1.Type.Optional(typebox_1.Type.Record(typebox_1.Type.String(), typebox_1.Type.Union([typebox_1.Type.Literal(1), typebox_1.Type.Literal(-1)]), { default: { _id: -1 } })),
     limit: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1 })),
     offset: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 0 })),
+});
+exports.bundleConsumption = typebox_1.Type.Object({
+    _id: general_1.objectId,
+    expiresAt: typebox_1.Type.Union([general_1.date, typebox_1.Type.Null()]),
+    done: typebox_1.Type.Boolean(),
 });
 const bundleProps = {
     _id: general_1.objectId,
@@ -145,6 +150,7 @@ const bundleProps = {
     numTaken: typebox_1.Type.Integer({ minimum: 0 }),
     // same as (numTaken === numAvailable)
     allTaken: typebox_1.Type.Boolean(),
+    consumptions: typebox_1.Type.Array(exports.bundleConsumption),
 };
 exports.bundle = typebox_1.Type.Object(bundleProps);
 exports.bundleRead = typebox_1.Type.Object({
@@ -161,4 +167,10 @@ exports.bundleQuery = typebox_1.Type.Object({
     limit: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1 })),
     // set to true if returned bundles should be consumed
     consume: typebox_1.Type.Optional(typebox_1.Type.Boolean()),
+    // set if the bundle should be automatically unconsumed after n seconds
+    unconsumeAfter: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1 })),
+});
+// used when unconsuming bunldes
+exports.bundleWrite = typebox_1.Type.Object({
+    consumptionId: general_1.objectId,
 });

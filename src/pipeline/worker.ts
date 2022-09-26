@@ -162,6 +162,7 @@ export class ExternalWorker implements IWorker
           createdAt: new Date(),
           allTaken: false,
           flowStack: item.flowStack,
+          consumptions: [],
         },
         $set:
         {

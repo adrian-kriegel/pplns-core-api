@@ -46,6 +46,12 @@ const indexes : CollectionIndexes =
     {
       lowerFlowIds: 1,
     },
+    {
+      'consumptions._id': 1,
+    },
+    {
+      'consumptions.expiresAt': -1,
+    },
   ],
 };
 

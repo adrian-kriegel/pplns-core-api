@@ -1,0 +1,13 @@
+{
+  "$id": "@ppln/schemas/bundle-write.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "consumptionId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "consumptionId"
+  ]
+}

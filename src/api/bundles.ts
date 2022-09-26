@@ -6,15 +6,18 @@ import {
 } from '@unologin/server-common/lib/util/rest-util';
 
 import { resource } from 'express-lemur/lib/rest/rest-router';
-import { Collection } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import { checkTaskAccess } from '../middleware/resource-access';
 
 import * as schemas from '../pipeline/schemas';
 import { bundles, dataItems } from '../storage/database';
 
 import { mapMask } from '@unologin/server-common/lib/util/util';
-import { Type } from '@sinclair/typebox';
-import { notFound } from 'express-lemur/lib/errors';
+
+import {
+  initConsumptionExpiration,
+  unconsume,
+} from '../pipeline/bundle-consumptions';
 
 const getBundlesWithUnorderedItems = 
 collectionToGetHandler<schemas.BundleQuery, typeof schemas.bundleRead>(
@@ -65,6 +68,7 @@ function orderItemsInBundles(
   );
 }
 
+
 /**
  * TODO: allow for taking more than one bundle at a time
  * 
@@ -86,12 +90,28 @@ export async function consumeBundles(query : schemas.BundleQuery)
     },
   );
 
+  const consumptionId = new ObjectId();
+
+  const expiresAt = query.unconsumeAfter ?
+    new Date(Date.now() + query.unconsumeAfter * 1000) :
+    null
+  ;
+
   const updateResult = await bundles.findOneAndUpdate(
     findQuery,
     {
       $inc:
       {
         numTaken: 1,
+      },
+      $push:
+      {
+        consumptions:
+        {
+          _id: consumptionId,
+          expiresAt,
+          done: false,
+        },
       },
     },
     {
@@ -100,6 +120,15 @@ export async function consumeBundles(query : schemas.BundleQuery)
   );
 
   const bundle = updateResult.value;
+
+  if (bundle && expiresAt)
+  {
+    initConsumptionExpiration(
+      bundle._id,
+      consumptionId,
+      expiresAt,
+    );
+  }
 
   const [items, total] = await Promise.all(
     [
@@ -146,7 +175,7 @@ export default resource(
     {
       read: schemas.bundleRead,
       query: schemas.bundleQuery,
-      write: Type.Object({}),
+      write: schemas.bundleWrite,
     },
 
     accessControl: ({ taskId }, _0, _1, res) => checkTaskAccess(taskId, res),
@@ -163,21 +192,9 @@ export default resource(
      * @param param0 query
      * @returns _id
      */
-    put: async ({ _id }) => 
+    put: async ({ _id }, { consumptionId }) => 
     {
-      const bundle = await bundles.updateOne(
-        { _id },
-        {
-          $inc: { numTaken: -1 },
-          $set: { allTaken: false },
-        },
-      );
-
-      if (bundle.matchedCount !== 1)
-      {
-        throw notFound()
-          .msg('Bundle not found.');
-      }
+      await unconsume(_id, consumptionId);
 
       return _id as any;
     },

@@ -247,8 +247,8 @@ export const dataItemQuery = Type.Object(
     nodeId: Type.Optional(objectId),
     done: Type.Optional(Type.Boolean()),
     flowId: Type.Optional(flowIdSchema),
-    // the input that produced this item as an output
-    inputBundleId: Type.Optional(objectId),
+    // the consumptionId of  the input that produced this item as an output
+    consumptionId: Type.Optional(objectId),
     sort: Type.Optional(
       Type.Record(
         Type.String(), 
@@ -263,6 +263,15 @@ export const dataItemQuery = Type.Object(
 
 export type DataItemQuery = Static<typeof dataItemQuery>;
 
+export const bundleConsumption = Type.Object(
+  {
+    _id: objectId,
+    expiresAt: Type.Union([date, Type.Null()]),
+    done: Type.Boolean(),
+  },
+);
+
+export type BundleConsumption = Static<typeof bundleConsumption>;
 
 const bundleProps = 
 {
@@ -314,6 +323,8 @@ const bundleProps =
 
   // same as (numTaken === numAvailable)
   allTaken: Type.Boolean(),
+
+  consumptions: Type.Array(bundleConsumption),
 };
 
 export const bundle = Type.Object(bundleProps);
@@ -336,8 +347,19 @@ export const bundleQuery = Type.Object(
     done: Type.Optional(Type.Boolean()),
     flowId: Type.Optional(objectId),
     limit: Type.Optional(Type.Integer({ minimum: 1 })),
+
     // set to true if returned bundles should be consumed
     consume: Type.Optional(Type.Boolean()),
+
+    // set if the bundle should be automatically unconsumed after n seconds
+    unconsumeAfter: Type.Optional(Type.Integer({ minimum: 1 })),
+  },
+);
+
+// used when unconsuming bunldes
+export const bundleWrite = Type.Object(
+  {
+    consumptionId: objectId,
   },
 );
 

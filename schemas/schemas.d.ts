@@ -185,12 +185,18 @@ export declare const dataItemQuery: TObject<{
     nodeId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TString]>>;
-    inputBundleId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
+    consumptionId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     sort: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TRecord<import("@sinclair/typebox").TString, import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TLiteral<1>, import("@sinclair/typebox").TLiteral<-1>]>>>;
     limit: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     offset: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
 }>;
 export declare type DataItemQuery = Static<typeof dataItemQuery>;
+export declare const bundleConsumption: TObject<{
+    _id: import("@sinclair/typebox").TString;
+    expiresAt: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TNull]>;
+    done: import("@sinclair/typebox").TBoolean;
+}>;
+export declare type BundleConsumption = Static<typeof bundleConsumption>;
 export declare const bundle: TObject<{
     _id: import("@sinclair/typebox").TString;
     createdAt: import("@sinclair/typebox").TString;
@@ -216,6 +222,11 @@ export declare const bundle: TObject<{
     numAvailable: import("@sinclair/typebox").TInteger;
     numTaken: import("@sinclair/typebox").TInteger;
     allTaken: import("@sinclair/typebox").TBoolean;
+    consumptions: import("@sinclair/typebox").TArray<TObject<{
+        _id: import("@sinclair/typebox").TString;
+        expiresAt: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TNull]>;
+        done: import("@sinclair/typebox").TBoolean;
+    }>>;
 }>;
 export declare const bundleRead: TObject<{
     items: import("@sinclair/typebox").TArray<TObject<{
@@ -259,6 +270,11 @@ export declare const bundleRead: TObject<{
     numAvailable: import("@sinclair/typebox").TInteger;
     numTaken: import("@sinclair/typebox").TInteger;
     allTaken: import("@sinclair/typebox").TBoolean;
+    consumptions: import("@sinclair/typebox").TArray<TObject<{
+        _id: import("@sinclair/typebox").TString;
+        expiresAt: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TNull]>;
+        done: import("@sinclair/typebox").TBoolean;
+    }>>;
 }>;
 export declare const bundleQuery: TObject<{
     _id: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
@@ -269,6 +285,10 @@ export declare const bundleQuery: TObject<{
     flowId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     limit: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     consume: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
+    unconsumeAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
+}>;
+export declare const bundleWrite: TObject<{
+    consumptionId: import("@sinclair/typebox").TString;
 }>;
 export declare type BundleQuery = Static<typeof bundleQuery>;
 export declare type Bundle = Static<typeof bundle>;

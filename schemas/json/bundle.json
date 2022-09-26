@@ -119,6 +119,36 @@
     },
     "allTaken": {
       "type": "boolean"
+    },
+    "consumptions": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "done": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "_id",
+          "expiresAt",
+          "done"
+        ]
+      }
     }
   },
   "required": [
@@ -133,6 +163,7 @@
     "consumerId",
     "numAvailable",
     "numTaken",
-    "allTaken"
+    "allTaken",
+    "consumptions"
   ]
 }
