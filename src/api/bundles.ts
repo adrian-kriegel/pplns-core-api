@@ -87,12 +87,13 @@ export async function consumeBundles(query : schemas.BundleQuery)
       $expr: { $lt: ['$numTaken', '$numAvailable'] },
       limit: undefined,
       consume: undefined,
+      unconsumeAfter: undefined,
     },
   );
 
   const consumptionId = new ObjectId();
 
-  const expiresAt = query.unconsumeAfter ?
+  const expiresAt = 'unconsumeAfter' in query ?
     new Date(Date.now() + query.unconsumeAfter * 1000) :
     null
   ;
@@ -120,7 +121,7 @@ export async function consumeBundles(query : schemas.BundleQuery)
   );
 
   const bundle = updateResult.value;
-
+  
   if (bundle && expiresAt)
   {
     initConsumptionExpiration(
@@ -202,7 +203,7 @@ export default resource(
     get: async (...args) => 
     { 
       const query = args[0];
-
+      
       if (query.consume)
       {
         return consumeBundles(query);

@@ -83,7 +83,7 @@ test(
       inputData,
     );
 
-    const inputBundles = await inspectNode.consume();
+    const inputBundles = await inspectNode.getInputs();
 
     expect(inputBundles.length).toBe(3);
 

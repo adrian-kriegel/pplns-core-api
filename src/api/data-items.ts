@@ -108,7 +108,7 @@ export async function postDataItem(
       item['flowStack'] : 
       []
   ;
-
+  
   if ('consumptionId' in item && item['consumptionId'])
   {
     const bundleUpdate = await bundles.findOneAndUpdate(
@@ -116,7 +116,7 @@ export async function postDataItem(
       {
         $set:
         {
-          done: true,
+          'consumptions.$.done': true,
         },
       },
       {

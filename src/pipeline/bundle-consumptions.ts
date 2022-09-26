@@ -110,15 +110,22 @@ export function initConsumptionExpiration(
 }
 
 /**
- * Automatically initializes the most relevant expiration timer from the database.
- * @param ignoreConsumptionId a consumption id to ignore
- * @returns Promise
+ * @returns most relevant timer
  */
-async function autoInitConumptionExpiration(
+export function getCurrentTimer()
+{
+  return shortestTimeout;
+}
+
+/**
+ * @param ignoreConsumptionId ignoreConsumptionId
+ * @returns currently most relevant consumtion 
+ */
+export function findNextExpiringConsumption(
   ignoreConsumptionId?: ObjectId,
 )
 {
-  const next = await bundles.find(
+  return bundles.find(
     {
       consumptions: 
       {
@@ -141,6 +148,18 @@ async function autoInitConumptionExpiration(
     .limit(1)
     .next()
   ;
+}
+
+/**
+ * Automatically initializes the most relevant expiration timer from the database.
+ * @param ignoreConsumptionId a consumption id to ignore
+ * @returns Promise
+ */
+async function autoInitConumptionExpiration(
+  ignoreConsumptionId?: ObjectId,
+)
+{
+  const next = await findNextExpiringConsumption(ignoreConsumptionId);
 
   if (next)
   {

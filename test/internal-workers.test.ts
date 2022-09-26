@@ -82,10 +82,10 @@ describe('Join node.', () =>
       },
     );
 
-    inspect2NodeId = await new InspectNode(
+    inspect2NodeId = (await new InspectNode(
       taskId,
       [{ nodeId: joinNodeId, outputChannel: 'out' }],
-    ).register();
+    ).register()).nodeId as ObjectId;
 
   });
 });
@@ -182,7 +182,7 @@ describe('Split node', () =>
           outputChannel: 'out',
           flowId: bundle.flowId,
           flowStack: bundle.items[0].flowStack,
-          consumptionId: bundle.consumptionId,
+          consumptionId: bundle.consumptionId as ObjectId,
         },
       ],
     );

@@ -5,6 +5,7 @@ import nodesApi from '../../src/api/nodes';
 import dataItemsApi from '../../src/api/data-items';
 
 import {
+  BundleQuery,
   BundleRead,
   DataItemWrite,
   NodeRead,
@@ -12,6 +13,7 @@ import {
 } from '../../src/pipeline/schemas';
 
 import { workers } from '../../src/storage/database';
+import { GetResponse } from 'express-lemur/lib/rest/rest-router';
 
 const anyType = { schema: {}, description: '' };
 
@@ -71,7 +73,7 @@ export class InspectNode
       },
     );
 
-    return this.nodeId = (await nodesApi.post?.(
+    this.nodeId = (await nodesApi.post?.(
       {
         taskId: this.taskId,
       },
@@ -85,13 +87,14 @@ export class InspectNode
       null as any,
       null as any,
     ) as NodeRead)._id;
+
+    return this;
   }
 
   /**
-   * TODO: implement with consume=true and iterate
    * @returns bundles 
    */
-  async consume() : Promise<BundleRead[]>
+  async getInputs() : Promise<BundleRead[]>
   {
     return (await bundlesApi.get?.(
       { taskId: this.taskId, consumerId: this.nodeId as ObjectId },
@@ -101,15 +104,54 @@ export class InspectNode
   }
 
   /**
+   * @param query optional bundle query
+   * @returns bundles
+   */
+  async consume(query : BundleQuery = {}) : Promise<BundleRead[]>
+  {
+    const bundles : BundleRead[] = [];
+
+    while (bundles.length < (query.limit ?? Infinity))
+    {
+      const res = await bundlesApi.get?.(
+        { 
+          taskId: this.taskId, 
+          consumerId: this.nodeId as ObjectId,
+          limit: 1,
+          consume: true,
+          ...query,
+        },
+        null as any,
+        null as any,
+      ) as GetResponse<BundleRead>;
+
+      if (res && res?.results.length > 0)
+      {
+        bundles.push(res.results[0]);
+      }
+      else 
+      {
+        break;
+      }
+    }
+
+    return bundles;
+  }
+
+  /**
    * Re-emits 
    * @param processor processor
    * @returns Promise<void>
    */
   async process(
-    processor : BundleProcessor = ((b) => b.items), 
+    processor : BundleProcessor = (
+      (b) => b.items.map((i) => (
+        { ...i, consumptionId: b.consumptionId as ObjectId }
+      ))
+    ), 
   )
   {
-    for (const bundle of await this.consume())
+    for (const bundle of await this.getInputs())
     {
       const itemsToEmit = await processor(bundle);
 

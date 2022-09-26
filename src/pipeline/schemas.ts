@@ -200,7 +200,7 @@ export const dataItem = Type.Object(
     flowId: Type.Optional(dataItemProps.flowId),
     flowStack: Type.Optional(dataItemProps.flowStack),
 
-    // the consumptionId of  the input that produced this item as an output
+    // the consumptionId of the input that produced this item as an output
     consumptionId: Type.Union([objectId, Type.Null()]),
   },
 );
