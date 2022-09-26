@@ -1,5 +1,5 @@
 {
-  "$id": "@pplns/schemas/bundle.json",
+  "$id": "@pplns/schemas/bundle-read.json",
   "additionalProperties": false,
   "type": "object",
   "properties": {
@@ -149,6 +149,108 @@
           "done"
         ]
       }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "taskId": {
+            "type": "string"
+          },
+          "nodeId": {
+            "type": "string"
+          },
+          "outputChannel": {
+            "type": "string"
+          },
+          "flowId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "flowStack": {
+            "type": "array",
+            "items": {
+              "additionalProperties": false,
+              "type": "object",
+              "properties": {
+                "flowId": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                },
+                "splitNodeId": {
+                  "type": "string"
+                },
+                "numEmitted": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "flowId",
+                "splitNodeId",
+                "numEmitted"
+              ]
+            }
+          },
+          "producerNodeIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "done": {
+            "default": false,
+            "type": "boolean"
+          },
+          "autoDoneAfter": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {}
+          },
+          "consumptionId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              null
+            ]
+          }
+        },
+        "required": [
+          "_id",
+          "createdAt",
+          "taskId",
+          "nodeId",
+          "outputChannel",
+          "producerNodeIds",
+          "data",
+          "consumptionId"
+        ]
+      }
+    },
+    "consumptionId": {
+      "type": "string"
     }
   },
   "required": [
@@ -164,6 +266,7 @@
     "numAvailable",
     "numTaken",
     "allTaken",
-    "consumptions"
+    "consumptions",
+    "items"
   ]
 }

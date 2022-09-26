@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/bundle-write.json",
+  "$id": "@pplns/schemas/bundle-write.json",
   "additionalProperties": false,
   "type": "object",
   "properties": {

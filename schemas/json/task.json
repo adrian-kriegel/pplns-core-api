@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/task.json",
+  "$id": "@pplns/schemas/task.json",
   "additionalProperties": false,
   "type": "object",
   "properties": {

@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/bundle-consumption.json",
+  "$id": "@pplns/schemas/bundle-consumption.json",
   "additionalProperties": false,
   "type": "object",
   "properties": {

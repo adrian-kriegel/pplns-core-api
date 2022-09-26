@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/node-query.json",
+  "$id": "@pplns/schemas/node-query.json",
   "additionalProperties": false,
   "type": "object",
   "properties": {

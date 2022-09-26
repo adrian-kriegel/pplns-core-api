@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/bundle-query.json",
+  "$id": "@pplns/schemas/bundle-query.json",
   "additionalProperties": false,
   "type": "object",
   "properties": {

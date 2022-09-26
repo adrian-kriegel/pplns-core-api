@@ -58,6 +58,7 @@ const illegalKeys = [
  */
 function cleanSchema(schema)
 {
+  if (!schema) return; 
   for (const key of illegalKeys)
   {
     delete schema[key];

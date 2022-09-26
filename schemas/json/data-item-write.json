@@ -1,0 +1,44 @@
+{
+  "$id": "@pplns/schemas/data-item-write.json",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "outputChannel": {
+      "type": "string"
+    },
+    "flowId": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "done": {
+      "default": false,
+      "type": "boolean"
+    },
+    "autoDoneAfter": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "array",
+      "items": {}
+    },
+    "consumptionId": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        null
+      ]
+    }
+  },
+  "required": [
+    "outputChannel",
+    "data",
+    "consumptionId"
+  ]
+}

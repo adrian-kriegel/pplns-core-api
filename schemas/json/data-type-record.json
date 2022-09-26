@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/data-type-record.json",
+  "$id": "@pplns/schemas/data-type-record.json",
   "type": "object",
   "patternProperties": {
     "^.*$": {}

@@ -1,8 +1,8 @@
 {
   "type": "object",
   "properties": {
-    "@ppln/schemas/task.json": {
-      "$id": "@ppln/schemas/task.json",
+    "@pplns/schemas/task.json": {
+      "$id": "@pplns/schemas/task.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -39,18 +39,18 @@
         "owners"
       ]
     },
-    "@ppln/schemas/data-type-definition.json": {
-      "$id": "@ppln/schemas/data-type-definition.json"
+    "@pplns/schemas/data-type-definition.json": {
+      "$id": "@pplns/schemas/data-type-definition.json"
     },
-    "@ppln/schemas/data-type-record.json": {
-      "$id": "@ppln/schemas/data-type-record.json",
+    "@pplns/schemas/data-type-record.json": {
+      "$id": "@pplns/schemas/data-type-record.json",
       "type": "object",
       "patternProperties": {
         "^.*$": {}
       }
     },
-    "@ppln/schemas/worker.json": {
-      "$id": "@ppln/schemas/worker.json",
+    "@pplns/schemas/worker.json": {
+      "$id": "@pplns/schemas/worker.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -94,8 +94,8 @@
         "params"
       ]
     },
-    "@ppln/schemas/worker-write.json": {
-      "$id": "@ppln/schemas/worker-write.json",
+    "@pplns/schemas/worker-write.json": {
+      "$id": "@pplns/schemas/worker-write.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -135,8 +135,8 @@
         "params"
       ]
     },
-    "@ppln/schemas/internal-worker.json": {
-      "$id": "@ppln/schemas/internal-worker.json",
+    "@pplns/schemas/internal-worker.json": {
+      "$id": "@pplns/schemas/internal-worker.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -176,8 +176,8 @@
         "params"
       ]
     },
-    "@ppln/schemas/task-write.json": {
-      "$id": "@ppln/schemas/task-write.json",
+    "@pplns/schemas/task-write.json": {
+      "$id": "@pplns/schemas/task-write.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -206,8 +206,8 @@
         "owners"
       ]
     },
-    "@ppln/schemas/node.json": {
-      "$id": "@ppln/schemas/node.json",
+    "@pplns/schemas/node.json": {
+      "$id": "@pplns/schemas/node.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -282,8 +282,8 @@
         "position"
       ]
     },
-    "@ppln/schemas/node-write.json": {
-      "$id": "@ppln/schemas/node-write.json",
+    "@pplns/schemas/node-write.json": {
+      "$id": "@pplns/schemas/node-write.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -346,8 +346,8 @@
         "position"
       ]
     },
-    "@ppln/schemas/node-read.json": {
-      "$id": "@ppln/schemas/node-read.json",
+    "@pplns/schemas/node-read.json": {
+      "$id": "@pplns/schemas/node-read.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -511,8 +511,8 @@
         "worker"
       ]
     },
-    "@ppln/schemas/node-query.json": {
-      "$id": "@ppln/schemas/node-query.json",
+    "@pplns/schemas/node-query.json": {
+      "$id": "@pplns/schemas/node-query.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -524,8 +524,8 @@
         }
       }
     },
-    "@ppln/schemas/flow-id-schema.json": {
-      "$id": "@ppln/schemas/flow-id-schema.json",
+    "@pplns/schemas/flow-id-schema.json": {
+      "$id": "@pplns/schemas/flow-id-schema.json",
       "anyOf": [
         {
           "type": "string"
@@ -535,8 +535,8 @@
         }
       ]
     },
-    "@ppln/schemas/flow-stack-schema.json": {
-      "$id": "@ppln/schemas/flow-stack-schema.json",
+    "@pplns/schemas/flow-stack-schema.json": {
+      "$id": "@pplns/schemas/flow-stack-schema.json",
       "type": "array",
       "items": {
         "additionalProperties": false,
@@ -566,8 +566,149 @@
         ]
       }
     },
-    "@ppln/schemas/data-item-query.json": {
-      "$id": "@ppln/schemas/data-item-query.json",
+    "@pplns/schemas/data-item.json": {
+      "$id": "@pplns/schemas/data-item.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "taskId": {
+          "type": "string"
+        },
+        "nodeId": {
+          "type": "string"
+        },
+        "outputChannel": {
+          "type": "string"
+        },
+        "flowId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "flowStack": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "flowId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "splitNodeId": {
+                "type": "string"
+              },
+              "numEmitted": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "flowId",
+              "splitNodeId",
+              "numEmitted"
+            ]
+          }
+        },
+        "producerNodeIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "done": {
+          "default": false,
+          "type": "boolean"
+        },
+        "autoDoneAfter": {
+          "type": "integer"
+        },
+        "data": {
+          "type": "array",
+          "items": {}
+        },
+        "consumptionId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            null
+          ]
+        }
+      },
+      "required": [
+        "_id",
+        "createdAt",
+        "taskId",
+        "nodeId",
+        "outputChannel",
+        "producerNodeIds",
+        "data",
+        "consumptionId"
+      ]
+    },
+    "@pplns/schemas/data-item-write.json": {
+      "$id": "@pplns/schemas/data-item-write.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "outputChannel": {
+          "type": "string"
+        },
+        "flowId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "done": {
+          "default": false,
+          "type": "boolean"
+        },
+        "autoDoneAfter": {
+          "type": "integer"
+        },
+        "data": {
+          "type": "array",
+          "items": {}
+        },
+        "consumptionId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            null
+          ]
+        }
+      },
+      "required": [
+        "outputChannel",
+        "data",
+        "consumptionId"
+      ]
+    },
+    "@pplns/schemas/data-item-query.json": {
+      "$id": "@pplns/schemas/data-item-query.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -623,8 +764,8 @@
         }
       }
     },
-    "@ppln/schemas/bundle-consumption.json": {
-      "$id": "@ppln/schemas/bundle-consumption.json",
+    "@pplns/schemas/bundle-consumption.json": {
+      "$id": "@pplns/schemas/bundle-consumption.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -651,8 +792,8 @@
         "done"
       ]
     },
-    "@ppln/schemas/bundle.json": {
-      "$id": "@ppln/schemas/bundle.json",
+    "@pplns/schemas/bundle.json": {
+      "$id": "@pplns/schemas/bundle.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -820,8 +961,280 @@
         "consumptions"
       ]
     },
-    "@ppln/schemas/bundle-query.json": {
-      "$id": "@ppln/schemas/bundle-query.json",
+    "@pplns/schemas/bundle-read.json": {
+      "$id": "@pplns/schemas/bundle-read.json",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "inputItems": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "type": "string"
+              },
+              "position": {
+                "type": "integer"
+              },
+              "nodeId": {
+                "type": "string"
+              },
+              "outputChannel": {
+                "type": "string"
+              },
+              "inputChannel": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "itemId",
+              "position",
+              "nodeId",
+              "outputChannel",
+              "inputChannel"
+            ]
+          }
+        },
+        "depth": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "taskId": {
+          "type": "string"
+        },
+        "flowId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "lowerFlowIds": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "flowStack": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "flowId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "splitNodeId": {
+                "type": "string"
+              },
+              "numEmitted": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "flowId",
+              "splitNodeId",
+              "numEmitted"
+            ]
+          }
+        },
+        "done": {
+          "type": "boolean"
+        },
+        "consumerId": {
+          "type": "string"
+        },
+        "workerId": {
+          "type": "string"
+        },
+        "numAvailable": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "numTaken": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "allTaken": {
+          "type": "boolean"
+        },
+        "consumptions": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "expiresAt": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "done": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "_id",
+              "expiresAt",
+              "done"
+            ]
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "additionalProperties": false,
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "taskId": {
+                "type": "string"
+              },
+              "nodeId": {
+                "type": "string"
+              },
+              "outputChannel": {
+                "type": "string"
+              },
+              "flowId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "flowStack": {
+                "type": "array",
+                "items": {
+                  "additionalProperties": false,
+                  "type": "object",
+                  "properties": {
+                    "flowId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "splitNodeId": {
+                      "type": "string"
+                    },
+                    "numEmitted": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "flowId",
+                    "splitNodeId",
+                    "numEmitted"
+                  ]
+                }
+              },
+              "producerNodeIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "done": {
+                "default": false,
+                "type": "boolean"
+              },
+              "autoDoneAfter": {
+                "type": "integer"
+              },
+              "data": {
+                "type": "array",
+                "items": {}
+              },
+              "consumptionId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  null
+                ]
+              }
+            },
+            "required": [
+              "_id",
+              "createdAt",
+              "taskId",
+              "nodeId",
+              "outputChannel",
+              "producerNodeIds",
+              "data",
+              "consumptionId"
+            ]
+          }
+        },
+        "consumptionId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "_id",
+        "createdAt",
+        "inputItems",
+        "depth",
+        "taskId",
+        "flowId",
+        "flowStack",
+        "done",
+        "consumerId",
+        "numAvailable",
+        "numTaken",
+        "allTaken",
+        "consumptions",
+        "items"
+      ]
+    },
+    "@pplns/schemas/bundle-query.json": {
+      "$id": "@pplns/schemas/bundle-query.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {
@@ -856,8 +1269,8 @@
         }
       }
     },
-    "@ppln/schemas/bundle-write.json": {
-      "$id": "@ppln/schemas/bundle-write.json",
+    "@pplns/schemas/bundle-write.json": {
+      "$id": "@pplns/schemas/bundle-write.json",
       "additionalProperties": false,
       "type": "object",
       "properties": {

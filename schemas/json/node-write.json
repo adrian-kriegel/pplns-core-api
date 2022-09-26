@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/node-write.json",
+  "$id": "@pplns/schemas/node-write.json",
   "additionalProperties": false,
   "type": "object",
   "properties": {

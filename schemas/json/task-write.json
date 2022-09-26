@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/task-write.json",
+  "$id": "@pplns/schemas/task-write.json",
   "additionalProperties": false,
   "type": "object",
   "properties": {

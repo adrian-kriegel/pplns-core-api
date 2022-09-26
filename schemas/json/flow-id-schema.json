@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/flow-id-schema.json",
+  "$id": "@pplns/schemas/flow-id-schema.json",
   "anyOf": [
     {
       "type": "string"

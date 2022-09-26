@@ -1,5 +1,5 @@
 {
-  "$id": "@ppln/schemas/flow-stack-schema.json",
+  "$id": "@pplns/schemas/flow-stack-schema.json",
   "type": "array",
   "items": {
     "additionalProperties": false,
