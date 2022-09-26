@@ -648,7 +648,9 @@
             {
               "type": "string"
             },
-            null
+            {
+              "type": "null"
+            }
           ]
         }
       },
@@ -697,7 +699,9 @@
             {
               "type": "string"
             },
-            null
+            {
+              "type": "null"
+            }
           ]
         }
       },
@@ -1196,7 +1200,9 @@
                   {
                     "type": "string"
                   },
-                  null
+                  {
+                    "type": "null"
+                  }
                 ]
               }
             },

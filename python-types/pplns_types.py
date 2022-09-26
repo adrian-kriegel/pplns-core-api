@@ -164,7 +164,11 @@ str
 'producerNodeIds': list[str],
 'done': NotRequired[bool],
 'autoDoneAfter': NotRequired[int],
-'data': list[typing.Any]
+'data': list[typing.Any],
+'consumptionId': typing.Union[
+str,
+None
+]
 })
 
 DataItemWrite = typing.TypedDict('DataItemWrite',{
@@ -173,17 +177,13 @@ DataItemWrite = typing.TypedDict('DataItemWrite',{
 str,
 str
 ]],
-'flowStack': NotRequired[list[typing.TypedDict('name.flowStack.items',{
-'flowId': typing.Union[
-str,
-str
-],
-'splitNodeId': str,
-'numEmitted': int
-})]],
 'done': NotRequired[bool],
 'autoDoneAfter': NotRequired[int],
-'data': list[typing.Any]
+'data': list[typing.Any],
+'consumptionId': typing.Union[
+str,
+None
+]
 })
 
 DataItemQuery = typing.TypedDict('DataItemQuery',{
@@ -195,7 +195,6 @@ DataItemQuery = typing.TypedDict('DataItemQuery',{
 str,
 str
 ]],
-'consumptionId': NotRequired[str],
 'sort': NotRequired[dict[str, typing.Union[
 typing.Literal[1],
 typing.Literal[-1]
@@ -320,7 +319,11 @@ str
 'producerNodeIds': list[str],
 'done': NotRequired[bool],
 'autoDoneAfter': NotRequired[int],
-'data': list[typing.Any]
+'data': list[typing.Any],
+'consumptionId': typing.Union[
+str,
+None
+]
 })],
 'consumptionId': NotRequired[str]
 })
@@ -340,8 +343,4 @@ BundleQuery = typing.TypedDict('BundleQuery',{
 BundleWrite = typing.TypedDict('BundleWrite',{
 'consumptionId': str
 })
-version = '0.0.1'
-
-version = '0.0.1'
-
 version = '0.0.1'

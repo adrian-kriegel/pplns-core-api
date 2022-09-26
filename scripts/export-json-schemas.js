@@ -84,7 +84,7 @@ Promise.all(Object.entries(schemas).map(
   async ([name, type]) =>
   {
     const fileName = camelCaseToHyphenated(name) + '.json';
-    const $id = `@ppln/schemas/${fileName}`;
+    const $id = `@pplns/schemas/${fileName}`;
 
     const schema = {
       $id,

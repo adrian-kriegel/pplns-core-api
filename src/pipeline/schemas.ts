@@ -201,7 +201,7 @@ export const dataItem = Type.Object(
     flowStack: Type.Optional(dataItemProps.flowStack),
 
     // the consumptionId of  the input that produced this item as an output
-    consumptionId: Type.Union([objectId, null]),
+    consumptionId: Type.Union([objectId, Type.Null()]),
   },
 );
 

@@ -233,7 +233,9 @@
               {
                 "type": "string"
               },
-              null
+              {
+                "type": "null"
+              }
             ]
           }
         },

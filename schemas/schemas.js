@@ -100,7 +100,7 @@ exports.dataItem = typebox_1.Type.Object({
     flowId: typebox_1.Type.Optional(dataItemProps.flowId),
     flowStack: typebox_1.Type.Optional(dataItemProps.flowStack),
     // the consumptionId of  the input that produced this item as an output
-    consumptionId: typebox_1.Type.Union([general_1.objectId, null]),
+    consumptionId: typebox_1.Type.Union([general_1.objectId, typebox_1.Type.Null()]),
 });
 exports.dataItemWrite = typebox_1.Type.Omit(exports.dataItem, ['taskId', 'nodeId', 'producerNodeIds', 'createdAt', '_id', 'flowStack']);
 exports.dataItemQuery = typebox_1.Type.Object({

@@ -143,7 +143,7 @@ export declare const dataItem: TObject<{
         splitNodeId: import("@sinclair/typebox").TString;
         numEmitted: import("@sinclair/typebox").TInteger;
     }>>>;
-    consumptionId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, any]>;
+    consumptionId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TNull]>;
     _id: import("@sinclair/typebox").TString;
     createdAt: import("@sinclair/typebox").TString;
     taskId: import("@sinclair/typebox").TString;
@@ -161,7 +161,7 @@ export declare const dataItemWrite: TObject<Omit<{
         splitNodeId: import("@sinclair/typebox").TString;
         numEmitted: import("@sinclair/typebox").TInteger;
     }>>>;
-    consumptionId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, any]>;
+    consumptionId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TNull]>;
     _id: import("@sinclair/typebox").TString;
     createdAt: import("@sinclair/typebox").TString;
     taskId: import("@sinclair/typebox").TString;
@@ -237,7 +237,7 @@ export declare const bundleRead: TObject<{
             splitNodeId: import("@sinclair/typebox").TString;
             numEmitted: import("@sinclair/typebox").TInteger;
         }>>>;
-        consumptionId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, any]>;
+        consumptionId: import("@sinclair/typebox").TUnion<[import("@sinclair/typebox").TString, import("@sinclair/typebox").TNull]>;
         _id: import("@sinclair/typebox").TString;
         createdAt: import("@sinclair/typebox").TString;
         taskId: import("@sinclair/typebox").TString;
