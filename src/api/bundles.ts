@@ -79,18 +79,24 @@ export async function consumeBundles(query : schemas.BundleQuery)
 {
   const findQuery = removeUndefined(
     {
-      ...query,
+      // remove any keys 
+      ...mapMask(
+        query,
+        Object.keys(schemas.bundle.properties) as any,
+      ),
       done: true,
       // note that allTaken: false is only used to speed up the query 
       // semaphore-behavior is achieved through the $lt expression along with findOneAndUpdate $inc
       allTaken: false,
       $expr: { $lt: ['$numTaken', '$numAvailable'] },
-      limit: undefined,
-      consume: undefined,
-      unconsumeAfter: undefined,
+
+      // TODO: test
+      _id: 'after' in query ? 
+        { $gt: query.after } : 
+        undefined,
     },
   );
-
+  
   const consumptionId = new ObjectId();
 
   const expiresAt = 'unconsumeAfter' in query ?

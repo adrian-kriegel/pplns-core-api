@@ -1262,6 +1262,9 @@
         "flowId": {
           "type": "string"
         },
+        "after": {
+          "type": "string"
+        },
         "limit": {
           "minimum": 1,
           "type": "integer"

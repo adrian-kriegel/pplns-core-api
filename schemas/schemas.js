@@ -165,6 +165,9 @@ exports.bundleQuery = typebox_1.Type.Object({
     workerId: typebox_1.Type.Optional(typebox_1.Type.String()),
     done: typebox_1.Type.Optional(typebox_1.Type.Boolean()),
     flowId: typebox_1.Type.Optional(general_1.objectId),
+    // set to a bundleId in order to get only bundles inserted after
+    // the specified bundle
+    after: typebox_1.Type.Optional(general_1.objectId),
     limit: typebox_1.Type.Optional(typebox_1.Type.Integer({ minimum: 1 })),
     // set to true if returned bundles should be consumed
     consume: typebox_1.Type.Optional(typebox_1.Type.Boolean()),

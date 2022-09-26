@@ -286,6 +286,7 @@ export declare const bundleQuery: TObject<{
     workerId: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TString>;
     done: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     flowId: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
+    after: import("@sinclair/typebox").TOptional<import("@unologin/typebox-extended").TUserDefined<import("bson").ObjectID>>;
     limit: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;
     consume: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TBoolean>;
     unconsumeAfter: import("@sinclair/typebox").TOptional<import("@sinclair/typebox").TInteger>;

@@ -349,6 +349,10 @@ export const bundleQuery = Type.Object(
     workerId: Type.Optional(Type.String()),
     done: Type.Optional(Type.Boolean()),
     flowId: Type.Optional(objectId),
+
+    // set to a bundleId in order to get only bundles inserted after
+    // the specified bundle
+    after: Type.Optional(objectId),
     limit: Type.Optional(Type.Integer({ minimum: 1 })),
 
     // set to true if returned bundles should be consumed

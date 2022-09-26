@@ -335,6 +335,7 @@ BundleQuery = typing.TypedDict('BundleQuery',{
 'workerId': NotRequired[str],
 'done': NotRequired[bool],
 'flowId': NotRequired[str],
+'after': NotRequired[str],
 'limit': NotRequired[int],
 'consume': NotRequired[bool],
 'unconsumeAfter': NotRequired[int]
