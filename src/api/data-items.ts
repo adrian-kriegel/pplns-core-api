@@ -84,7 +84,24 @@ export async function postDataItem(
     item.data = [item.data];
   }
 
-  let bundle : schemas.Bundle | null = null;
+  const bundleProjection = 
+  { 
+    'consumptions.$': 1,
+    '_id': 1,
+    'taskId': 1,
+    'consumerId': 1,
+    'flowId': 1,
+    'flowStack': 1,
+  };
+
+  type PBundle = Pick<
+    schemas.Bundle,
+    (keyof typeof bundleProjection & keyof schemas.Bundle) |
+    'consumptions'
+   >;
+
+  // type of the projected bundle
+  let bundle : PBundle | null = null;
 
   let flowStack : schemas.DataItem['flowStack'] = 
     'flowStack' in item ?
@@ -105,7 +122,7 @@ export async function postDataItem(
       {
         // this is important in order to check the value of "done"
         returnDocument: 'before',
-        projection: { 'consumptions.$': 1 },
+        projection: bundleProjection,
       },
     );
 
@@ -132,7 +149,7 @@ export async function postDataItem(
       ;
     }
 
-    if (con.expiresAt <= new Date())
+    if (con.expiresAt && con.expiresAt <= new Date())
     {
       await unconsume(bundle._id, con._id);
 
@@ -141,7 +158,6 @@ export async function postDataItem(
         .data({ bundle, conumptionn: con })
       ;
     }
-
 
     if (nodeId && !nodeId.equals(bundle.consumerId))
     {
