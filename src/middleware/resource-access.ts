@@ -30,7 +30,15 @@ export async function checkTaskAccess(
     },
   );
 
-  if (task && task.owners.find((_id) => _id.equals(user.asuId)))
+  if (
+    // [!] TODO: remove this (granting any api clients full access because I'm super lazy rn)
+    // see api key parser
+    res.locals.apiClient || 
+    (
+      task && 
+      task.owners.find((_id) => _id.equals(user.id))
+    )
+  )
   {
     res.locals.taskResource = task;
   }

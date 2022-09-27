@@ -1,6 +1,6 @@
 
 import { parseObjectId } from '@unologin/server-common/lib/general/database';
-import { Response } from 'express';
+
 import { ObjectId } from 'mongodb';
 import { DataItem, Node, TaskWrite } from '../src/pipeline/schemas';
 
@@ -12,12 +12,7 @@ import bundlesApi from '../src/api/bundles';
 import { bundles, dataItems, workers } from '../src/storage/database';
 import { APIError } from 'express-lemur/lib/errors';
 
-const userId = new ObjectId('62de9ee9ac751033dad45a62');
-
-const mockRes = 
-{
-  locals: { unologin: { user: { asuId: userId.toHexString() } } },
-} as any as Response;
+import { mockRes } from './util/pipeline-setups';
 
 let taskId : ObjectId;
 const workerId = 'worker1';
@@ -87,7 +82,7 @@ describe('Tasks & Nodes API', () =>
     ) as any;
 
     expect(results[0].owners)
-      .toStrictEqual([userId]);
+      .toStrictEqual([parseObjectId(mockRes.locals.unologin.user.asuId)]);
   });
 
   it('POST /task/:taskId/nodes creates new nodes for task', async () => 

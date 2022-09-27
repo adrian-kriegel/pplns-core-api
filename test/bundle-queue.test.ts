@@ -2,20 +2,13 @@
  * Tests for queue behavior of the bundles API.
  */
 
-import { Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { bundles } from '../src/storage/database';
 
 import bundlesApi from '../src/api/bundles';
 import { BundleRead } from '../src/pipeline/schemas';
 
-const userId = new ObjectId('62de9ee9ac751033dad45a62');
-
-const mockRes = 
-{
-  locals: { unologin: { user: { asuId: userId.toHexString() } } },
-} as any as Response;
-
+import { mockRes } from './util/pipeline-setups';
 
 const flowId1 = new ObjectId('f1de9ee9ac751033dad45a62');
 const flowId2 = new ObjectId('f2de9ee9ac751033dad45a62');

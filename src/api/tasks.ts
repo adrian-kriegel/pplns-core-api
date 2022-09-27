@@ -60,7 +60,7 @@ export default resource(
 
       const taskToInsert = {
         ...task,
-        owners: [parseObjectId(user.asuId)],
+        owners: [parseObjectId(user.id)],
         createdAt: new Date(),
       };
 

@@ -1,6 +1,4 @@
 
-import { Response } from 'express';
-
 import dataItemsApi from '../src/api/data-items';
 import bundlesApi from '../src/api/bundles';
 import { ObjectId } from 'mongodb';
@@ -9,12 +7,7 @@ import { createNode } from './util/api-util';
 
 const taskId = new ObjectId('62de9ee9ac751033dad45a62');
 
-const userId = new ObjectId('62de9ee9ac751033dad45a62');
-
-const mockRes = 
-{
-  locals: { unologin: { user: { asuId: userId.toHexString() } } },
-} as any as Response;
+import { mockRes } from './util/pipeline-setups';
 
 let dataSrcNodeId : ObjectId;
 let splitNodeId : ObjectId;

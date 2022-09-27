@@ -21,6 +21,9 @@ import requestLogger from '../middleware/request-logger';
 import util from '../api/util';
 
 import jsonQueryParser from '../middleware/json-query-parser';
+import apiKeyParser from '../middleware/api-key-parser';
+import { getUser } from '../util/express-util';
+import { unauthorized } from 'express-lemur/lib/errors';
 
 const app = express();
 
@@ -34,6 +37,21 @@ app.use(connection.expressSetup);
 app.use(cookieParser());
 
 app.use(unologin);
+
+app.use(apiKeyParser);
+
+app.all('*', (req, res, next) => 
+{
+  if (getUser(res))
+  {
+    next();
+  }
+  else 
+  {
+    res.status(401).send(unauthorized());
+  }
+});
+
 app.use(jsonQueryParser);
 app.use(express.json());
 

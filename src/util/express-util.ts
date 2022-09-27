@@ -1,11 +1,16 @@
 
 import type { Response } from 'express';
 
-import type { User } from '@unologin/node-api';
+import * as unologin from '@unologin/node-api';
 
 import { unauthorized } from 'express-lemur/lib/errors';
 import { assert404 } from 'express-lemur/lib/rest/rest-router';
 import { Task } from '../pipeline/schemas';
+
+export type User = 
+{
+  id: string;
+};
 
 /**
  * 
@@ -17,9 +22,15 @@ export function getUser(
   res : Response,
 ) : User
 {
-  if (res.locals.unologin?.user)
+  if (res.locals.apiClient)
   {
-    return res.locals.unologin.user;
+    return { id: res.locals.apiClient.id };
+  }
+  else if (res.locals.unologin?.user)
+  {
+    const user : unologin.User = res.locals.unologin.user;
+
+    return { id: user.asuId };
   }
   else 
   {
