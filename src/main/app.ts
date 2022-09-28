@@ -29,12 +29,15 @@ import {
   isAPIError,
   unauthorized,
 } from 'express-lemur/lib/errors';
+import logger from './logger';
 
 const app = express();
 
 export = app;
 
 app.use(cors);
+
+app.use(logger.setup());
 
 // TODO: also add logger (see any other api)
 app.use(connection.expressSetup);
