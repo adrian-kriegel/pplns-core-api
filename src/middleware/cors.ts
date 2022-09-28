@@ -14,7 +14,7 @@ export default router;
 // TODO: put this in env and join it with origins used in serverless.yml
 const ALLOWED_ORIGINS = 
  [
-   'http://label.localhost:8080',
+   'http://pplns.localhost:8080',
    'https://login.unolog.in',
  ];
   

@@ -31,9 +31,9 @@ export async function checkTaskAccess(
   );
 
   if (
-    // [!] TODO: remove this (granting any api clients full access because I'm super lazy rn)
+    // [!] TODO: remove this (granting any authenticated clients full access because I'm super lazy rn)
     // see api key parser
-    res.locals.apiClient || 
+    user ||
     (
       task && 
       task.owners.find((_id) => _id.equals(user.id))

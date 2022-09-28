@@ -36,8 +36,6 @@ const api = new LemurRouter('rest');
 
 export default api.express();
 
-api.express().use('/login', loginEventHandler);
-
 api.add(
   {
     route: '/logout',
@@ -78,6 +76,20 @@ else
     },
   );
 
+  api.express().use('/login', loginEventHandler);
+
   // always parse login 
   api.express().all('/*', parseLogin);
 }
+
+
+api.add(
+  {
+    route: '/me/get-login-info',
+
+    method: 'ALL',
+
+    callback: (req, res) => res.locals.unologin.user,
+  },
+);
+
