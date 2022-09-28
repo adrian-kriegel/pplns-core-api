@@ -15,7 +15,7 @@ const apiKeyParser : Handler = (
     )
   )
   {
-    res.locals.apiClient = { id: req.header['X-API-User'] || 'anonymouse' };
+    res.locals.apiClient = { id: req.header['X-API-User'] || 'anonymous' };
   }
 
   next();
