@@ -8,14 +8,14 @@ import {
 } from 'express-lemur/lib/rest/rest-router';
 
 import { LemurOptions } from 'express-lemur/lib/router';
+import logger from './logger';
 
 export const lemurOptions : LemurOptions =
 {
   ...defaultRestOptions,
   method: 'POST',
   ajv,
-  // TODO: set up logger
-  logger: console,
+  logger,
   timeout: 20000,
 };
 

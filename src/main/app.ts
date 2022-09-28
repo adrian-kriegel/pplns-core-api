@@ -23,7 +23,12 @@ import util from '../api/util';
 import jsonQueryParser from '../middleware/json-query-parser';
 import apiKeyParser from '../middleware/api-key-parser';
 import { getUser } from '../util/express-util';
-import { unauthorized } from 'express-lemur/lib/errors';
+import {
+  APIError,
+  badRequest,
+  isAPIError,
+  unauthorized,
+} from 'express-lemur/lib/errors';
 
 const app = express();
 
@@ -71,3 +76,41 @@ restAPI.addResource(tasks);
 restAPI.addResource(workers);
 
 app.use(restAPI.express());
+
+
+/**
+ * Turn anything into an APIError
+ * @param e error
+ * @returns APIError
+ */
+function toAPIError(e : unknown) : APIError
+{
+  if (isAPIError(e))
+  {
+    return e as APIError;
+  }
+  else if (e instanceof SyntaxError)
+  {
+    return badRequest()
+      .msg('Syntax error in request.');
+  }
+  else 
+  {
+    return new APIError(500);
+  }
+}
+
+app.use(
+  // it is important that the error handler have 4 arguments for express to know what's up
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (error, _1, res, _3) => 
+  {
+    const err = toAPIError(error);
+
+    res.status(err._code).send(
+      { error: err },
+    );
+  },
+);
+
+

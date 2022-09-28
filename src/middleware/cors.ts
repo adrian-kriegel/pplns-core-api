@@ -13,10 +13,11 @@ export default router;
 // allow certain origins
 // TODO: put this in env and join it with origins used in serverless.yml
 const ALLOWED_ORIGINS = 
- [
-   'http://pplns.localhost:8080',
-   'https://login.unolog.in',
- ];
+[  
+  'https://pplns.unolog.in',
+  'http://pplns.localhost:8080',
+  'https://login.unolog.in',
+];
   
 router.all('*', function(req, res, next) 
 {

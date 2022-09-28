@@ -89,7 +89,11 @@ api.add(
 
     method: 'ALL',
 
-    callback: (req, res) => res.locals.unologin.user,
+    callback: (req, res) => 
+    {
+      res.send(res.locals.unologin.user);
+      // return res.locals.unologin?.user;
+    },
   },
 );
 

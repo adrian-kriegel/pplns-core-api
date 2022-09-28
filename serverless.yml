@@ -24,6 +24,28 @@ functions:
       - http: 
           path: /
           method: ANY
+          cors:
+            origins: 
+              - 'https://pplns.unolog.in'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: true
       - http: 
           path: /{proxy+}
           method: ANY
+          cors:
+            origins: 
+              - 'https://pplns.unolog.in'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: true
