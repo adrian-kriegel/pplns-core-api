@@ -6,10 +6,12 @@ import * as unologin from '@unologin/node-api';
 import { unauthorized } from 'express-lemur/lib/errors';
 import { assert404 } from 'express-lemur/lib/rest/rest-router';
 import { Task } from '../pipeline/schemas';
+import { ObjectId } from 'mongodb';
+import { parseObjectId } from '@unologin/server-common/lib/general/database';
 
 export type User = 
 {
-  id: string;
+  id: ObjectId;
 };
 
 /**
@@ -24,13 +26,13 @@ export function getUser(
 {
   if (res.locals.apiClient)
   {
-    return { id: res.locals.apiClient.id };
+    return { id: new ObjectId(0) };
   }
   else if (res.locals.unologin?.user)
   {
     const user : unologin.User = res.locals.unologin.user;
 
-    return { id: user.asuId };
+    return { id: parseObjectId(user.asuId) };
   }
   else 
   {

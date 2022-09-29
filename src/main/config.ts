@@ -7,7 +7,9 @@ export type PplnsConfig =
 
 export let config : PplnsConfig = 
 {
-  runBundlerAfterItemInsert: false,
+  runBundlerAfterItemInsert: (
+    process.env.CONFIG_RUN_BUNDER_ON_INSERT == 'true'
+  ),
 };
 
 /**

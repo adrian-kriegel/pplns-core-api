@@ -1,5 +1,4 @@
 
-import { parseObjectId } from '@unologin/server-common/lib/general/database';
 import {
   objectId,
 } from '@unologin/server-common/lib/schemas/general';
@@ -60,7 +59,7 @@ export default resource(
 
       const taskToInsert = {
         ...task,
-        owners: [parseObjectId(user.id)],
+        owners: [user.id],
         createdAt: new Date(),
       };
 
