@@ -18,7 +18,9 @@
 
 import { notFound } from 'express-lemur/lib/errors';
 import { ObjectId } from 'mongodb';
+import { isLambda } from '../main/env-setup';
 import { bundles } from '../storage/database';
+import { requestWorkerOperation } from './background-worker';
 
 
 /**
@@ -86,6 +88,11 @@ export function initConsumptionExpiration(
   force = false,
 )
 {
+  if (isLambda)
+  {
+    return;
+  }
+
   if (
     // force override
     force || 
@@ -155,7 +162,7 @@ export function findNextExpiringConsumption(
  * @param ignoreConsumptionId a consumption id to ignore
  * @returns Promise
  */
-async function autoInitConumptionExpiration(
+export async function autoInitConumptionExpiration(
   ignoreConsumptionId?: ObjectId,
 )
 {
@@ -193,7 +200,9 @@ function unconsumeCascade(
     [
       // TODO: catch any errors except "not found"
       unconsume(bundleId, consumptionId).catch(() => null),
-      autoInitConumptionExpiration(consumptionId),
+      requestWorkerOperation(
+        () => autoInitConumptionExpiration(consumptionId),
+      ),
     ],
   );
 }

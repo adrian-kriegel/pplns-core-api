@@ -1,9 +1,13 @@
 
+// required by some libraries but somehow not available in jest
 import { TextEncoder, TextDecoder } from 'util';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+
+(global as any).TextEncoder = TextEncoder;
+(global as any).TextDecoder = TextDecoder;
 
 import { config } from 'dotenv';
+
+import { editConfig } from '../../src/main/config';
 
 config({ path: '.env.test' });
 
@@ -24,6 +28,7 @@ import { connection } from '../../src/storage/database';
 beforeAll(connectFresh);
 beforeAll(() => connection.connect());
 
+afterAll(() => connection.disconnect());
 
 // create a fake unologin API KEY
 process.env.UNOLOGIN_API_KEY = createApiToken(
@@ -48,4 +53,9 @@ beforeAll(() =>
     },
   );
 
+  editConfig(
+    {
+      runBundlerAfterItemInsert: true,
+    },
+  );
 });

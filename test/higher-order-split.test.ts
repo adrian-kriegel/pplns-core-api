@@ -21,18 +21,24 @@
  */
 
 import { ObjectId } from 'mongodb';
+import { BundleRead, DataItem } from '../src/pipeline/schemas';
 import { createNode } from './util/api-util';
 import { InspectNode } from './util/inspect-node';
+
 import SourceNode from './util/source-node';
 
-const taskId = new ObjectId('62de9ee9ac751033dad45a62');
-
-let sourceNode : SourceNode;
-let inspectNode : InspectNode;
-
-beforeAll(async () =>
+/**
+ * Sets up the above scenario.
+ * @param arrayFirst whether the array or its elements come first in the inspect node inputs
+ * @returns [sourceNode, inspectNode]
+ */
+const setup = async (
+  arrayFirst: boolean,
+) : Promise<[SourceNode, InspectNode]> => 
 {
-  sourceNode = await new SourceNode(taskId)
+  const taskId = new ObjectId();
+
+  const sourceNode = await new SourceNode(taskId)
     .register();
 
   const splitId = await createNode(
@@ -50,57 +56,120 @@ beforeAll(async () =>
     },
   );
 
-  inspectNode = new InspectNode(
+  const inputs = [
+    {
+      nodeId: splitId,
+      outputChannel: 'out',
+    },
+    {
+      nodeId: sourceNode.getNodeId(),
+      outputChannel: 'data',
+    },
+  ];
+
+  if (arrayFirst)
+  {
+    inputs.reverse();
+  }
+
+  const inspectNode = new InspectNode(
     taskId,
-    [
-      {
-        nodeId: splitId,
-        outputChannel: 'out',
-      },
-      {
-        nodeId: sourceNode.getNodeId(),
-        outputChannel: 'data',
-      },
-    ],
+    inputs,
   );
 
   await inspectNode.register();
-});
 
-test(
-  'Input items from different split levels are bundled correctly.', 
-  async () => 
-  {
-    const inputData = [
-      'f1data1',
-      'f1data2',
-      'f1data3',
-    ];
+  return [
+    sourceNode,
+    inspectNode,
+  ];
+};
 
-    // emit first dataitem
-    // this will emit a SINGLE item containnig the array
-    await sourceNode.emit(
-      inputData,
-    );
+/**
+ * @param inputItems inputItems from the bunlde
+ * @param items items from the bundle
+ * @returns items in same order as inputItems
+ */
+function sortBundleItems(
+  inputItems : BundleRead['inputItems'],
+  items : DataItem[],
+) : DataItem[]
+{
+  return inputItems.map(
+    ({ itemId }) => 
+    {
+      const item = items.find(({ _id }) => (''+_id) === (''+itemId));
 
-    const inputBundles = await inspectNode.getInputs();
+      if (!item)
+      {
+        throw new Error('Could not find item.');
+      }
 
-    expect(inputBundles.length).toBe(3);
+      return item;
+    },
+  );
+}
 
-    const data = inputBundles.map(
-      (bundle) => bundle.items.map((item) => item.data),
-    );
-    
-    const sortedData = inputData.map(
+const testHigherOrderSplit = async (arrayFirst : boolean) => 
+{
+  const [sourceNode, inspectNode] = await setup(arrayFirst);
+
+  const inputData = [
+    'f1data1',
+    'f1data2',
+    'f1data3',
+  ];
+
+  // emit first dataitem
+  // this will emit a SINGLE item containig the array which is then split in the split node
+  await sourceNode.emit(
+    inputData,
+    'data',
+  );
+
+  const inputBundles = await inspectNode.getInputs();
+  
+  expect(inputBundles.length).toBe(3);
+  
+  const data = inputBundles.map(
+    (bundle) => sortBundleItems(
+      bundle.inputItems,
+      bundle.items,
+    ).map((item) => item.data),
+  );
+  
+  // sorts the data because bundles themselves may come in different orders
+  // which is expected
+  const sortedData = inputData.map(
+    arrayFirst ? 
+      (str) => data.find(([, [item1]]) => item1 === str) :
       (str) => data.find(([[item1]]) => item1 === str),
-    );
+  );
 
-    const expectedData = inputData.map(
-      // nested array format is expected because sortedData = [item1.data, item2.data][]
-      // and item.data is always an array
-      (str) => [[str], inputData],
-    );
+  const expectedData = inputData.map(
+    // nested array format is expected because sortedData = [item1.data, item2.data][]
+    // and item.data is always an array
+    (str) => arrayFirst ? 
+      [inputData, [str]] :
+      [[str], inputData]
+    ,
+  );
 
-    expect(sortedData).toStrictEqual(expectedData);
+  expect(sortedData).toStrictEqual(expectedData);
+};
+
+describe(
+  'Input items from different split levels are bundled correctly.', 
+  () => 
+  {
+    it('When array comes first', () => 
+    {
+      return testHigherOrderSplit(true);
+    });
+
+    it('When array comes last', () => 
+    {
+      return testHigherOrderSplit(false);
+    });
   },
 );

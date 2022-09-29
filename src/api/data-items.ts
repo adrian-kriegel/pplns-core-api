@@ -4,58 +4,17 @@ import {
   collectionToGetHandler, removeUndefined,
 } from '@unologin/server-common/lib/util/rest-util';
 
-import { badRequest, forbidden } from 'express-lemur/lib/errors';
+import { APIError, badRequest, forbidden } from 'express-lemur/lib/errors';
 
 import { assert404, resource } from 'express-lemur/lib/rest/rest-router';
 import { ObjectId } from 'mongodb';
 import { checkTaskAccess } from '../middleware/resource-access';
 
-import { upsertBundle } from '../pipeline/worker';
-
 import * as schemas from '../pipeline/schemas';
-import { bundles, dataItems, nodes } from '../storage/database';
+import { bundles, dataItems } from '../storage/database';
 import { unconsume } from '../pipeline/bundle-consumptions';
+import { requestBundling } from '../pipeline/item-bundler-queue';
 
-/**
- * Pushes item into its destination bundles.
- * Updates bundle status if bundle is full.
- * 
- * TODO: handle the edge case where the same output is connected to two inputs on the same node
- * 
- * @param item dataitem
- * 
- * @returns Promise<void>
- */
-export async function onItemDone(
-  item : schemas.DataItem,
-)
-{
-  const { nodeId, outputChannel } = item;
-
-  const consumers = await nodes.aggregate<schemas.Node>(
-    [
-      {
-        $match: 
-        {
-          'taskId': item.taskId,
-          'inputs.outputChannel': outputChannel,
-          'inputs.nodeId': nodeId,
-          'inputs': { $elemMatch: { nodeId, outputChannel } },
-        },
-      },
-    ],
-  ).toArray();
-
-  await Promise.all(
-    consumers.map((consumer) => 
-      upsertBundle(
-        nodeId,
-        consumer,
-        item,
-      ),
-    ),
-  );
-}
 
 /**
  * 
@@ -232,7 +191,7 @@ export async function postDataItem(
               { _id: dbItem._id },
               { $set: { done: true } },
             ) : Promise.resolve(),
-          onItemDone(dbItem),
+          requestBundling(dbItem._id),
         ],
       );
     }
@@ -245,7 +204,8 @@ export async function postDataItem(
     // if item is done already and thus should not be changed anymore
     if (e.code === 11000)
     {
-      throw badRequest()
+      // 409 means "conflict"
+      throw new APIError(409)
         .msg('Item is "done". Update rejected.')
         .data(
           { 

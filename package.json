@@ -6,7 +6,9 @@
   "scripts": {
     "lint": "eslint --fix --ext .ts ./src ./test",
     "dev": "UNOLOGIN_ENV=local ts-node-dev ./src/main/server",
-    "test": "jest --detectOpenHandles",
+    "worker-dev": "UNOLOGIN_ENV=local ts-node-dev ./src/main/run-background-worker",
+    "worker": "UNOLOGIN_ENV=local ts-node-dev ./build/main/run-background-worker",
+    "test": "jest --detectOpenHandles --runInBand",
     "deploy-dev": "sls deploy --stage=dev",
     "deploy-production": "sls deploy --stage=production",
     "build-schemas": "sh ./scripts/build-schemas.sh",

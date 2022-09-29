@@ -27,6 +27,7 @@ const indexes : CollectionIndexes =
       outputChannel: 1,
       $options: { unique: true },
     },
+    { bundled: -1 },
   ],
   bundles:
   [

@@ -31,11 +31,10 @@ export default function collection<T=any>(cname: string)
 }
 
 
+export const dataItems = collection<DataItem>('dataItems');
 export const bundles = collection<Bundle>('bundles');
 
 export const nodes = collection<Node>('nodes');
-
-export const dataItems = collection<DataItem>('dataItems');
 
 export const tasks = collection<Task>('tasks');
 

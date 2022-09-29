@@ -45,13 +45,15 @@ export default class SourceNode
   /**
    * Emit a single item containing the data.
    * @param data data
+   * @param flowId optional flowId
    * @returns Promise
    */
-  async emit(data : any) : Promise<DataItem>
+  async emit(data : any, flowId?: string) : Promise<DataItem>
   {
     return (dataItemsApi as any).post(
       { nodeId: this.getNodeId(), taskId: this.taskId },
       {
+        flowId,
         consumptionId: null,
         data: data,
         outputChannel: 'data',

@@ -3,7 +3,7 @@ import { assert404 } from 'express-lemur/lib/rest/rest-router';
 import { ObjectId } from 'mongodb';
 import * as schemas from './schemas';
 import { bundles, dataItems, workers } from '../storage/database';
-import Mutex from '../util/mutex';
+
 import { getInternalWorker, IInternalWorker } from './internal-workers';
 import { listFileSystemWorkers } from './filesystem-workers';
 
@@ -97,7 +97,7 @@ export class ExternalWorker implements IWorker
     const worker = await this.get();
 
     const input = findInputForItem(item, consumer);
-
+    
     // if item needs to be added to higher level items, skip the logic below
     if (
       !specificBundleId &&
@@ -200,7 +200,7 @@ export class ExternalWorker implements IWorker
     );
 
     // lower level items can be assumed to be done
-    // because the split node will only split once done
+    // because the split node will only split once the bundle is done
     const lowerLevelItems = missingInputs.length ?
       await dataItems.find(
         {
@@ -242,18 +242,21 @@ export class ExternalWorker implements IWorker
       []
     ;
 
-    const lowerLevelInputItems = lowerLevelItems.map((item) => 
-      (
-        {
+    const lowerLevelInputItems = lowerLevelItems.map(
+      (item) => 
+      {
+        const input = findInputForItem(item, consumer);
+
+        return {
           position: Object.keys(worker.inputs).findIndex(
-            (c) => input.inputChannel === c,
+            (c) => c === input.inputChannel,
           ),
           nodeId: item.nodeId,
           outputChannel: item.outputChannel,
           itemId: item._id,
           inputChannel: findInputForItem(item, consumer).inputChannel,
-        }
-      ),
+        };
+      },
     );
 
     const allInputItems : schemas.Bundle['inputItems'] = [
@@ -328,21 +331,9 @@ export async function upsertBundle(
 {
   const consumer = args[1];
 
-  const mutex = await new Mutex(consumer._id.toHexString()).take();
-
-  try 
-  {
-    const result =
-      getInternalWorker(consumer.workerId)?.upsertBundle(...args) ||
-      new ExternalWorker(consumer.workerId).upsertBundle(...args)
-    ;
-
-    return result;
-  }
-  finally
-  {
-    await mutex.free();
-  }
+  return getInternalWorker(consumer.workerId)?.upsertBundle(...args) ||
+    new ExternalWorker(consumer.workerId).upsertBundle(...args)
+  ;
 }
 
 

@@ -207,7 +207,14 @@ export const dataItem = Type.Object(
 
 export const dataItemWrite = Type.Omit(
   dataItem,
-  ['taskId', 'nodeId', 'producerNodeIds', 'createdAt', '_id', 'flowStack'],
+  [
+    'taskId', 
+    'nodeId', 
+    'producerNodeIds', 
+    'createdAt', 
+    '_id', 
+    'flowStack',
+  ],
 );
 
 // generic part of the DataItem type
