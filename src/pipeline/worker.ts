@@ -5,7 +5,7 @@ import * as schemas from './schemas';
 import { bundles, dataItems, workers } from '../storage/database';
 import Mutex from '../util/mutex';
 import { getInternalWorker, IInternalWorker } from './internal-workers';
-import { listFileSystemWorkers } from './worker-management';
+import { listFileSystemWorkers } from './filesystem-workers';
 
 export interface IWorker
 {

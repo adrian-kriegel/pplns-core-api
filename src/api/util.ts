@@ -1,6 +1,6 @@
 
 import { LemurRouter } from 'express-lemur';
-import { listFileSystemWorkers } from '../pipeline/worker-management';
+import { listFileSystemWorkers } from '../pipeline/filesystem-workers';
 
 const api = new LemurRouter('rest');
 

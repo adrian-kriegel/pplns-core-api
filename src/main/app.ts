@@ -23,12 +23,13 @@ import util from '../api/util';
 import jsonQueryParser from '../middleware/json-query-parser';
 import apiKeyParser from '../middleware/api-key-parser';
 import { getUser } from '../util/express-util';
+
 import {
   APIError,
   badRequest,
   isAPIError,
-  unauthorized,
 } from 'express-lemur/lib/errors';
+
 import logger from './logger';
 
 const app = express();
@@ -44,19 +45,26 @@ app.use(connection.expressSetup);
 
 app.use(cookieParser());
 
-app.use(unologin);
+app.all('*', apiKeyParser);
 
-app.use(apiKeyParser);
+app.use(unologin);
 
 app.all('*', (req, res, next) => 
 {
-  if (getUser(res))
+  try 
   {
-    next();
+    if (getUser(res))
+    {
+      next();
+    }
+    else 
+    {
+      new Error('Invalid login.');
+    }
   }
-  else 
+  catch (e)
   {
-    res.status(401).send(unauthorized());
+    res.send(toAPIError(e));
   }
 });
 

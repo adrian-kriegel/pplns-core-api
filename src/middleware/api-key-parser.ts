@@ -8,10 +8,12 @@ const apiKeyParser : Handler = (
 ) => 
 {
   // [!] TODO: actual API keys
+  const key = req.header('X-API-Key');
+
   if (
     process.env.DISABLE_AUTH === 'true' || (
-      req.header['X-API-Key'] &&
-      req.header['X-API-Key'] === process.env.PPLNS_API_PASSWORD 
+      key &&
+      key === process.env.PPLNS_API_PASSWORD 
     )
   )
   {

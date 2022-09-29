@@ -1,9 +1,10 @@
 
-import { Worker } from '../pipeline/schemas';
+import { Worker } from './schemas';
 
 import { exec } from 'child_process';
 import { readFileSync } from 'fs';
 import path from 'path';
+import { isLambda } from '../main/env-setup';
 
 /**
  * Finds list of workers in the local file system.
@@ -12,8 +13,14 @@ import path from 'path';
  * 
  * @returns Promise<Worker[]>
  */
-export function listFileSystemWorkers()
+export function listFileSystemWorkers() : Promise<Worker[]>
 {
+  // this function does not work on most "lambda"-like functions and there is no need to have it anyway
+  if (isLambda)
+  {
+    return Promise.resolve([]);
+  }
+
   const process = exec('echo ../*/pplns_workers/*.json');
 
   let files : string[] = [];
