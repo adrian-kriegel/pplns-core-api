@@ -20,7 +20,7 @@ import { notFound } from 'express-lemur/lib/errors';
 import { ObjectId } from 'mongodb';
 import { isLambda } from '../main/env-setup';
 import { bundles } from '../storage/database';
-import { requestWorkerOperation } from './background-worker';
+import { requestWorkerOperation } from '../background-worker/background-worker';
 
 
 /**

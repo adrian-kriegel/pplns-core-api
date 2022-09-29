@@ -1,5 +1,6 @@
 
 import { LemurRouter } from 'express-lemur';
+import { getWorkerStatus } from '../background-worker/background-worker-status';
 import { listFileSystemWorkers } from '../pipeline/filesystem-workers';
 
 const api = new LemurRouter('rest');
@@ -17,5 +18,15 @@ api.add(
     description: 'Returns list of local worker definitions from the file system.',
 
     callback: listFileSystemWorkers,  
+  },
+);
+
+api.add(
+  {
+    route: '/status',
+    
+    method: 'GET',
+
+    callback: getWorkerStatus,
   },
 );

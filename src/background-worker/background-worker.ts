@@ -2,9 +2,10 @@
 import {
   autoInitConumptionExpiration,
   getCurrentTimer,
-} from './bundle-consumptions';
+} from '../pipeline/bundle-consumptions';
 
-import { processBundleRequests } from './item-bundler-queue';
+import { processBundleRequests } from '../pipeline/item-bundler-queue';
+import { ping } from './background-worker-status';
 
 type Timeout = ReturnType<typeof setTimeout>;
 type Interval = ReturnType<typeof setInterval>;
@@ -53,6 +54,7 @@ export function requestWorkerOperation(
   fnc : () => any,
 )
 {
+  ping();
   if (running)
   {
     return fnc();
